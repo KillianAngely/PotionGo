@@ -1,4 +1,4 @@
-# PotionGo API
+# PotionGo API 🥤🌍
 
 A REST API built with Node.js, TypeScript, and Express for the PotionGo application.
 
@@ -53,5 +53,3 @@ npm start
 - **CORS**: Enabled for all origins
 
 ## License
-
-ISC
