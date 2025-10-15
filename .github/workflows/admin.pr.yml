@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'app/**'
+      - "app/**"
 
 jobs:
   build:
@@ -21,12 +21,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: './app/package-lock.json'
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "./app/package-lock.json"
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Format code
+        run: npm run test:static
 
       - name: Build
         run: npm run build
