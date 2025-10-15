@@ -10,15 +10,14 @@ export default function Home() {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/health`)
       .then((res) => res.json())
       .then((data) => setMessage(data.message))
-      .catch((err) => {
-        console.error("Erreur API :", err);
+      .catch(() => {
         setMessage("Erreur de connexion à l’API");
       });
   }, []);
 
   return (
     <div className={styles.page}>
-      <h1>Statut de l'API :</h1>
+      <h1>{"Statut de l'API :"}</h1>
       <p>{message}</p>
     </div>
   );
