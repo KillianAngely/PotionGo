@@ -12,6 +12,6 @@ app.get("/api/health", (_req: Request, res: Response) => {
   res.json({ message: "Hello from PotionGo API!" })
 })
 
-app.listen(PORT, () => 
+app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT} 🌍`)
 })
