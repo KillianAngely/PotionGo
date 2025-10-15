@@ -5,14 +5,14 @@ on:
     branches:
       - main
     paths:
-      - 'admin/**'
+      - 'app/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./admin
+        working-directory: ./app
 
     steps:
       - name: Checkout code
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: './admin/package-lock.json'
+          cache-dependency-path: './app/package-lock.json'
 
       - name: Install dependencies
         run: npm ci
@@ -34,7 +34,7 @@ jobs:
       - name: Check build artifacts
         run: |
           if [ ! -d ".next" ]; then
-            echo "Build failed - ./admin/.next directory not found"
+            echo "Build failed - ./app/.next directory not found"
             exit 1
           fi
-          echo "Build successful - ./admin/.next directory created"
+          echo "Build successful - ./app/.next directory created"
