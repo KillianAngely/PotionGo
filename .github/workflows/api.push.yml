@@ -1,9 +1,11 @@
-name: PR Build
+name: Main Build
 
 on:
-  pull_request:
+  push:
     branches:
       - main
+    paths:
+      - 'api/**'
 
 jobs:
   build:
@@ -36,3 +38,4 @@ jobs:
             exit 1
           fi
           echo "Build successful - ./api/dist directory created"
+
