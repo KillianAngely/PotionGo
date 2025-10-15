@@ -3,6 +3,6 @@ export async function GET() {
     JSON.stringify({
       message: "Hello from PotionGo API!",
     }),
-    { status: 200 },
+    { status: 200, headers: { "Content-Type": "application/json" } },
   )
 }
