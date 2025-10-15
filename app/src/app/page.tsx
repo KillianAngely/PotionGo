@@ -7,7 +7,7 @@ export default function Home() {
   const [message, setMessage] = useState("Chargement...")
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/health`)
+    fetch(`/api/health`)
       .then((res) => res.json())
       .then((data) => setMessage(data.message))
       .catch(() => {
