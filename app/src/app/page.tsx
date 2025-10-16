@@ -1,24 +1,43 @@
 "use client"
-
-import { useEffect, useState } from "react"
+import { FormEvent } from "react"
 import styles from "./page.module.css"
 
 export default function Home() {
-  const [message, setMessage] = useState("Chargement...")
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
 
-  useEffect(() => {
-    fetch(`/api/health`)
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message))
-      .catch(() => {
-        setMessage("Erreur de connexion à l’API")
+    fetch(`/api/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: (event.currentTarget.elements.namedItem("email") as HTMLInputElement).value,
+        password: (event.currentTarget.elements.namedItem("password") as HTMLInputElement).value,
+      }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const errorData = await response.json()
+          return new Error(errorData.message || "Failed to sign up")
+        }
+        return response.json()
       })
-  }, [])
+      .then((data) => {
+        console.log("User signed up successfully:", data)
+      })
+      .catch((error) => {
+        console.error("Error during sign up:", error)
+      })
+  }
 
   return (
     <div className={styles.page}>
-      <h1>{"Statut de l'API :"}</h1>
-      <p>{message}</p>
+      <form onSubmit={handleSubmit}>
+        <input type="email" placeholder="Email" name="email" />
+        <input type="password" placeholder="Password" name="password" />
+        <button type="submit">Login</button>
+      </form>
     </div>
   )
 }
