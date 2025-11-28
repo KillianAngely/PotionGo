@@ -24,16 +24,20 @@ export async function POST(request: Request) {
 
     await admin.auth().setCustomUserClaims(userCredential.uid, { role })
 
+    await admin.firestore().collection("users").doc(userCredential.uid).set({
+      email,
+      role,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    })
+
     console.log(`[SIGNUP] New user created: ${userCredential.uid}`)
+
+    const token = await admin.auth().createCustomToken(userCredential.uid, { role })
 
     return new Response(
       JSON.stringify({
         success: true,
-        user: {
-          uid: userCredential.uid,
-          email: userCredential.email,
-          role,
-        },
+        token,
       }),
       { status: 201, headers: { "Content-Type": "application/json" } },
     )
