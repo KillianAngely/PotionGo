@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.potiongo.ui.screen.HomeScreen
 import com.example.potiongo.ui.screen.LoginScreen
+import com.example.potiongo.ui.screen.SignUpScreen
 
 @Composable
 fun AppNavHost(
@@ -19,10 +20,18 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(route = AppScreenDestination.Login.name) {
-            LoginScreen(onSubmit = { navController.navigate(AppScreenDestination.Home.name)})
+            LoginScreen(
+                onSubmit = { navController.navigate(AppScreenDestination.Home.name)},
+                onClickCreateAccount = {navController.navigate(AppScreenDestination.SignUp.name)}
+            )
         }
         composable(route = AppScreenDestination.Home.name){
             HomeScreen()
+        }
+        composable (route = AppScreenDestination.SignUp.name){
+            SignUpScreen(
+                onSubmit = { navController.navigate(AppScreenDestination.Home.name)},
+            )
         }
     }
 }
