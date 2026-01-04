@@ -6,8 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.potiongo.ui.screen.HomeScreen
-import com.example.potiongo.ui.screen.LoginScreen
-import com.example.potiongo.ui.screen.SignUpScreen
+import com.example.potiongo.ui.screen.login.LoginScreen
+import com.example.potiongo.ui.screen.signup.SignUpScreen
 
 @Composable
 fun AppNavHost(
