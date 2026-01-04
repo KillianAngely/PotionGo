@@ -1,31 +1,23 @@
 package com.example.potiongo.ui.screen
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
+import androidx.compose.material3.SecureTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.SecureTextField
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-
-import androidx.compose.ui.tooling.preview.Preview
-
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.potiongo.ui.theme.PotionGoTheme
 
 
 @Composable
-fun LoginScreen(
+fun SignUpScreen(
     modifier: Modifier = Modifier ,
     onSubmit: () -> Unit,
-    onClickCreateAccount: () -> Unit,
     viewModel: LoginViewModel = viewModel()
 )
 {
@@ -42,26 +34,15 @@ fun LoginScreen(
             state = rememberTextFieldState(initialText = ""),
             label = { Text("Password")}
         )
-        TextButton(onClick =  onClickCreateAccount) {
-            Text("I don't have account ")
-        }
+        SecureTextField(
+            state = rememberTextFieldState(initialText = ""),
+            label = { Text("Confirm Password")}
+        )
 
         Button(
             onClick = onSubmit
         ) {
             Text("Click me!")
         }
-
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    PotionGoTheme {
-        LoginScreen(
-            onSubmit = {  } ,
-            onClickCreateAccount = {}
-        )
     }
 }
