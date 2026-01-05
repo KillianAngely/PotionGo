@@ -10,6 +10,8 @@ interface IAuthService {
     suspend fun signUp(email: String, password: String): Result<Unit>
 
     suspend fun login(email: String, password: String): Result<Unit>
+
+    suspend fun signOut(): Result<Unit>
 }
 
 private val TAG : String = "AuthService"
@@ -37,6 +39,17 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
 
         } catch (e: Exception) {
             Log.w(TAG, "loginUserWithEmail:failure", e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun signOut(): Result<Unit> {
+        return try {
+            auth.signOut()
+            Log.d(TAG, "signOut:success")
+            Result.success(Unit)
+        }catch (e : Exception){
+            Log.d(TAG, "signOut:failure")
             Result.failure(e)
         }
     }
