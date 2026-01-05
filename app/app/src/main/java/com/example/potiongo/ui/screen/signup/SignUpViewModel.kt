@@ -2,10 +2,15 @@ package com.example.potiongo.ui.screen.signup
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.potiongo.services.AuthService
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 
 class SignUpViewModel : ViewModel() {
@@ -32,8 +37,10 @@ class SignUpViewModel : ViewModel() {
 
 
     fun signUp() {
-        Log.d("LoginViewModel", "${_uiState.value.email} + ${_uiState.value.password}")
-
+        viewModelScope.launch {
+            val auth = AuthService(FirebaseAuth.getInstance())
+            auth.signUp(_uiState.value.email, _uiState.value.password)
+        }
     }
 
 }

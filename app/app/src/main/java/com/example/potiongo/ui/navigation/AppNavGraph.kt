@@ -2,9 +2,11 @@ package com.example.potiongo.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.potiongo.services.IAuthService
 import com.example.potiongo.ui.screen.HomeScreen
 import com.example.potiongo.ui.screen.login.LoginScreen
 import com.example.potiongo.ui.screen.signup.SignUpScreen
@@ -13,10 +15,12 @@ import com.example.potiongo.ui.screen.signup.SignUpScreen
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    auth: IAuthService
 ){
+
     NavHost(
         navController = navController,
-        startDestination = AppScreenDestination.Login.name,
+        startDestination = if (auth.isAuthenticated()) AppScreenDestination.Home.name else AppScreenDestination.Login.name,
         modifier = modifier
     ) {
         composable(route = AppScreenDestination.Login.name) {
