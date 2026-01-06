@@ -2,14 +2,13 @@ package com.example.potiongo.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.potiongo.services.IAuthService
-import com.example.potiongo.ui.screen.HomeScreen
-import com.example.potiongo.ui.screen.login.LoginScreen
-import com.example.potiongo.ui.screen.signup.SignUpScreen
+import com.example.potiongo.ui.screens.HomeScreen
+import com.example.potiongo.ui.screens.login.LoginScreen
+import com.example.potiongo.ui.screens.signup.SignUpScreen
 
 @Composable
 fun AppNavHost(

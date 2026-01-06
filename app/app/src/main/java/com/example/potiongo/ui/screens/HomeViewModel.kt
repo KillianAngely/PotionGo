@@ -1,4 +1,4 @@
-package com.example.potiongo.ui.screen
+package com.example.potiongo.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
