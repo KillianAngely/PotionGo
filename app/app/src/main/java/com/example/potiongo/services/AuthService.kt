@@ -61,6 +61,8 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
     override suspend fun signInWithCredential(credential: AuthCredential): Result<Unit> {
         try {
             auth.signInWithCredential(credential)
+            /*TODO Clear credentials manager see https://firebase.google.com/docs/auth/android/google-signin
+            *  */
             Log.d(TAG, "signInWithCredential:succes")
             return Result.success(Unit)
         } catch (e : Exception){
