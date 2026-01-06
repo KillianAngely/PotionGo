@@ -1,6 +1,5 @@
-package com.example.potiongo.ui.screen.login
+package com.example.potiongo.ui.screens.login
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.potiongo.services.AuthService

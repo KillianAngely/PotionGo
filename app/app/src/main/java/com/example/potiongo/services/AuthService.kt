@@ -1,7 +1,9 @@
 package com.example.potiongo.services
 
 import android.util.Log
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.tasks.await
 
 interface IAuthService {
@@ -12,6 +14,8 @@ interface IAuthService {
     suspend fun login(email: String, password: String): Result<Unit>
 
     suspend fun signOut(): Result<Unit>
+
+    suspend fun signInWithCredential(credential: AuthCredential): Result<Unit>
 }
 
 private val TAG : String = "AuthService"
@@ -51,6 +55,17 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
         }catch (e : Exception){
             Log.d(TAG, "signOut:failure")
             Result.failure(e)
+        }
+    }
+
+    override suspend fun signInWithCredential(credential: AuthCredential): Result<Unit> {
+        try {
+            auth.signInWithCredential(credential)
+            Log.d(TAG, "signInWithCredential:succes")
+            return Result.success(Unit)
+        } catch (e : Exception){
+            Log.d(TAG, "signInWithCredential:failure")
+            return Result.failure(e)
         }
     }
 
