@@ -1,4 +1,4 @@
-package com.example.potiongo.ui.screens.login
+package com.example.potiongo.ui.screens.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,9 +10,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(LoginUiState())
-    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+
+class SignUpViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(SignUpUiState())
+    val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
 
     fun updateEmail(email: String) {
         _uiState.update { currentState ->
@@ -26,15 +27,26 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    fun login() {
-        viewModelScope.launch {
-            val auth = AuthService(FirebaseAuth.getInstance())
-            auth.login(_uiState.value.email, _uiState.value.password)
+    fun updateConfirmPassword(confirmPassword: String) {
+        _uiState.update { currentState ->
+            currentState.copy(confirmPassword = confirmPassword)
         }
     }
+
+
+    fun signUp() {
+        viewModelScope.launch {
+            val auth = AuthService(FirebaseAuth.getInstance())
+            auth.signUp(_uiState.value.email, _uiState.value.password)
+        }
+    }
+
 }
 
-data class LoginUiState(
+
+data class SignUpUiState(
     val email: String = "",
-    val password: String = ""
+    val password: String = "",
+    val confirmPassword : String = "",
+    val hasError:  Boolean = false
 )

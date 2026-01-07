@@ -1,31 +1,41 @@
-package com.example.potiongo.ui.screens.signup
+package com.example.potiongo.ui.screens.auth.login
+
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+
+import androidx.compose.ui.tooling.preview.Preview
+
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.potiongo.ui.components.ButtonSignInWithGoogle
+import com.example.potiongo.ui.theme.PotionGoTheme
 
 
 @Composable
-fun SignUpScreen(
-    modifier: Modifier = Modifier ,
+fun LoginScreen(
+    modifier: Modifier = Modifier,
     onSubmit: () -> Unit,
-    viewModel: SignUpViewModel = viewModel()
-)
-{
+    onClickCreateAccount: () -> Unit,
+    viewModel: LoginViewModel = viewModel()
+) {
     val uiState by viewModel.uiState.collectAsState()
+
     Column(
-        modifier.fillMaxSize() ,
+        modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -40,19 +50,23 @@ fun SignUpScreen(
             label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation()
         )
-        TextField(
-            value = uiState.confirmPassword,
-            onValueChange = { viewModel.updatePassword(it) },
-            label = { Text("Confirm password") },
-            visualTransformation = PasswordVisualTransformation()
-        )
+        TextButton(onClick = onClickCreateAccount) {
+            Text("I don't have account")
+        }
         ButtonSignInWithGoogle(webClientId = "527507288095-765jf2mmn11bvu93b1mtupooad5tm58t.apps.googleusercontent.com")
-        Button(
-            onClick = {
-                viewModel.signUp()
-            }
-        ) {
+        Button(onClick = { viewModel.login() }) {
             Text("Click me!")
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    PotionGoTheme {
+        LoginScreen(
+            onSubmit = {  } ,
+            onClickCreateAccount = {}
+        )
     }
 }

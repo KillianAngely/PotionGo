@@ -3,7 +3,7 @@ package com.example.potiongo.services
 import android.util.Log
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.actionCodeSettings
 import kotlinx.coroutines.tasks.await
 
 interface IAuthService {
@@ -28,6 +28,7 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
         return try {
             auth.createUserWithEmailAndPassword(email, password).await()
             Log.d(TAG, "createUserWithEmail:success")
+            //TODO should be extract
             Result.success(Unit)
         } catch (e: Exception) {
             Log.w(TAG, "createUserWithEmail:failure", e)
@@ -38,6 +39,7 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
     override suspend fun login(email: String, password: String): Result<Unit> {
         return try {
             auth.signInWithEmailAndPassword(email, password)
+            this.sendEmailVerification()
             Log.d(TAG, "loginUserWithEmail:success")
             Result.success(Unit)
 
@@ -50,6 +52,8 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
     override suspend fun signOut(): Result<Unit> {
         return try {
             auth.signOut()
+            /*TODO Clear credentials manager see https://firebase.google.com/docs/auth/android/google-signin
+           *  */
             Log.d(TAG, "signOut:success")
             Result.success(Unit)
         }catch (e : Exception){
@@ -61,13 +65,22 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
     override suspend fun signInWithCredential(credential: AuthCredential): Result<Unit> {
         try {
             auth.signInWithCredential(credential)
-            /*TODO Clear credentials manager see https://firebase.google.com/docs/auth/android/google-signin
-            *  */
             Log.d(TAG, "signInWithCredential:succes")
             return Result.success(Unit)
         } catch (e : Exception){
             Log.d(TAG, "signInWithCredential:failure")
             return Result.failure(e)
+        }
+    }
+
+    private fun sendEmailVerification(): Result<Unit>{
+        return try {
+            auth.currentUser!!.sendEmailVerification()
+            Log.d(TAG, "sendEmailVerification:success")
+            Result.success(Unit)
+        }catch (e : Exception){
+            Log.d(TAG, "sendEmailVerification:failure")
+            Result.failure(e)
         }
     }
 
