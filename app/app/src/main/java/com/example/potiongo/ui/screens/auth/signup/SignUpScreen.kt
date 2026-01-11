@@ -46,7 +46,7 @@ fun SignUpScreen(
             label = { Text("Confirm password") },
             visualTransformation = PasswordVisualTransformation()
         )
-        ButtonSignInWithGoogle(webClientId = "527507288095-765jf2mmn11bvu93b1mtupooad5tm58t.apps.googleusercontent.com")
+        ButtonSignInWithGoogle(webClientId = "925160551434-549oqmc42ci254726sdv31fipgncvtqt.apps.googleusercontent.com")
         Button(
             onClick = {
                 viewModel.signUp()
