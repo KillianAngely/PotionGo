@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "527507288095",
-    "firebase_url": "https://potiongo-default-rtdb.europe-west1.firebasedatabase.app",
-    "project_id": "potiongo",
-    "storage_bucket": "potiongo.firebasestorage.app"
+    "project_number": "925160551434",
+    "project_id": "potiongo-f85b7",
+    "storage_bucket": "potiongo-f85b7.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:527507288095:android:562c1d7c35554b034d652a",
+        "mobilesdk_app_id": "1:925160551434:android:41074126980dc7c48fdbf3",
         "android_client_info": {
           "package_name": "com.example.potiongo"
         }
       },
       "oauth_client": [
         {
-          "client_id": "527507288095-765jf2mmn11bvu93b1mtupooad5tm58t.apps.googleusercontent.com",
+          "client_id": "925160551434-549oqmc42ci254726sdv31fipgncvtqt.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAS3BDYFQJCpaZ3Ku7cyWgmZWogw4lE-VM"
+          "current_key": "AIzaSyCHiZDf2q4QJwn-HcUErfSr24xnUBJXhS8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "527507288095-765jf2mmn11bvu93b1mtupooad5tm58t.apps.googleusercontent.com",
+              "client_id": "925160551434-549oqmc42ci254726sdv31fipgncvtqt.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

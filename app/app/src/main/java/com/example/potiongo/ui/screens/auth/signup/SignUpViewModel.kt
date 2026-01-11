@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.potiongo.services.AuthService
 import com.google.firebase.auth.FirebaseAuth
+import com.example.potiongo.services.CloudFunctionsService
+import com.google.firebase.Firebase
+import com.google.firebase.functions.functions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,6 +41,8 @@ class SignUpViewModel : ViewModel() {
         viewModelScope.launch {
             val auth = AuthService(FirebaseAuth.getInstance())
             auth.signUp(_uiState.value.email, _uiState.value.password)
+            val cFunction = CloudFunctionsService(Firebase.functions)
+            cFunction.setUserRole("customer")
         }
     }
 

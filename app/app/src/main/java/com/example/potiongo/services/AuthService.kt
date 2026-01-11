@@ -3,13 +3,12 @@ package com.example.potiongo.services
 import android.util.Log
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.actionCodeSettings
 import kotlinx.coroutines.tasks.await
 
 interface IAuthService {
     fun isAuthenticated(): Boolean
 
-    suspend fun signUp(email: String, password: String): Result<Unit>
+    suspend fun  signUp(email: String, password: String): Result<Unit>
 
     suspend fun login(email: String, password: String): Result<Unit>
 
@@ -25,13 +24,15 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
     override fun isAuthenticated() = auth.currentUser != null
 
     override suspend fun signUp(email: String, password: String): Result<Unit> {
+        Log.d(TAG, "signUp: START")
         return try {
-            auth.createUserWithEmailAndPassword(email, password).await()
-            Log.d(TAG, "createUserWithEmail:success")
-            //TODO should be extract
+            Log.d(TAG, "signUp: calling Firebase...")
+            val result = auth.createUserWithEmailAndPassword(email, password).await()
+            this.sendEmailVerification()
+            Log.d(TAG, "signUp: SUCCESS uid=${result.user?.uid}")
             Result.success(Unit)
         } catch (e: Exception) {
-            Log.w(TAG, "createUserWithEmail:failure", e)
+            Log.e(TAG, "signUp: FAILED", e)
             Result.failure(e)
         }
     }
@@ -39,7 +40,6 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
     override suspend fun login(email: String, password: String): Result<Unit> {
         return try {
             auth.signInWithEmailAndPassword(email, password)
-            this.sendEmailVerification()
             Log.d(TAG, "loginUserWithEmail:success")
             Result.success(Unit)
 
@@ -74,6 +74,7 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
     }
 
     private fun sendEmailVerification(): Result<Unit>{
+        Log.d(TAG,"start sendEmailVerification")
         return try {
             auth.currentUser!!.sendEmailVerification()
             Log.d(TAG, "sendEmailVerification:success")
