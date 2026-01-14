@@ -1,43 +1,70 @@
 "use client"
-import { FormEvent } from "react"
+import { FormEvent, useState } from "react"
+import { useRouter } from "next/navigation"
 import styles from "./page.module.css"
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth"
+import { auth } from "../../config/firebase"
 
 export default function Home() {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
 
-    fetch(`/api/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: (event.currentTarget.elements.namedItem("email") as HTMLInputElement).value,
-        password: (event.currentTarget.elements.namedItem("password") as HTMLInputElement).value,
-      }),
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          const errorData = await response.json()
-          return new Error(errorData.message || "Failed to sign up")
-        }
-        return response.json()
-      })
-      .then((data) => {
-        console.log("User signed up successfully:", data)
-      })
-      .catch((error) => {
-        console.error("Error during sign up:", error)
-      })
+  // const createUser = async (event: FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault()
+  //   setError(null)
+
+  //   const email = (event.currentTarget.elements.namedItem("email2") as HTMLInputElement).value
+  //   const password = (event.currentTarget.elements.namedItem("password2") as HTMLInputElement).value
+
+  //   try {
+  //     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+  //     console.log("User created:", userCredential.user)
+  //   } catch (err: any) {
+  //     setError(err.message)
+  //   }
+  // }
+
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setError(null)
+
+    const email = (event.currentTarget.elements.namedItem("email") as HTMLInputElement).value
+    const password = (event.currentTarget.elements.namedItem("password") as HTMLInputElement).value
+    
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const tokenResult = await userCredential.user.getIdTokenResult()
+
+      if (tokenResult.claims.role === "admin") {
+        router.push("/dashboard")
+      } else {
+        await signOut(auth)
+        setError("Compte non admin")
+      }
+    } catch (err: any) {
+      setError("Login failed: " + err.message)
+    }
   }
 
   return (
     <div className={styles.page}>
-      <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="Email" name="email" />
-        <input type="password" placeholder="Password" name="password" />
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      
+      <form onSubmit={handleLogin}>
+        <h3>Login Admin Only</h3>
+        <input type="email" placeholder="Email" name="email" required />
+        <input type="password" placeholder="Password" name="password" required />
         <button type="submit">Login</button>
       </form>
+{/* 
+      <hr />
+
+      <form onSubmit={createUser}>
+        <h3>SignUp</h3>
+        <input type="email" placeholder="Email" name="email2" required />
+        <input type="password" placeholder="Password" name="password2" required />
+        <button type="submit">SignUp</button>
+      </form> */}
     </div>
   )
 }
