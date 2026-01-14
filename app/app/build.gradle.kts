@@ -2,8 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    //Firebase
     id("com.google.gms.google-services")
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -64,6 +65,9 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
+     implementation("com.google.dagger:hilt-android:2.57.2")
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp("com.google.dagger:hilt-compiler:2.57.2")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

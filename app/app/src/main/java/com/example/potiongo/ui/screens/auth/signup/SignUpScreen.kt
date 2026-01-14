@@ -12,7 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.potiongo.ui.components.ButtonSignInWithGoogle
 
 
@@ -20,7 +20,7 @@ import com.example.potiongo.ui.components.ButtonSignInWithGoogle
 fun SignUpScreen(
     modifier: Modifier = Modifier ,
     onSubmit: () -> Unit,
-    viewModel: SignUpViewModel = viewModel()
+    viewModel: SignUpViewModel = hiltViewModel()
 )
 {
     val uiState by viewModel.uiState.collectAsState()

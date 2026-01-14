@@ -3,7 +3,13 @@ package com.example.potiongo.services
 import android.util.Log
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
+import javax.inject.Singleton
 
 interface IAuthService {
     fun isAuthenticated(): Boolean
@@ -18,7 +24,7 @@ interface IAuthService {
 }
 
 private val TAG : String = "AuthService"
-class AuthService(private val auth : FirebaseAuth) : IAuthService {
+class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthService {
 
 
     override fun isAuthenticated() = auth.currentUser != null
@@ -85,4 +91,21 @@ class AuthService(private val auth : FirebaseAuth) : IAuthService {
         }
     }
 
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AuthServiceModule {
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthService(firebaseAuth: FirebaseAuth): AuthService {
+        return AuthService(firebaseAuth)
+    }
 }

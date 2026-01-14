@@ -10,19 +10,20 @@ import androidx.navigation.compose.rememberNavController
 import com.example.potiongo.services.AuthService
 import com.example.potiongo.ui.navigation.AppNavHost
 import com.example.potiongo.ui.theme.PotionGoTheme
-import com.google.firebase.FirebaseApp
-import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var auth: AuthService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        FirebaseApp.initializeApp(this)
-
-        val auth = AuthService(FirebaseAuth.getInstance())
         enableEdgeToEdge()
         setContent {
-            PotionGoTheme {
                 PotionGoTheme {
                     val navController = rememberNavController()
                     AppNavHost(
@@ -31,7 +32,6 @@ class MainActivity : ComponentActivity() {
                         auth = auth
                     )
                 }
-            }
         }
     }
 }
