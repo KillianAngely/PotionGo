@@ -26,7 +26,7 @@ class CloudFunctionsService @Inject constructor(private val cloudFunction: Fireb
             val result = cloudFunction.getHttpsCallable("setUserRole")
                 .call(data)
                 .await()
-            val response = result.data as Map<String, Any?>
+            val response = result.data as Map<*, *>
             val assignedRole = response["role"] as String
 
             Log.d(TAG, "success - role: $assignedRole")
