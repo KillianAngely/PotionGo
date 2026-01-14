@@ -3,21 +3,23 @@ package com.example.potiongo.ui.screens.auth.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.potiongo.services.AuthService
-import com.google.firebase.auth.FirebaseAuth
 import com.example.potiongo.services.CloudFunctionsService
-import com.google.firebase.Firebase
-import com.google.firebase.functions.functions
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
-class SignUpViewModel : ViewModel() {
+@HiltViewModel
+class SignUpViewModel @Inject constructor(
+    private val auth: AuthService,
+    private val cloudFunction : CloudFunctionsService
+): ViewModel(){
     private val _uiState = MutableStateFlow(SignUpUiState())
     val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
-
     fun updateEmail(email: String) {
         _uiState.update { currentState ->
             currentState.copy(email = email)
@@ -39,10 +41,8 @@ class SignUpViewModel : ViewModel() {
 
     fun signUp() {
         viewModelScope.launch {
-            val auth = AuthService(FirebaseAuth.getInstance())
             auth.signUp(_uiState.value.email, _uiState.value.password)
-            val cFunction = CloudFunctionsService(Firebase.functions)
-            cFunction.setUserRole("customer")
+            cloudFunction.setUserRole("customer")
         }
     }
 
