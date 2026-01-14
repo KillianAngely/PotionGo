@@ -31,8 +31,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun login() {
-        println()
+    fun login(){
         viewModelScope.launch {
             auth.login(_uiState.value.email, _uiState.value.password)
         }
