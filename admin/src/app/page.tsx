@@ -1,70 +1,85 @@
 "use client"
-import { FormEvent, useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import styles from "./page.module.css"
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth"
+import { signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "../../config/firebase"
+import { useAuth } from "../context/AuthContext"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+
+const loginSchema = z.object({
+  email: z.string().email("Format d'email invalide"),
+  password: z.string().min(6, "Le mdp doit contenir au moins 6 caractères"),
+})
+
+type LoginForm = z.infer<typeof loginSchema>
 
 export default function Home() {
-  const [error, setError] = useState<string | null>(null)
+  const [serverError, setServerError] = useState<string | null>(null)
   const router = useRouter()
+  const { isAdmin, loading, user } = useAuth()
 
-  // const createUser = async (event: FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault()
-  //   setError(null)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+  })
 
-  //   const email = (event.currentTarget.elements.namedItem("email2") as HTMLInputElement).value
-  //   const password = (event.currentTarget.elements.namedItem("password2") as HTMLInputElement).value
+  useEffect(() => {
+    if (!loading && isAdmin) {
+      router.push("/dashboard")
+    }
+  }, [isAdmin, loading, router])
 
-  //   try {
-  //     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-  //     console.log("User created:", userCredential.user)
-  //   } catch (err: any) {
-  //     setError(err.message)
-  //   }
-  // }
+  useEffect(() => {
+    if (!loading && user && !isAdmin) {
+      setServerError("Accès refusé. Seuls les administrateurs peuvent accéder.")
+    }
+  }, [user, isAdmin, loading])
 
-  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setError(null)
-
-    const email = (event.currentTarget.elements.namedItem("email") as HTMLInputElement).value
-    const password = (event.currentTarget.elements.namedItem("password") as HTMLInputElement).value
-    
+  const onSubmit = async (data: LoginForm) => {
+    setServerError(null)
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      const tokenResult = await userCredential.user.getIdTokenResult()
-
-      if (tokenResult.claims.role === "admin") {
-        router.push("/dashboard")
-      } else {
-        await signOut(auth)
-        setError("Compte non admin")
-      }
+      await signInWithEmailAndPassword(auth, data.email, data.password)
     } catch (err: any) {
-      setError("Login failed: " + err.message)
+      setServerError("Erreur d'authentification : " + err.message)
     }
   }
 
+  if (loading) return <div>Chargement...</div>
+
   return (
     <div className={styles.page}>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <h3>Login Admin Only</h3>
-        <input type="email" placeholder="Email" name="email" required />
-        <input type="password" placeholder="Password" name="password" required />
-        <button type="submit">Login</button>
-      </form>
-{/* 
-      <hr />
+        <div>
+          <input 
+            {...register("email")} 
+            type="email" 
+            placeholder="Email" 
+          />
+          {errors.email && <p className={styles.errorText}>{errors.email.message}</p>}
+        </div>
 
-      <form onSubmit={createUser}>
-        <h3>SignUp</h3>
-        <input type="email" placeholder="Email" name="email2" required />
-        <input type="password" placeholder="Password" name="password2" required />
-        <button type="submit">SignUp</button>
-      </form> */}
+        <div>
+          <input 
+            {...register("password")} 
+            type="password" 
+            placeholder="Password" 
+          />
+          {errors.password && <p className={styles.errorText}>{errors.password.message}</p>}
+        </div>
+
+        {serverError && <p style={{ color: "red" }}>{serverError}</p>}
+
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Connexion..." : "Login"}
+        </button>
+      </form>
     </div>
   )
 }

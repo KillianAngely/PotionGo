@@ -12,11 +12,13 @@
     "test:static:pretty:fix": "prettier --write ."
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "firebase": "^12.4.0",
     "firebase-admin": "^13.6.0",
     "next": "15.5.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-hook-form": "^7.71.1",
     "zod": "^4.3.5"
   },
   "devDependencies": {
