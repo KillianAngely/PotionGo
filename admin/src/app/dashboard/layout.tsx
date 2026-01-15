@@ -1,35 +1,22 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { onAuthStateChanged } from "firebase/auth"
-import { auth } from "../../../config/firebase"
+import { useAuth } from "../../context/AuthContext"
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
-  const [authorized, setAuthorized] = useState(false)
+  const { user, isAdmin, loading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const tokenResult = await user.getIdTokenResult(true)
-        
-        if (tokenResult.claims.role === "admin") {
-          setAuthorized(true)
-        } else {
-          router.replace("/")
-        }
-      } else {
-        router.replace("/")
-      }
-    })
+    if (!loading && (!user || !isAdmin)) {
+      router.replace("/")
+    }
+  }, [user, isAdmin, loading, router])
 
-    return () => unsubscribe()
-  }, [router])
-
-  if (!authorized) {
+  if (loading || !isAdmin) {
     return (
-      <div>
-        <h1>Vérif admin</h1>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <h1>Vérification des droits administrateur...</h1>
       </div>
     )
   }
