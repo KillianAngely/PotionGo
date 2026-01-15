@@ -1,28 +1,29 @@
 "use client"
-import { FormEvent, useState } from "react"
+import { FormEvent, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import styles from "./page.module.css"
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth"
+import { signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "../../config/firebase"
+import { useAuth } from "../context/AuthContext"
 
 export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const { isAdmin, loading, user, logout } = useAuth()
 
-  // const createUser = async (event: FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault()
-  //   setError(null)
+  useEffect(() => {
+    if (!loading && isAdmin) {
+      router.push("/dashboard")
+    }
+  }, [isAdmin, loading, router])
 
-  //   const email = (event.currentTarget.elements.namedItem("email2") as HTMLInputElement).value
-  //   const password = (event.currentTarget.elements.namedItem("password2") as HTMLInputElement).value
 
-  //   try {
-  //     const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-  //     console.log("User created:", userCredential.user)
-  //   } catch (err: any) {
-  //     setError(err.message)
-  //   }
-  // }
+  useEffect(() => {
+    if (!loading && user && !isAdmin) {
+      console.log('Utilisateur non-admin détecté, déconnexion...')
+      setError("Accès refusé. Seuls les administrateurs peuvent accéder à cette interface.")
+    }
+  }, [user, isAdmin, loading])
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -32,18 +33,17 @@ export default function Home() {
     const password = (event.currentTarget.elements.namedItem("password") as HTMLInputElement).value
     
     try {
+      console.log('Tentative de connexion avec:', email)
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      const tokenResult = await userCredential.user.getIdTokenResult()
-
-      if (tokenResult.claims.role === "admin") {
-        router.push("/dashboard")
-      } else {
-        await signOut(auth)
-        setError("Compte non admin")
-      }
+      console.log('Connexion réussie, utilisateur:', userCredential.user.email)
     } catch (err: any) {
+      console.log('Erreur de connexion:', err.message)
       setError("Login failed: " + err.message)
     }
+  }
+
+  if (loading) {
+    return <div>Chargement...</div>
   }
 
   return (
@@ -56,15 +56,6 @@ export default function Home() {
         <input type="password" placeholder="Password" name="password" required />
         <button type="submit">Login</button>
       </form>
-{/* 
-      <hr />
-
-      <form onSubmit={createUser}>
-        <h3>SignUp</h3>
-        <input type="email" placeholder="Email" name="email2" required />
-        <input type="password" placeholder="Password" name="password2" required />
-        <button type="submit">SignUp</button>
-      </form> */}
     </div>
   )
 }
