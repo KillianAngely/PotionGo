@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           document.cookie = `authToken=${idToken}; path=/; max-age=3600; Secure; SameSite=Strict`
         } else {
           console.log('Utilisateur non admin', tokenResult.claims.role)
-          setUser(null)
+          setUser(currentUser)
           setIsAdmin(false)
           await auth.signOut()
         }
