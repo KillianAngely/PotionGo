@@ -1,15 +1,16 @@
 import { firestore } from "../../../../config/firebase"
 import { collection, getDocs } from "firebase/firestore"
+import { Product } from "./schema"
 
 export async function GET() {
   try {
     const productsRef = collection(firestore, "products")
     const snapshot = await getDocs(productsRef)
 
-    const products = snapshot.docs.map((doc) => ({
+    const products: Product[] = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    }))
+    } as Product))
 
     return new Response(
       JSON.stringify({
