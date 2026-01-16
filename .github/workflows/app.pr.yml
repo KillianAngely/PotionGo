@@ -3,12 +3,17 @@ name: Android CI
 on:
   push:
     branches: ["main", "develop"]
+    paths:
+      - "app/**"
   pull_request:
     branches: ["main", "develop"]
+    paths:
+      - "app/**"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    working-directory: ./app
 
     steps:
       - uses: actions/checkout@v4
