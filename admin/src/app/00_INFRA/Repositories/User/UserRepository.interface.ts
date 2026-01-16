@@ -1,8 +1,5 @@
 // user need to be typed properly later
 
-type User = {
-  uid: string
-}
 
 interface IUserRepository {
   findAllByRole(role: string): Promise<User[] | null>
