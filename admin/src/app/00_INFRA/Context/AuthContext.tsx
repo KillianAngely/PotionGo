@@ -1,7 +1,7 @@
 "use client"
 import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
 import { User } from 'firebase/auth'
-import { auth } from '../../config/firebase'
+import { auth } from '../../../../config/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
 
 interface AuthContextType {
@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const tokenResult = await currentUser.getIdTokenResult()
         console.log('Token result claims:', tokenResult.claims)
         console.log('Rôle utilisateur:', tokenResult.claims.role)
-        
+
         if (tokenResult.claims.role === 'admin') {
           console.log('admin confirm')
           setUser(currentUser)
