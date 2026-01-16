@@ -1,0 +1,3 @@
+type User = {
+  uid: string
+}
