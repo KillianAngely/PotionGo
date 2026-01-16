@@ -1,6 +1,6 @@
 "use client"
 import { useRouter } from "next/navigation"
-import { useAuth } from "../../context/AuthContext"
+import { useAuth } from "../00_INFRA/Context/AuthContext"
 
 export default function Dashboard() {
   const router = useRouter()

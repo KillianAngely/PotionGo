@@ -1,11 +1,8 @@
-// user need to be typed properly later
+import { User, UserRole } from "../../types/User"
 
-type User = {
-  uid: string
-}
-
-interface IUserRepository {
-  findAllByRole(role: string): Promise<User[] | null>
+export interface IUserRepository {
+  findAll(): Promise<User[] | null>
+  findAllByRole(role: UserRole): Promise<User[] | null>
   findById(userId: string): Promise<User | null>
   removeById(userId: string): Promise<void>
 }
