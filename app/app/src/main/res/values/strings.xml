@@ -1,3 +1,10 @@
 <resources>
+
     <string name="app_name">potionGo</string>
+    //COMMON
+    <string name="submit">Submit</string>
+    //Login Screen
+    <string name="email_input">Email</string>
+    <string name="password_input">Password</string>
+    <string name="signup_link">"I don't have account"</string>
 </resources>
