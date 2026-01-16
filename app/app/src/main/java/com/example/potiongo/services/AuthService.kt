@@ -2,7 +2,9 @@ package com.example.potiongo.services
 
 import android.util.Log
 import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +18,7 @@ interface IAuthService {
 
     suspend fun  signUp(email: String, password: String): Result<Unit>
 
-    suspend fun login(email: String, password: String): Result<Unit>
+    suspend fun login(email: String, password: String): AuthResult
 
     suspend fun signOut(): Result<Unit>
 
@@ -43,17 +45,17 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
         }
     }
 
-    override suspend fun login(email: String, password: String): Result<Unit> {
-        return try {
-            auth.signInWithEmailAndPassword(email, password)
-            Log.d(TAG, "loginUserWithEmail:success")
-            Result.success(Unit)
-
-        } catch (e: Exception) {
-            Log.w(TAG, "loginUserWithEmail:failure", e)
-            Result.failure(e)
+    override suspend fun login(email: String, password: String): AuthResult {
+        try {
+            val res = auth.signInWithEmailAndPassword(email, password).await()
+            return res
+        }catch (e : FirebaseAuthException){
+            Log.w(TAG, "signInWithEmailAndPassword:failure", e)
+            throw e
         }
     }
+
+
 
     override suspend fun signOut(): Result<Unit> {
         return try {
