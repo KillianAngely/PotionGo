@@ -24,7 +24,8 @@ fun AppNavHost(
     ) {
         composable(route = AppScreenDestination.Login.name) {
             LoginScreen(
-                onClickCreateAccount = {navController.navigate(AppScreenDestination.SignUp.name)}
+                onClickCreateAccount = {navController.navigate(AppScreenDestination.SignUp.name)},
+                onLoginSuccess = {navController.navigate(AppScreenDestination.Home.name)}
             )
         }
         composable(route = AppScreenDestination.Home.name){

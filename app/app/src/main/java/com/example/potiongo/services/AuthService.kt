@@ -46,13 +46,7 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
     }
 
     override suspend fun login(email: String, password: String): AuthResult {
-        try {
-            val res = auth.signInWithEmailAndPassword(email, password).await()
-            return res
-        }catch (e : FirebaseAuthException){
-            Log.w(TAG, "signInWithEmailAndPassword:failure", e)
-            throw e
-        }
+        return auth.signInWithEmailAndPassword(email, password).await()
     }
 
 

@@ -16,7 +16,6 @@ import com.example.potiongo.ui.theme.PotionGoTheme
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
-
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
