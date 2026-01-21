@@ -1,8 +1,9 @@
 package com.example.potiongo.domain
 
+
 import android.util.Log
 import com.example.potiongo.services.AuthService
-import kotlinx.coroutines.delay
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import javax.inject.Inject
 
 
@@ -10,7 +11,7 @@ private val TAG : String = "LoginUseCase"
 
 sealed interface LoginUseCaseResult {
     data object Success : LoginUseCaseResult
-    data object ErrorApi : LoginUseCaseResult
+    data class ErrorAuth(val errorMessage :String) : LoginUseCaseResult
 
 }
 
@@ -23,9 +24,9 @@ class LoginUseCase @Inject constructor(
             auth.login(email, password)
             Log.d(TAG,"login:success")
             LoginUseCaseResult.Success
-        } catch (e : Exception) {
+        } catch (e : FirebaseAuthInvalidCredentialsException) {
             Log.d(TAG,"login:failed",e)
-            LoginUseCaseResult.ErrorApi
+            LoginUseCaseResult.ErrorAuth("Invalid Password")
         }
     }
 }

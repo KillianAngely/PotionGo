@@ -40,8 +40,8 @@ class LoginViewModel @Inject constructor(
             _uiState.value = LoginUiState.Loading
             when(val res = loginUseCase(email,password)){
                 is LoginUseCaseResult.Success -> { _uiState.value = LoginUiState.Success }
-                is LoginUseCaseResult.ErrorApi -> { _uiState.value = LoginUiState.Error }
+                is LoginUseCaseResult.ErrorAuth -> { _uiState.value = LoginUiState.Error(res.errorMessage) }
+                }
             }
         }
     }
-}
