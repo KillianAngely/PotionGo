@@ -20,7 +20,7 @@ interface IAuthService {
 
     suspend fun login(email: String, password: String): AuthResult
 
-    suspend fun signOut(): Result<Unit>
+    fun signOut(): Unit
 
     suspend fun signInWithCredential(credential: AuthCredential): Result<Unit>
 }
@@ -51,17 +51,10 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
 
 
 
-    override suspend fun signOut(): Result<Unit> {
-        return try {
-            auth.signOut()
-            /*TODO Clear credentials manager see https://firebase.google.com/docs/auth/android/google-signin
+    override fun signOut(): Unit {
+        return auth.signOut()
+        /*TODO Clear credentials manager see https://firebase.google.com/docs/auth/android/google-signin
            *  */
-            Log.d(TAG, "signOut:success")
-            Result.success(Unit)
-        }catch (e : Exception){
-            Log.d(TAG, "signOut:failure")
-            Result.failure(e)
-        }
     }
 
     override suspend fun signInWithCredential(credential: AuthCredential): Result<Unit> {

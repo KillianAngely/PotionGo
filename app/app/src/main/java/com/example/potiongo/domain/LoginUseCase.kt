@@ -7,7 +7,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import javax.inject.Inject
 
 
-private val TAG : String = "LoginUseCase"
+private const val TAG : String = "LoginUseCase"
 
 sealed interface LoginUseCaseResult {
     data object Success : LoginUseCaseResult
@@ -19,14 +19,15 @@ sealed interface LoginUseCaseResult {
 class LoginUseCase @Inject constructor(
     private val auth: AuthService
 ){
-    suspend operator fun invoke(email: String, password : String) :LoginUseCaseResult{
+    suspend operator fun invoke(email: String, password: String): LoginUseCaseResult {
         return try {
             auth.login(email, password)
-            Log.d(TAG,"login:success")
             LoginUseCaseResult.Success
-        } catch (e : FirebaseAuthInvalidCredentialsException) {
-            Log.d(TAG,"login:failed",e)
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
             LoginUseCaseResult.ErrorAuth("Invalid Password")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            LoginUseCaseResult.ErrorAuth("Unknown error: ${e.message}")
         }
     }
 }

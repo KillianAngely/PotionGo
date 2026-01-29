@@ -1,5 +1,6 @@
 package com.example.potiongo.ui.screens.auth.login
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -35,13 +36,17 @@ class LoginViewModel @Inject constructor(
         password = passwordInput
     }
 
-    fun login(){
+    fun login() {
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
-            when(val res = loginUseCase(email,password)){
-                is LoginUseCaseResult.Success -> { _uiState.value = LoginUiState.Success }
-                is LoginUseCaseResult.ErrorAuth -> { _uiState.value = LoginUiState.Error(res.errorMessage) }
+            when(val res = loginUseCase(email, password)) {
+                is LoginUseCaseResult.Success -> {
+                    _uiState.value = LoginUiState.Success
+                }
+                is LoginUseCaseResult.ErrorAuth -> {
+                    _uiState.value = LoginUiState.Error(res.errorMessage)
                 }
             }
         }
     }
+}

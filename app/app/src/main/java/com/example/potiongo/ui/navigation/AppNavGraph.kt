@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navOptions
 import com.example.potiongo.services.IAuthService
 import com.example.potiongo.ui.screens.HomeScreen
 import com.example.potiongo.ui.screens.auth.login.LoginScreen
@@ -29,7 +30,11 @@ fun AppNavHost(
             )
         }
         composable(route = AppScreenDestination.Home.name){
-            HomeScreen()
+            HomeScreen(
+                onSignOut = { navController.navigate(AppScreenDestination.Login.name) {
+                    popUpTo(AppScreenDestination.Login.name) { inclusive = true }
+                } }
+            )
         }
         composable (route = AppScreenDestination.SignUp.name){
             SignUpScreen(
