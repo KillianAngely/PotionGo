@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -18,9 +19,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.potiongo.R
-import com.example.potiongo.ui.components.ButtonSignInWithGoogle
 import com.example.potiongo.ui.theme.PotionGoTheme
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 
 
 @Composable
@@ -31,6 +32,7 @@ fun LoginScreen(
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
+    val activityContext = LocalContext.current
 
     LaunchedEffect(uiState) {
         if (uiState is LoginUiState.Success) {
@@ -60,7 +62,12 @@ fun LoginScreen(
         TextButton(onClick = onClickCreateAccount) {
             Text(stringResource(R.string.signup_link))
         }
-        ButtonSignInWithGoogle(webClientId = "527507288095-765jf2mmn11bvu93b1mtupooad5tm58t.apps.googleusercontent.com")
+        OutlinedButton(
+            modifier = modifier,
+            onClick = { loginViewModel.signWithGoogle(activityContext) }
+        ){
+            Text("Sign with google")
+        }
         Button(
             onClick = { loginViewModel.login() },
             enabled = uiState !is LoginUiState.Loading

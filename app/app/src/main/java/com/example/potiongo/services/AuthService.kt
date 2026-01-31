@@ -22,7 +22,7 @@ interface IAuthService {
 
     fun signOut(): Unit
 
-    suspend fun signInWithCredential(credential: AuthCredential): Result<Unit>
+    suspend fun signInWithCredential(credential: AuthCredential): AuthResult
 }
 
 private val TAG : String = "AuthService"
@@ -30,6 +30,21 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
 
 
     override fun isAuthenticated() = auth.currentUser != null
+
+    fun currentUser(){
+        auth.currentUser?.providerData?.forEach { profile ->
+            Log.d("UseCase", "--- Provider ---")
+            Log.d("UseCase", "providerId: ${profile.providerId}")
+            Log.d("UseCase", "displayName: ${profile.displayName}")
+            Log.d("UseCase", "email: ${profile.email}")
+            Log.d("UseCase", "photoUrl: ${profile.photoUrl}")
+        }
+        Log.d("UseCase", "currentUser: ${auth.currentUser}")
+        Log.d("UseCase", "currentUser: ${auth.currentUser}")
+        Log.d("UseCase", "uid: ${auth.currentUser?.uid}")
+        Log.d("UseCase", "isAnonymous: ${auth.currentUser?.isAnonymous}")
+        Log.d("UseCase", "providerData: ${auth.currentUser?.providerData}")
+    }
 
     override suspend fun signUp(email: String, password: String): Result<Unit> {
         Log.d(TAG, "signUp: START")
@@ -57,15 +72,8 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
            *  */
     }
 
-    override suspend fun signInWithCredential(credential: AuthCredential): Result<Unit> {
-        try {
-            auth.signInWithCredential(credential)
-            Log.d(TAG, "signInWithCredential:succes")
-            return Result.success(Unit)
-        } catch (e : Exception){
-            Log.d(TAG, "signInWithCredential:failure")
-            return Result.failure(e)
-        }
+    override suspend fun signInWithCredential(credential: AuthCredential): AuthResult  {
+        return auth.signInWithCredential(credential).await()
     }
 
     private fun sendEmailVerification(): Result<Unit>{

@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "925160551434-549oqmc42ci254726sdv31fipgncvtqt.apps.googleusercontent.com",
+          "client_id": "925160551434-fm94gkakcb5n4or9q8gkhm6ci0hn6efu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.potiongo",
+            "certificate_hash": "0cb4f7f23ff04f1d8995135015ef9f6ddfad6019"
+          }
+        },
+        {
+          "client_id": "925160551434-3jrvmgc9ita3t5v5c2r6oabum1ukhdcn.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +35,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "925160551434-549oqmc42ci254726sdv31fipgncvtqt.apps.googleusercontent.com",
+              "client_id": "925160551434-3jrvmgc9ita3t5v5c2r6oabum1ukhdcn.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
