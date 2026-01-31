@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,22 +20,30 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.potiongo.R
 import com.example.potiongo.ui.components.ButtonSignInWithGoogle
 import com.example.potiongo.ui.theme.PotionGoTheme
+import androidx.compose.runtime.getValue
 
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
     onClickCreateAccount: () -> Unit,
+    onLoginSuccess: () -> Unit,
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
-    val uiState = loginViewModel.uiState.collectAsState().value
+    val uiState by loginViewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState) {
+        if (uiState is LoginUiState.Success) {
+            onLoginSuccess()
+        }
+    }
 
     Column(
         modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if(uiState.hasNetworkError){
+        if(uiState is LoginUiState.Error){
             Text("Invalid Password or Something")
         }
         TextField(
@@ -53,7 +62,8 @@ fun LoginScreen(
         }
         ButtonSignInWithGoogle(webClientId = "527507288095-765jf2mmn11bvu93b1mtupooad5tm58t.apps.googleusercontent.com")
         Button(
-            onClick = { loginViewModel.login() }
+            onClick = { loginViewModel.login() },
+            enabled = uiState !is LoginUiState.Loading
         ) {
             Text(stringResource(R.string.submit))
         }
@@ -65,7 +75,8 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     PotionGoTheme {
         LoginScreen(
-            onClickCreateAccount = {}
+            onClickCreateAccount = {},
+            onLoginSuccess = {}
         )
     }
 }

@@ -1,5 +1,9 @@
 package com.example.potiongo.ui.screens.auth.login
 
-data class LoginUiState (
-    val hasNetworkError : Boolean = false
-)
+
+sealed class LoginUiState{
+    data object Idle : LoginUiState()
+    data object Success : LoginUiState()
+    data class Error(val error : String) : LoginUiState()
+    data object Loading : LoginUiState()
+}
