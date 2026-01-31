@@ -2,6 +2,7 @@ package com.example.potiongo.domain
 
 import android.util.Log
 import com.example.potiongo.services.AuthService
+import com.example.potiongo.services.GoogleAuthService
 import javax.inject.Inject
 
 
@@ -14,11 +15,13 @@ sealed interface LogoutUseCaseResult {
 
 
 class LogoutUseCase @Inject constructor(
-    private val auth: AuthService
+    private val auth: AuthService,
+    private val googleAuthService: GoogleAuthService
 ){
-     operator fun invoke(): LogoutUseCaseResult {
+     suspend operator fun invoke(): LogoutUseCaseResult {
         return try {
             auth.signOut()
+            googleAuthService.clearCredentials()
             Log.d(TAG, "LogoutUseCase:success")
             LogoutUseCaseResult.Success
         } catch (e: Exception) {
