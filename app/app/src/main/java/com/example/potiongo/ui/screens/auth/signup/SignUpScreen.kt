@@ -15,15 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.potiongo.ui.screens.auth.login.LoginUiState
 
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier ,
     onSubmit: () -> Unit,
-    viewModel: SignUpViewModel = hiltViewModel()
+    signUpViewModel: SignUpViewModel = hiltViewModel()
 )
 {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by signUpViewModel.uiState.collectAsState()
     val activityContext = LocalContext.current
 
     Column(
@@ -32,31 +33,25 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TextField(
-            value = uiState.email,
-            onValueChange = { viewModel.updateEmail(it) },
+            value = signUpViewModel.email,
+            onValueChange = { signUpViewModel.updateEmail(it) },
             label = { Text("Email") }
         )
         TextField(
-            value = uiState.password,
-            onValueChange = { viewModel.updatePassword(it) },
+            value = signUpViewModel.password,
+            onValueChange = { signUpViewModel.updatePassword(it) },
             label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation()
-        )
-        TextField(
-            value = uiState.confirmPassword,
-            onValueChange = { viewModel.updatePassword(it) },
-            label = { Text("Confirm password") },
             visualTransformation = PasswordVisualTransformation()
         )
         OutlinedButton(
             modifier = modifier,
-            onClick = { viewModel.signWithGoogle(activityContext) }
+            onClick = { signUpViewModel.signWithGoogle(activityContext) }
         ){
             Text("Sign with google")
         }
         Button(
             onClick = {
-                viewModel.signUp()
+                signUpViewModel.signUp()
             }
         ) {
             Text("Click me!")

@@ -2,12 +2,15 @@ package com.example.potiongo.ui.screens.auth.signup
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.potiongo.domain.SignUpUseCase
+import com.example.potiongo.domain.SignUpUseCaseResult
 import com.example.potiongo.domain.SignWithGoogleUseCase
 import com.example.potiongo.domain.SignWithGoogleUseCaseResult
-import com.example.potiongo.services.AuthService
-import com.example.potiongo.services.CloudFunctionsService
 import com.example.potiongo.ui.screens.auth.login.LoginUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,28 +23,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val auth: AuthService,
-    private val cloudFunction : CloudFunctionsService,
+    private val signUpUseCase: SignUpUseCase,
     private  val signWithGoogleUseCase: SignWithGoogleUseCase
 ): ViewModel(){
-    private val _uiState = MutableStateFlow(SignUpUiState())
+    private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Idle)
     val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
-    fun updateEmail(email: String) {
-        _uiState.update { currentState ->
-            currentState.copy(email = email)
-        }
-    }
 
-    fun updatePassword(password: String) {
-        _uiState.update { currentState ->
-            currentState.copy(password = password)
-        }
-    }
+    var email by mutableStateOf("")
+        private set
 
-    fun updateConfirmPassword(confirmPassword: String) {
-        _uiState.update { currentState ->
-            currentState.copy(confirmPassword = confirmPassword)
-        }
+    var password by mutableStateOf("")
+        private set
+
+    fun updateEmail(emailInput: String) {
+        email = emailInput
+    }
+    fun updatePassword(passwordInput: String) {
+        password = passwordInput
     }
 
     fun signWithGoogle(activityContext: Context) {
@@ -61,17 +59,16 @@ class SignUpViewModel @Inject constructor(
 
     fun signUp() {
         viewModelScope.launch {
-            auth.signUp(_uiState.value.email, _uiState.value.password)
-            cloudFunction.setUserRole("customer")
+            when(val res = signUpUseCase(email,password)){
+                is SignUpUseCaseResult.Success -> {
+                    _uiState.value = SignUpUiState.Success
+                }
+                is SignUpUseCaseResult.ErrorAuth -> {
+                    _uiState.value = SignUpUiState.Error(res.errorMessage)
+                }
+            }
         }
     }
 
 }
 
-
-data class SignUpUiState(
-    val email: String = "",
-    val password: String = "",
-    val confirmPassword : String = "",
-    val hasError:  Boolean = false
-)
