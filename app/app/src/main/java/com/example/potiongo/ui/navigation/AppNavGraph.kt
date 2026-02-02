@@ -38,7 +38,7 @@ fun AppNavHost(
         }
         composable (route = AppScreenDestination.SignUp.name){
             SignUpScreen(
-                onSubmit = { navController.navigate(AppScreenDestination.Home.name)},
+                onSignUpSuccess = { navController.navigate(AppScreenDestination.Home.name)},
             )
         }
     }
