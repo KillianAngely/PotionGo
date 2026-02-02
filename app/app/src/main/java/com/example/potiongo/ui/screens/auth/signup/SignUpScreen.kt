@@ -8,6 +8,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -15,23 +16,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.potiongo.ui.screens.auth.login.LoginUiState
 
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier ,
-    onSubmit: () -> Unit,
-    signUpViewModel: SignUpViewModel = hiltViewModel()
+    signUpViewModel: SignUpViewModel = hiltViewModel() ,
+    onSignUpSuccess: () -> Unit
 )
 {
     val uiState by signUpViewModel.uiState.collectAsState()
     val activityContext = LocalContext.current
+
+    LaunchedEffect(uiState) {
+        if (uiState is SignUpUiState.Success) {
+            onSignUpSuccess()
+        }
+    }
 
     Column(
         modifier.fillMaxSize() ,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        TextField(
+            value = signUpViewModel.firstName,
+            onValueChange = { signUpViewModel.updateFirstname(it) },
+            label = { Text("First Name") }
+        )
+        TextField(
+            value = signUpViewModel.lastName,
+            onValueChange = { signUpViewModel.updateLastname(it) },
+            label = { Text("Last Name") }
+        )
         TextField(
             value = signUpViewModel.email,
             onValueChange = { signUpViewModel.updateEmail(it) },

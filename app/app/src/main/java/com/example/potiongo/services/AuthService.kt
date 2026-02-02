@@ -5,6 +5,7 @@ import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseUser
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,11 +17,13 @@ import javax.inject.Singleton
 interface IAuthService {
     fun isAuthenticated(): Boolean
 
-    suspend fun  signUp(email: String, password: String): Result<Unit>
+    suspend fun  signUp(email: String, password: String) : AuthResult
 
     suspend fun login(email: String, password: String): AuthResult
 
     fun signOut(): Unit
+
+    suspend fun sendEmailVerification(user: FirebaseUser)
 
     suspend fun signInWithCredential(credential: AuthCredential): AuthResult
 }
@@ -33,31 +36,21 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
 
     fun currentUser(){
         auth.currentUser?.providerData?.forEach { profile ->
-            Log.d("UseCase", "--- Provider ---")
-            Log.d("UseCase", "providerId: ${profile.providerId}")
-            Log.d("UseCase", "displayName: ${profile.displayName}")
-            Log.d("UseCase", "email: ${profile.email}")
-            Log.d("UseCase", "photoUrl: ${profile.photoUrl}")
+            Log.d(TAG, "--- Provider ---")
+            Log.d(TAG, "providerId: ${profile.providerId}")
+            Log.d(TAG, "displayName: ${profile.displayName}")
+            Log.d(TAG, "email: ${profile.email}")
+            Log.d(TAG, "photoUrl: ${profile.photoUrl}")
         }
-        Log.d("UseCase", "currentUser: ${auth.currentUser}")
-        Log.d("UseCase", "currentUser: ${auth.currentUser}")
-        Log.d("UseCase", "uid: ${auth.currentUser?.uid}")
-        Log.d("UseCase", "isAnonymous: ${auth.currentUser?.isAnonymous}")
-        Log.d("UseCase", "providerData: ${auth.currentUser?.providerData}")
+        Log.d(TAG, "currentUser: ${auth.currentUser}")
+        Log.d(TAG, "currentUser: ${auth.currentUser}")
+        Log.d(TAG, "uid: ${auth.currentUser?.uid}")
+        Log.d(TAG, "isAnonymous: ${auth.currentUser?.isAnonymous}")
+        Log.d(TAG, "providerData: ${auth.currentUser?.providerData}")
     }
 
-    override suspend fun signUp(email: String, password: String): Result<Unit> {
-        Log.d(TAG, "signUp: START")
-        return try {
-            Log.d(TAG, "signUp: calling Firebase...")
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-            this.sendEmailVerification()
-            Log.d(TAG, "signUp: SUCCESS uid=${result.user?.uid}")
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "signUp: FAILED", e)
-            Result.failure(e)
-        }
+    override suspend fun signUp(email: String, password: String): AuthResult {
+        return auth.createUserWithEmailAndPassword(email, password).await()
     }
 
     override suspend fun login(email: String, password: String): AuthResult {
@@ -76,16 +69,8 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
         return auth.signInWithCredential(credential).await()
     }
 
-    private fun sendEmailVerification(): Result<Unit>{
-        Log.d(TAG,"start sendEmailVerification")
-        return try {
-            auth.currentUser!!.sendEmailVerification()
-            Log.d(TAG, "sendEmailVerification:success")
-            Result.success(Unit)
-        }catch (e : Exception){
-            Log.d(TAG, "sendEmailVerification:failure")
-            Result.failure(e)
-        }
+    override suspend fun sendEmailVerification(user: FirebaseUser) {
+        user.sendEmailVerification().await()
     }
 
 }
