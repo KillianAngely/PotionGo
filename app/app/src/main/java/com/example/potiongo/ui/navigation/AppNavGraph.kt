@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import com.example.potiongo.services.IAuthService
 import com.example.potiongo.ui.screens.HomeScreen
+import com.example.potiongo.ui.screens.auth.emailVerif.EmailVerifScreen
 import com.example.potiongo.ui.screens.auth.login.LoginScreen
 import com.example.potiongo.ui.screens.auth.signup.SignUpScreen
 
@@ -17,7 +18,6 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
     auth: IAuthService
 ){
-
     NavHost(
         navController = navController,
         startDestination = if (auth.isAuthenticated()) AppScreenDestination.Home.name else AppScreenDestination.Login.name,
@@ -38,7 +38,12 @@ fun AppNavHost(
         }
         composable (route = AppScreenDestination.SignUp.name){
             SignUpScreen(
-                onSignUpSuccess = { navController.navigate(AppScreenDestination.Home.name)},
+                onSignUpSuccess = { navController.navigate(AppScreenDestination.EmailVerif.name)},
+            )
+        }
+        composable (route = AppScreenDestination.EmailVerif.name){
+            EmailVerifScreen(
+                onEmailVerif = { navController.navigate(AppScreenDestination.Home.name)},
             )
         }
     }
