@@ -15,6 +15,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 interface IAuthService {
+
+    suspend fun getUser(): FirebaseUser
     fun isAuthenticated(): Boolean
 
     suspend fun  signUp(email: String, password: String) : AuthResult
@@ -49,6 +51,11 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
         Log.d(TAG, "providerData: ${auth.currentUser?.providerData}")
     }
 
+    override suspend fun getUser(): FirebaseUser {
+        auth.currentUser!!.reload().await()
+        return auth.currentUser ?: throw IllegalStateException("User is null")
+    }
+
     override suspend fun signUp(email: String, password: String): AuthResult {
         return auth.createUserWithEmailAndPassword(email, password).await()
     }
@@ -57,12 +64,8 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
         return auth.signInWithEmailAndPassword(email, password).await()
     }
 
-
-
     override fun signOut(): Unit {
         return auth.signOut()
-        /*TODO Clear credentials manager see https://firebase.google.com/docs/auth/android/google-signin
-           *  */
     }
 
     override suspend fun signInWithCredential(credential: AuthCredential): AuthResult  {
