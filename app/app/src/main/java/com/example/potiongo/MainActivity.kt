@@ -16,8 +16,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var auth: AuthService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +27,6 @@ class MainActivity : ComponentActivity() {
                     AppNavHost(
                         navController = navController,
                         modifier = Modifier.fillMaxSize(),
-                        auth = auth
                     )
                 }
         }
