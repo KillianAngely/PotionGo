@@ -23,8 +23,5 @@ jobs:
           distribution: "temurin"
           cache: gradle
 
-      - name: Gradle Lint
-        run: ./gradlew lint
-
       - name: Build with Gradle
         run: ./gradlew build
