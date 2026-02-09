@@ -9,6 +9,7 @@ export default function Dashboard() {
     const [users, setUsers] = useState<User[]>([])
     const [loading, setLoading] = useState(true)
     const [roleFilter, setRoleFilter] = useState<string>("all")
+    const [searchTerm, setSearchTerm] = useState("")
 
     const userRepository = new UserRepository()
 
@@ -37,85 +38,114 @@ export default function Dashboard() {
         }
     }
 
-    const getRoleBadgeStyle = (role: string) => {
-        const baseStyle = { display: 'inline-block', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.875rem' }
-        if (role === UserAdminRole.ADMIN) return { ...baseStyle, backgroundColor: '#fee2e2', color: '#991b1b' }
-        if (role === UserClientRole.DRIVER) return { ...baseStyle, backgroundColor: '#dbeafe', color: '#1e40af' }
-        return { ...baseStyle, backgroundColor: '#d1fae5', color: '#065f46' }
+    const getRoleBadgeClass = (role: string) => {
+        const base = "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
+        if (role === UserAdminRole.ADMIN) return `${base} bg-accent/15 text-accent`
+        if (role === UserClientRole.DRIVER) return `${base} bg-accent2/15 text-accent2`
+        return `${base} bg-accent3/15 text-accent3`
     }
 
     const handleRowClick = (userId: string) => {
         router.push(`/dashboard/users/${userId}`)
     }
 
-    // if (loading) {
-    //     return <div style={{ padding: '2rem' }}>Chargement...</div>
-    // }
+    if (loading) {
+        return <div className="text-sm text-muted">Chargement...</div>
+    }
+
+    const normalizedSearch = searchTerm.trim().toLowerCase()
+    const filteredUsers = normalizedSearch
+        ? users.filter((user) => {
+              const email = user.email?.toLowerCase() ?? ""
+              const first = user.firstName?.toLowerCase() ?? ""
+              const last = user.lastName?.toLowerCase() ?? ""
+              return (
+                  email.includes(normalizedSearch) ||
+                  first.includes(normalizedSearch) ||
+                  last.includes(normalizedSearch)
+              )
+          })
+        : users
 
     return (
-        <div style={{ padding: '2rem' }}>
-            <button
-                onClick={() => router.push("/dashboard")}
-                style={{ marginBottom: '1rem', color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '0.5rem 0' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#1d4ed8'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#3b82f6'}
-            >
-                ← Retour au dashboard
-            </button>
+        <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
+                        Utilisateurs
+                    </p>
+                    <h2 className="text-xl font-semibold">Gestion des utilisateurs</h2>
+                </div>
+                <button
+                    onClick={() => router.push("/dashboard")}
+                    className="text-sm font-semibold text-accent2 transition hover:text-accent"
+                >
+                    ← Retour au dashboard
+                </button>
+            </div>
 
-            <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Gestion des Utilisateurs</h1>
-
-            <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <label htmlFor="roleFilter" style={{ fontWeight: '500' }}>
+            <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-bg/80 px-4 py-3">
+                <label htmlFor="roleFilter" className="text-sm font-semibold">
                     Filtrer par rôle:
                 </label>
                 <select
                     id="roleFilter"
                     value={roleFilter}
                     onChange={(e) => setRoleFilter(e.target.value)}
-                    style={{ border: '1px solid #d1d5db', borderRadius: '0.25rem', padding: '0.5rem 0.75rem', fontSize: '1rem' }}
+                    className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none"
                 >
                     <option value="all">Tous</option>
                     <option value={UserAdminRole.ADMIN}>Admin</option>
                     <option value={UserClientRole.CUSTOMER}>Customer</option>
                     <option value={UserClientRole.DRIVER}>Driver</option>
                 </select>
-                <span style={{ color: '#6b7280', marginLeft: '1rem' }}>
-                    {users.length} utilisateur(s) trouvé(s)
+                <div className="flex items-center gap-2">
+                    <label htmlFor="userSearch" className="text-sm font-semibold">
+                        Recherche:
+                    </label>
+                    <input
+                        id="userSearch"
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Email, prénom ou nom"
+                        className="w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none"
+                    />
+                </div>
+                <span className="text-sm text-muted">
+                    {filteredUsers.length} utilisateur(s) trouvé(s)
                 </span>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', backgroundColor: 'white', border: '1px solid #d1d5db', borderCollapse: 'collapse' }}>
-                    <thead style={{ backgroundColor: '#f3f4f6', color: 'black' }}>
+            <div className="overflow-hidden rounded-2xl border border-border">
+                <table className="min-w-full divide-y divide-border text-sm">
+                    <thead className="bg-bg/80 text-left text-xs uppercase tracking-[0.2em] text-muted">
                         <tr>
-                            <th style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #d1d5db', textAlign: 'left', fontWeight: '600' }}>Email</th>
-                            <th style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #d1d5db', textAlign: 'left', fontWeight: '600' }}>Prénom</th>
-                            <th style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #d1d5db', textAlign: 'left', fontWeight: '600' }}>Nom</th>
-                            <th style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #d1d5db', textAlign: 'left', fontWeight: '600' }}>Rôle</th>
+                            <th className="px-4 py-3">Email</th>
+                            <th className="px-4 py-3">Prénom</th>
+                            <th className="px-4 py-3">Nom</th>
+                            <th className="px-4 py-3">Rôle</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {users.length === 0 ? (
+                    <tbody className="divide-y divide-border bg-card">
+                        {filteredUsers.length === 0 ? (
                             <tr>
-                                <td colSpan={4} style={{ textAlign: 'center', color: '#6b7280', padding: '2rem 1rem' }}>
+                                <td colSpan={4} className="px-4 py-8 text-center text-muted">
                                     Aucun utilisateur trouvé
                                 </td>
                             </tr>
                         ) : (
-                            users.map((user) => (
+                            filteredUsers.map((user) => (
                                 <tr
                                     key={user.uid}
                                     onClick={() => handleRowClick(user.uid)}
-                                    style={{ cursor: 'pointer', transition: 'background-color 0.2s', color: 'black' }}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                                    className="cursor-pointer transition hover:bg-bg/80"
                                 >
-                                    <td style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #d1d5db' }}>{user.email}</td>
-                                    <td style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #d1d5db' }}>{user.firstName}</td>
-                                    <td style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #d1d5db' }}>{user.lastName}</td>
-                                    <td style={{ padding: '0.5rem 1rem', borderBottom: '1px solid #d1d5db' }}>
-                                        <span style={getRoleBadgeStyle(user.role)}>
+                                    <td className="px-4 py-3">{user.email}</td>
+                                    <td className="px-4 py-3">{user.firstName}</td>
+                                    <td className="px-4 py-3">{user.lastName}</td>
+                                    <td className="px-4 py-3">
+                                        <span className={getRoleBadgeClass(user.role)}>
                                             {user.role}
                                         </span>
                                     </td>
