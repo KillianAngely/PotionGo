@@ -15,7 +15,6 @@ export default function Dashboard() {
       await logout()
       router.push('/')
     } catch (error) {
-      console.log('Erreur lors de la déconnexion:', error)
     }
   }
 
