@@ -53,12 +53,6 @@ export default function Dashboard() {
                     </p>
                     <h2 className="text-xl font-semibold">Gestion des produits</h2>
                 </div>
-                <button
-                    onClick={() => router.push("/dashboard")}
-                    className="text-sm font-semibold text-accent2 transition hover:text-accent"
-                >
-                    ← Retour au dashboard
-                </button>
             </div>
 
             <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-bg/80 px-4 py-3">
