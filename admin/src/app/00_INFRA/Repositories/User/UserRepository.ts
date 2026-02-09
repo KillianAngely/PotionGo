@@ -10,7 +10,7 @@ export class UserRepository implements IUserRepository {
 
   async findAll(): Promise<User[] | null> {
     try {
-      const response = await fetch(this.baseUrl)
+      const response = await fetch(this.baseUrl, { credentials: "include" })
       if (!response.ok) {
         throw new Error("Erreur lors de la récupération des utilisateurs")
       }
@@ -24,7 +24,7 @@ export class UserRepository implements IUserRepository {
 
   async findById(userId: string): Promise<User | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/${userId}`)
+      const response = await fetch(`${this.baseUrl}/${userId}`, { credentials: "include" })
       if (response.status === 404) {
         return null
       }
@@ -41,7 +41,7 @@ export class UserRepository implements IUserRepository {
 
   async findAllByRole(role: UserRole): Promise<User[] | null> {
     try {
-      const response = await fetch(`${this.baseUrl}?role=${role}`)
+      const response = await fetch(`${this.baseUrl}?role=${role}`, { credentials: "include" })
       if (!response.ok) {
         throw new Error("Erreur lors de la récupération des utilisateurs par rôle")
       }
@@ -57,6 +57,7 @@ export class UserRepository implements IUserRepository {
     try {
       const response = await fetch(`${this.baseUrl}/${userId}`, {
         method: "DELETE",
+        credentials: "include",
       })
       if (!response.ok) {
         throw new Error("Erreur lors de la suppression de l'utilisateur")
@@ -67,4 +68,3 @@ export class UserRepository implements IUserRepository {
     }
   }
 }
-
