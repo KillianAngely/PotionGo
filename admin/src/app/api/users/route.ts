@@ -2,9 +2,18 @@ import { firestore } from "../../../../config/firebase"
 import { collection, getDocs } from "firebase/firestore"
 import { User, UserRole } from "../../00_INFRA/types/User"
 import { userSchema } from "./schema"
+import { requireAdmin } from "../_utils/auth"
 
 export async function GET(request: Request) {
     try {
+        const auth = await requireAdmin(request)
+        if (!auth.ok) {
+            return new Response(JSON.stringify({ error: auth.error }), {
+                status: auth.status,
+                headers: { "Content-Type": "application/json" },
+            })
+        }
+
         const { searchParams } = new URL(request.url)
         const roleFilterRaw = searchParams.get("role")
         const roleFilter = roleFilterRaw
@@ -28,10 +37,7 @@ export async function GET(request: Request) {
             }) as User[]
 
         if (roleFilter) {
-            console.log("Applying role filter:", roleFilter)
-            console.log("Users before filtering:", users)
             users = users.filter((user) => user.role === roleFilter)
-            console.log(`Users after filtering by role "${roleFilter}":`, users)
         }
 
         return new Response(
