@@ -19,36 +19,60 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Dashboard Admin</h1>
-
-      <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
-        <button
-          onClick={() => router.push('/dashboard/users')}
-          style={{ backgroundColor: '#2563eb', color: 'white', padding: '0.6rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer', fontSize: '1rem' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
-        >
-          Gérer les utilisateurs
-        </button>
-        <button
-          onClick={() => router.push('/dashboard/products')}
-          style={{ backgroundColor: '#059669', color: 'white', padding: '0.6rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer', fontSize: '1rem' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#047857'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#059669'}
-        >
-          Gérer les produits
-        </button>
+    <div className="grid gap-6">
+      <div className="rounded-2xl border border-border bg-bg/80 p-6">
+        <h2 className="text-lg font-semibold">Accès rapide</h2>
+        <p className="mt-1 text-sm text-muted">
+          Choisis un module pour gérer les données principales.
+        </p>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <button
+            onClick={() => router.push("/dashboard/users")}
+            className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              Utilisateurs
+            </p>
+            <h3 className="mt-2 text-lg font-semibold">Gérer les comptes</h3>
+            <p className="mt-2 text-sm text-muted">
+              Parcourir, filtrer et consulter les profils.
+            </p>
+            <span className="mt-4 inline-flex items-center text-sm font-semibold text-accent2">
+              Ouvrir →
+            </span>
+          </button>
+          <button
+            onClick={() => router.push("/dashboard/products")}
+            className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              Produits
+            </p>
+            <h3 className="mt-2 text-lg font-semibold">Suivre les potions</h3>
+            <p className="mt-2 text-sm text-muted">
+              Inventaire, mood et détails des offres.
+            </p>
+            <span className="mt-4 inline-flex items-center text-sm font-semibold text-accent2">
+              Ouvrir →
+            </span>
+          </button>
+        </div>
       </div>
 
-      <button
-        onClick={handleLogout}
-        style={{ backgroundColor: '#ef4444', color: 'white', padding: '0.6rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer', fontSize: '1rem' }}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ef4444'}
-      >
-        Déconnexion
-      </button>
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-border bg-card px-5 py-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+            Session
+          </p>
+          <p className="mt-1 text-sm text-muted">Déconnexion sécurisée.</p>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="rounded-full border border-accent/30 bg-accent px-4 py-2 text-sm font-semibold text-white shadow-glow transition hover:bg-accent/90"
+        >
+          Déconnexion
+        </button>
+      </div>
     </div>
   )
 }
