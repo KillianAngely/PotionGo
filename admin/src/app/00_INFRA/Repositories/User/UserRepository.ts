@@ -53,6 +53,35 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  async create(payload: {
+    email: string
+    firstName: string
+    lastName: string
+    password: string
+    role: UserRole
+  }): Promise<User> {
+    try {
+      const response = await fetch(this.baseUrl, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null)
+        const message = data?.error || "Erreur lors de la création de l'utilisateur"
+        throw new Error(message)
+      }
+
+      const data = await response.json()
+      return data.user as User
+    } catch (error) {
+      console.error("Error creating user:", error)
+      throw error
+    }
+  }
+
   async removeById(userId: string): Promise<void> {
     try {
       const response = await fetch(`${this.baseUrl}/${userId}`, {
