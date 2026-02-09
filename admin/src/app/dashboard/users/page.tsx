@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useEffect, useState, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import { UserRepository } from "../../00_INFRA/Repositories/User/UserRepository"
 import { User, UserAdminRole, UserClientRole } from "../../00_INFRA/types/User"
@@ -10,6 +10,16 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true)
     const [roleFilter, setRoleFilter] = useState<string>("all")
     const [searchTerm, setSearchTerm] = useState("")
+    const [isCreateOpen, setIsCreateOpen] = useState(false)
+    const [isCreating, setIsCreating] = useState(false)
+    const [createError, setCreateError] = useState<string | null>(null)
+    const [createForm, setCreateForm] = useState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        role: UserClientRole.DRIVER,
+    })
 
     const userRepository = new UserRepository()
 
@@ -49,6 +59,38 @@ export default function Dashboard() {
         router.push(`/dashboard/users/${userId}`)
     }
 
+    const handleCreateSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        setCreateError(null)
+        setIsCreating(true)
+        try {
+            await userRepository.create({
+                email: createForm.email,
+                firstName: createForm.firstName,
+                lastName: createForm.lastName,
+                password: createForm.password,
+                role: createForm.role,
+            })
+            await loadUsers()
+            setIsCreateOpen(false)
+            setCreateForm({
+                firstName: "",
+                lastName: "",
+                email: "",
+                password: "",
+                role: UserClientRole.DRIVER,
+            })
+        } catch (error) {
+            setCreateError(
+                error instanceof Error
+                    ? error.message
+                    : "Erreur lors de la création de l'utilisateur"
+            )
+        } finally {
+            setIsCreating(false)
+        }
+    }
+
     if (loading) {
         return <div className="text-sm text-muted">Chargement...</div>
     }
@@ -77,10 +119,11 @@ export default function Dashboard() {
                     <h2 className="text-xl font-semibold">Gestion des utilisateurs</h2>
                 </div>
                 <button
-                    onClick={() => router.push("/dashboard")}
-                    className="text-sm font-semibold text-accent2 transition hover:text-accent"
+                    type="button"
+                    onClick={() => setIsCreateOpen(true)}
+                    className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-bg transition hover:opacity-90"
                 >
-                    ← Retour au dashboard
+                    + Ajouter un utilisateur
                 </button>
             </div>
 
@@ -155,6 +198,168 @@ export default function Dashboard() {
                     </tbody>
                 </table>
             </div>
+
+            {isCreateOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <button
+                        type="button"
+                        className="absolute inset-0 bg-black/40"
+                        onClick={() => setIsCreateOpen(false)}
+                        aria-label="Fermer la fenêtre"
+                    />
+                    <div className="relative w-[min(92vw,520px)] rounded-2xl border border-border bg-card p-6 shadow-xl">
+                        <div className="flex items-start justify-between gap-4">
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
+                                    Utilisateurs
+                                </p>
+                                <h3 className="text-lg font-semibold">
+                                    Ajouter un utilisateur
+                                </h3>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setIsCreateOpen(false)}
+                                className="rounded-full px-3 py-1 text-sm text-muted transition hover:text-fg"
+                            >
+                                Fermer
+                            </button>
+                        </div>
+
+                        <form className="mt-6 space-y-4" onSubmit={handleCreateSubmit}>
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-1">
+                                    <label
+                                        htmlFor="createFirstName"
+                                        className="text-sm font-semibold"
+                                    >
+                                        Prénom
+                                    </label>
+                                    <input
+                                        id="createFirstName"
+                                        type="text"
+                                        value={createForm.firstName}
+                                        onChange={(e) =>
+                                            setCreateForm((prev) => ({
+                                                ...prev,
+                                                firstName: e.target.value,
+                                            }))
+                                        }
+                                        className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none"
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label
+                                        htmlFor="createLastName"
+                                        className="text-sm font-semibold"
+                                    >
+                                        Nom
+                                    </label>
+                                    <input
+                                        id="createLastName"
+                                        type="text"
+                                        value={createForm.lastName}
+                                        onChange={(e) =>
+                                            setCreateForm((prev) => ({
+                                                ...prev,
+                                                lastName: e.target.value,
+                                            }))
+                                        }
+                                        className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none"
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <label htmlFor="createEmail" className="text-sm font-semibold">
+                                    Email
+                                </label>
+                                <input
+                                    id="createEmail"
+                                    type="email"
+                                    value={createForm.email}
+                                    onChange={(e) =>
+                                        setCreateForm((prev) => ({
+                                            ...prev,
+                                            email: e.target.value,
+                                        }))
+                                    }
+                                    className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none"
+                                    required
+                                />
+                            </div>
+
+                            <div className="space-y-1">
+                                <label
+                                    htmlFor="createPassword"
+                                    className="text-sm font-semibold"
+                                >
+                                    Mot de passe
+                                </label>
+                                <input
+                                    id="createPassword"
+                                    type="password"
+                                    value={createForm.password}
+                                    onChange={(e) =>
+                                        setCreateForm((prev) => ({
+                                            ...prev,
+                                            password: e.target.value,
+                                        }))
+                                    }
+                                    className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none"
+                                    required
+                                />
+                            </div>
+
+                            <div className="space-y-1">
+                                <label htmlFor="createRole" className="text-sm font-semibold">
+                                    Rôle
+                                </label>
+                                <select
+                                    id="createRole"
+                                    value={createForm.role}
+                                    onChange={(e) =>
+                                        setCreateForm((prev) => ({
+                                            ...prev,
+                                            role: e.target.value as UserClientRole,
+                                        }))
+                                    }
+                                    className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none"
+                                >
+                                    <option value={UserClientRole.DRIVER}>DRIVER</option>
+                                    <option value={UserClientRole.CUSTOMER}>CUSTOMER</option>
+                                </select>
+                            </div>
+
+                            {createError && (
+                                <p className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-600">
+                                    {createError}
+                                </p>
+                            )}
+
+                            <div className="flex flex-wrap justify-end gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCreateOpen(false)}
+                                    className="rounded-full border border-border px-4 py-2 text-sm font-semibold text-fg transition hover:bg-bg"
+                                    disabled={isCreating}
+                                >
+                                    Annuler
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-bg transition hover:opacity-90 disabled:opacity-60"
+                                    disabled={isCreating}
+                                >
+                                    {isCreating ? "Création..." : "Créer l'utilisateur"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
