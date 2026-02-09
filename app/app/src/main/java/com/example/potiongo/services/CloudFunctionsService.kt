@@ -18,28 +18,11 @@ import javax.inject.Singleton
 
 
 interface ICloudFunctionsService {
-    suspend fun setUserRole(role: String): Result<String>
     suspend fun createUser(role: String, email : String, firstName : String, lastName: String)
 }
 
-private val TAG : String = "CloudFunctionsService"
+private const val TAG : String = "CloudFunctionsService"
 class CloudFunctionsService @Inject constructor(private val cloudFunction: FirebaseFunctions) : ICloudFunctionsService {
-    override suspend fun setUserRole(role: String): Result<String> {
-        return try {
-            val data = hashMapOf("role" to role)
-            val result = cloudFunction.getHttpsCallable("setUserRole")
-                .call(data)
-                .await()
-            val response = result.data as Map<String, Any?>
-            val assignedRole = response["role"] as String
-
-            Log.d(TAG, "success - role: $assignedRole")
-            Result.success(assignedRole)
-        } catch (e: Exception) {
-            Log.e(TAG, "failed to set role", e)
-            Result.failure(e)
-        }
-    }
 
     override suspend fun createUser(
         role: String,

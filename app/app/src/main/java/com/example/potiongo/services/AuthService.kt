@@ -1,10 +1,11 @@
 package com.example.potiongo.services
 
+import android.nfc.Tag
 import android.util.Log
+import com.example.potiongo.data.Role
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
 import dagger.Module
 import dagger.Provides
@@ -18,6 +19,7 @@ interface IAuthService {
 
     suspend fun getUser(): FirebaseUser
     fun isAuthenticated(): Boolean
+    suspend fun getRole(): Role
 
     suspend fun  signUp(email: String, password: String) : AuthResult
 
@@ -49,6 +51,15 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
         Log.d(TAG, "uid: ${auth.currentUser?.uid}")
         Log.d(TAG, "isAnonymous: ${auth.currentUser?.isAnonymous}")
         Log.d(TAG, "providerData: ${auth.currentUser?.providerData}")
+    }
+
+    override suspend fun getRole(): Role {
+        val tokenResult = auth.currentUser!!.getIdToken(true).await()
+        val roleString = tokenResult.claims["role"] as? String
+            ?: throw IllegalStateException("Role missing")
+
+        val role = Role.valueOf(roleString.uppercase())
+        return role
     }
 
     override suspend fun getUser(): FirebaseUser {

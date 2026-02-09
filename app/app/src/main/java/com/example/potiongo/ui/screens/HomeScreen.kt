@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
+import com.example.potiongo.ui.screens.auth.login.LoginUiState
 import com.example.potiongo.ui.theme.PotionGoTheme
 import kotlinx.coroutines.flow.filter
 
@@ -70,6 +71,12 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
+            if(uiState is HomeUiState.CustomerView){
+                Text("I am customer")
+            }
+            if(uiState is HomeUiState.DriverView){
+                Text("I am driver")
+            }
             Button(
                 onClick = {
                     homeViewModel.signOut()

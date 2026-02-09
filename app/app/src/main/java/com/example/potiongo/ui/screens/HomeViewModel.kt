@@ -2,6 +2,8 @@ package com.example.potiongo.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.potiongo.domain.GetRoleUseCase
+import com.example.potiongo.domain.GetRoleUseCaseResult
 import com.example.potiongo.domain.LogoutUseCase
 import com.example.potiongo.domain.LogoutUseCaseResult
 import com.example.potiongo.services.AuthService
@@ -16,10 +18,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    val logoutUseCase: LogoutUseCase
+    val logoutUseCase: LogoutUseCase ,
+    val getRoleUseCase: GetRoleUseCase
 ): ViewModel() {
-    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Idle)
+    private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.CustomerView)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+
+    fun witchRole(){
+        viewModelScope.launch {
+            when(val res = getRoleUseCase()){
+                is GetRoleUseCaseResult.Customer -> {
+                    _uiState.value = HomeUiState.CustomerView
+                }
+                is GetRoleUseCaseResult.Driver -> {
+                    _uiState.value = HomeUiState.DriverView
+                }
+                is GetRoleUseCaseResult.ErrorAuth -> {
+                    _uiState.value = HomeUiState.Error(res.errorMessage)
+                }
+            }
+        }
+    }
 
 
     fun signOut(){
@@ -36,8 +55,3 @@ class HomeViewModel @Inject constructor(
     }
 }
 
-sealed class HomeUiState{
-    data object Idle : HomeUiState()
-    data object IsSignOut : HomeUiState()
-    data class Error(val error : String) : HomeUiState()
-}
