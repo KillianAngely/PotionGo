@@ -31,25 +31,25 @@ export default function ProductDetailPage() {
     }
 
     const getMoodBadgeStyle = (mood: string) => {
-        const baseStyle = { display: 'inline-block', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.875rem' }
+        const base = "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
         const normalizedMood = mood.toUpperCase()
-        if (normalizedMood === "SAD") return { ...baseStyle, backgroundColor: '#e0e7ff', color: '#3730a3' }
-        if (normalizedMood === "HAPPY") return { ...baseStyle, backgroundColor: '#fef3c7', color: '#92400e' }
-        if (normalizedMood === "ANGRY") return { ...baseStyle, backgroundColor: '#fee2e2', color: '#991b1b' }
-        return { ...baseStyle, backgroundColor: '#d1fae5', color: '#065f46' }
+        if (normalizedMood === "SAD") return `${base} bg-accent2/15 text-accent2`
+        if (normalizedMood === "HAPPY") return `${base} bg-accent/15 text-accent`
+        if (normalizedMood === "ANGRY") return `${base} bg-accent/20 text-accent`
+        return `${base} bg-accent3/15 text-accent3`
     }
 
     if (loading) {
-        return <div style={{ padding: '2rem' }}>Chargement...</div>
+        return <div className="text-sm text-muted">Chargement...</div>
     }
 
     if (!product) {
         return (
-            <div style={{ padding: '2rem' }}>
-                <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>Produit non trouvé</h1>
+            <div className="space-y-4">
+                <h1 className="text-xl font-semibold">Produit non trouvé</h1>
                 <button
                     onClick={() => router.push("/dashboard/products")}
-                    style={{ color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '0.5rem 0' }}
+                    className="text-sm font-semibold text-accent2 transition hover:text-accent"
                 >
                     Retour à la liste
                 </button>
@@ -58,45 +58,54 @@ export default function ProductDetailPage() {
     }
 
     return (
-        <div style={{ padding: '2rem' }}>
+        <div className="space-y-6">
             <button
                 onClick={() => router.push("/dashboard/products")}
-                style={{ marginBottom: '1rem', color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '0.5rem 0' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#1d4ed8'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#3b82f6'}
+                className="text-sm font-semibold text-accent2 transition hover:text-accent"
             >
                 ← Retour à la liste
             </button>
 
-            <div style={{ backgroundColor: 'white', border: '1px solid #d1d5db', borderRadius: '0.5rem', padding: '1.5rem', maxWidth: '48rem' }}>
-                <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem', color: 'black' }}>Détails du produit</h1>
+            <div className="max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-glow">
+                <h1 className="text-xl font-semibold">Détails du produit</h1>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem', color: 'black' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <label style={{ fontWeight: '500', color: '#374151' }}>ID:</label>
-                        <p style={{ color: '#111827', margin: '0' }}>{product.id}</p>
+                <div className="mt-6 grid gap-4 text-sm text-muted">
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                            ID
+                        </p>
+                        <p className="mt-1 text-sm text-fg">{product.id}</p>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <label style={{ fontWeight: '500', color: '#374151' }}>Nom:</label>
-                        <p style={{ color: '#111827', margin: '0' }}>{product.name}</p>
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                            Nom
+                        </p>
+                        <p className="mt-1 text-sm text-fg">{product.name}</p>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <label style={{ fontWeight: '500', color: '#374151' }}>Humeur:</label>
-                        <span style={getMoodBadgeStyle(product.mood)}>
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                            Humeur
+                        </p>
+                        <span className={getMoodBadgeStyle(product.mood)}>
                             {product.mood}
                         </span>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <label style={{ fontWeight: '500', color: '#374151' }}>Prix:</label>
-                        <p style={{ color: '#111827', margin: '0' }}>{product.price.toFixed(2)} €</p>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <label style={{ fontWeight: '500', color: '#374151' }}>Description:</label>
-                        <p style={{ color: '#111827', margin: '0' }}>{product.description || "—"}</p>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                                Prix
+                            </p>
+                            <p className="mt-1 text-sm text-fg">{product.price.toFixed(2)} €</p>
+                        </div>
+                        <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                                Description
+                            </p>
+                            <p className="mt-1 text-sm text-fg">{product.description || "—"}</p>
+                        </div>
                     </div>
                 </div>
             </div>

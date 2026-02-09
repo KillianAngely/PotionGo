@@ -54,29 +54,34 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <h3>Login Admin Only</h3>
-        <div>
+      <form className={styles.card} onSubmit={handleSubmit(onSubmit)}>
+        <div className={styles.brand}>PotionGo Admin</div>
+        <h3 className={styles.title}>Connexion</h3>
+        <p className={styles.subtitle}>Réservé aux administrateurs.</p>
+
+        <div className={styles.field}>
           <input 
             {...register("email")} 
             type="email" 
             placeholder="Email" 
+            className={styles.input}
           />
           {errors.email && <p className={styles.errorText}>{errors.email.message}</p>}
         </div>
 
-        <div>
+        <div className={styles.field}>
           <input 
             {...register("password")} 
             type="password" 
             placeholder="Password" 
+            className={styles.input}
           />
           {errors.password && <p className={styles.errorText}>{errors.password.message}</p>}
         </div>
 
-        {serverError && <p style={{ color: "red" }}>{serverError}</p>}
+        {serverError && <p className={styles.serverError}>{serverError}</p>}
 
-        <button type="submit" disabled={isSubmitting}>
+        <button className={styles.button} type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Connexion..." : "Login"}
         </button>
       </form>
