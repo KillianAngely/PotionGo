@@ -42,6 +42,21 @@ export default function Dashboard() {
             </span>
           </button>
           <button
+            onClick={() => router.push("/dashboard/orders")}
+            className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              Commandes
+            </p>
+            <h3 className="mt-2 text-lg font-semibold">Suivre les livraisons</h3>
+            <p className="mt-2 text-sm text-muted">
+              Statuts, clients et détails de livraison.
+            </p>
+            <span className="mt-4 inline-flex items-center text-sm font-semibold text-accent2">
+              Ouvrir →
+            </span>
+          </button>
+          <button
             onClick={() => router.push("/dashboard/products")}
             className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60"
           >
