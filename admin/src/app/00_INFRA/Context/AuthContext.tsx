@@ -21,29 +21,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        console.log('Utilisateur connecté:', currentUser.email)
         const tokenResult = await currentUser.getIdTokenResult()
-        console.log('Token result claims:', tokenResult.claims)
-        console.log('Rôle utilisateur:', tokenResult.claims.role)
 
         if (tokenResult.claims.role === 'admin') {
-          console.log('admin confirm')
           setUser(currentUser)
           setIsAdmin(true)
-          const idToken = await currentUser.getIdToken()
-          document.cookie = `authToken=${idToken}; path=/; max-age=3600; Secure; SameSite=Strict`
+          const idToken = await currentUser.getIdToken(true)
+          const response = await fetch("/api/auth/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ idToken }),
+          })
+          if (!response.ok) {
+            setIsAdmin(false)
+            await auth.signOut()
+          }
         } else {
-          console.log('Utilisateur non admin', tokenResult.claims.role)
           setUser(currentUser)
           setIsAdmin(false)
+          await fetch("/api/auth/session", { method: "DELETE", credentials: "include" })
           await auth.signOut()
         }
       } else {
-        console.log('Utilisateur déconnecté')
         setUser(null)
         setIsAdmin(false)
-        document.cookie = 'authToken=; path=/; max-age=0; Secure; SameSite=Strict'
-        console.log('Cookie authToken supprimé')
+        await fetch("/api/auth/session", { method: "DELETE", credentials: "include" })
       }
       setLoading(false)
     })
@@ -53,12 +56,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
+      await fetch("/api/auth/session", { method: "DELETE", credentials: "include" })
       await auth.signOut()
       setUser(null)
       setIsAdmin(false)
-      document.cookie = 'authToken=; path=/; max-age=0; Secure; SameSite=Strict'
     } catch (error) {
-      console.log('Erreur lors de la déconnexion:', error)
       throw error
     }
   }

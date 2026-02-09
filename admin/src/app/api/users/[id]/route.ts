@@ -2,6 +2,7 @@ import { firestore } from "../../../../../config/firebase"
 import { doc, getDoc, deleteDoc } from "firebase/firestore"
 import { User } from "../../../00_INFRA/types/User"
 import { userSchema } from "../schema"
+import { requireAdmin } from "../../_utils/auth"
 
 interface Params {
     id: string
@@ -9,6 +10,14 @@ interface Params {
 
 export async function GET(request: Request, { params }: { params: Params }) {
     try {
+        const auth = await requireAdmin(request)
+        if (!auth.ok) {
+            return new Response(JSON.stringify({ error: auth.error }), {
+                status: auth.status,
+                headers: { "Content-Type": "application/json" },
+            })
+        }
+
         const { id } = params
 
         if (!id) {

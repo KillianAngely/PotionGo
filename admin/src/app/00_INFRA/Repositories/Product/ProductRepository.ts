@@ -10,7 +10,7 @@ export class ProductRepository implements IProductRepository {
 
   async findAll(): Promise<Product[] | null> {
     try {
-      const response = await fetch(this.baseUrl)
+      const response = await fetch(this.baseUrl, { credentials: "include" })
       if (!response.ok) {
         throw new Error("Erreur lors de la récupération des produits")
       }
@@ -24,7 +24,7 @@ export class ProductRepository implements IProductRepository {
 
   async findById(productId: string): Promise<Product | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/${productId}`)
+      const response = await fetch(`${this.baseUrl}/${productId}`, { credentials: "include" })
       if (response.status === 404) {
         return null
       }

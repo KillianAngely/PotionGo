@@ -1,12 +1,21 @@
 import { firestore } from "../../../../../config/firebase"
 import { doc, getDoc } from "firebase/firestore"
-import { Product } from "../schema"
+import { Product, productSchema } from "../schema"
+import { requireAdmin } from "../../_utils/auth"
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireAdmin(request)
+    if (!auth.ok) {
+      return new Response(JSON.stringify({ error: auth.error }), {
+        status: auth.status,
+        headers: { "Content-Type": "application/json" },
+      })
+    }
+
     const { id } = await params
 
     const productDocRef = doc(firestore, "products", id)
@@ -21,9 +30,19 @@ export async function GET(
       )
     }
 
+    const validation = productSchema.safeParse(productDoc.data())
+    if (!validation.success) {
+      return new Response(
+        JSON.stringify({
+          error: "Données produit invalides",
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      )
+    }
+
     const product: Product = {
       id: productDoc.id,
-      ...productDoc.data(),
+      ...validation.data,
     } as Product
 
     return new Response(
