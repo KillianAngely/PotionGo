@@ -38,4 +38,47 @@ export class ProductRepository implements IProductRepository {
       return null
     }
   }
+
+  async create(payload: {
+    name: string
+    mood: string
+    price: number
+    description?: string
+  }): Promise<Product> {
+    try {
+      const response = await fetch(this.baseUrl, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null)
+        const message = data?.error || "Erreur lors de la création du produit"
+        throw new Error(message)
+      }
+
+      const data = await response.json()
+      return data.product as Product
+    } catch (error) {
+      console.error("Error creating product:", error)
+      throw error
+    }
+  }
+
+  async removeById(productId: string): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${productId}`, {
+        method: "DELETE",
+        credentials: "include",
+      })
+      if (!response.ok) {
+        throw new Error("Erreur lors de la suppression du produit")
+      }
+    } catch (error) {
+      console.error(`Error deleting product ${productId}:`, error)
+      throw error
+    }
+  }
 }
