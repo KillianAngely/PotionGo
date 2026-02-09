@@ -45,23 +45,23 @@ export default function UserDetailPage() {
     }
 
     const getRoleBadgeStyle = (role: string) => {
-        const baseStyle = { display: 'inline-block', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.875rem' }
-        if (role === UserAdminRole.ADMIN) return { ...baseStyle, backgroundColor: '#fee2e2', color: '#991b1b' }
-        if (role === UserClientRole.DRIVER) return { ...baseStyle, backgroundColor: '#dbeafe', color: '#1e40af' }
-        return { ...baseStyle, backgroundColor: '#d1fae5', color: '#065f46' }
+        const base = "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
+        if (role === UserAdminRole.ADMIN) return `${base} bg-accent/15 text-accent`
+        if (role === UserClientRole.DRIVER) return `${base} bg-accent2/15 text-accent2`
+        return `${base} bg-accent3/15 text-accent3`
     }
 
     if (loading) {
-        return <div style={{ padding: '2rem' }}>Chargement...</div>
+        return <div className="text-sm text-muted">Chargement...</div>
     }
 
     if (!user) {
         return (
-            <div style={{ padding: '2rem' }}>
-                <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>Utilisateur non trouvé</h1>
+            <div className="space-y-4">
+                <h1 className="text-xl font-semibold">Utilisateur non trouvé</h1>
                 <button
                     onClick={() => router.push("/dashboard/users")}
-                    style={{ color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '0.5rem 0' }}
+                    className="text-sm font-semibold text-accent2 transition hover:text-accent"
                 >
                     Retour à la liste
                 </button>
@@ -70,54 +70,61 @@ export default function UserDetailPage() {
     }
 
     return (
-        <div style={{ padding: '2rem' }}>
+        <div className="space-y-6">
             <button
                 onClick={() => router.push("/dashboard/users")}
-                style={{ marginBottom: '1rem', color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', padding: '0.5rem 0' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#1d4ed8'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#3b82f6'}
+                className="text-sm font-semibold text-accent2 transition hover:text-accent"
             >
                 ← Retour à la liste
             </button>
 
-            <div style={{ backgroundColor: 'white', border: '1px solid #d1d5db', borderRadius: '0.5rem', padding: '1.5rem', maxWidth: '48rem' }}>
-                <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1.5rem', color: 'black' }}>Détails de l'utilisateur</h1>
+            <div className="max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-glow">
+                <h1 className="text-xl font-semibold">Détails de l'utilisateur</h1>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.5rem', color: 'black' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <label style={{ fontWeight: '500', color: '#374151' }}>ID:</label>
-                        <p style={{ color: '#111827', margin: '0' }}>{user.uid}</p>
+                <div className="mt-6 grid gap-4 text-sm text-muted">
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                            ID
+                        </p>
+                        <p className="mt-1 text-sm text-fg">{user.uid}</p>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <label style={{ fontWeight: '500', color: '#374151' }}>Email:</label>
-                        <p style={{ color: '#111827', margin: '0' }}>{user.email}</p>
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                            Email
+                        </p>
+                        <p className="mt-1 text-sm text-fg">{user.email}</p>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <label style={{ fontWeight: '500', color: '#374151' }}>Prénom:</label>
-                        <p style={{ color: '#111827', margin: '0' }}>{user.firstName}</p>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                                Prénom
+                            </p>
+                            <p className="mt-1 text-sm text-fg">{user.firstName}</p>
+                        </div>
+                        <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                                Nom
+                            </p>
+                            <p className="mt-1 text-sm text-fg">{user.lastName}</p>
+                        </div>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <label style={{ fontWeight: '500', color: '#374151' }}>Nom:</label>
-                        <p style={{ color: '#111827', margin: '0' }}>{user.lastName}</p>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <label style={{ fontWeight: '500', color: '#374151' }}>Rôle:</label>
-                        <span style={getRoleBadgeStyle(user.role)}>
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                            Rôle
+                        </p>
+                        <span className={getRoleBadgeStyle(user.role)}>
                             {user.role}
                         </span>
                     </div>
                 </div>
 
-                <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
+                <div className="mt-6">
                     <button
                         onClick={handleDelete}
-                        style={{ backgroundColor: '#ef4444', color: 'white', padding: '0.5rem 1rem', borderRadius: '0.25rem', border: 'none', cursor: 'pointer', fontSize: '1rem' }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ef4444'}
+                        className="rounded-full border border-accent/30 bg-accent px-4 py-2 text-sm font-semibold text-white shadow-glow transition hover:bg-accent/90"
                     >
                         Supprimer l'utilisateur
                     </button>
