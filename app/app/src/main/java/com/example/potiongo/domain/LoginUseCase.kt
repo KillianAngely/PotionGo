@@ -1,6 +1,7 @@
 package com.example.potiongo.domain
 
 
+
 import android.util.Log
 import com.example.potiongo.services.AuthService
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -22,11 +23,12 @@ class LoginUseCase @Inject constructor(
     suspend operator fun invoke(email: String, password: String): LoginUseCaseResult {
         return try {
             auth.login(email, password)
+            Log.d(TAG,"LoginUseCase:success")
             LoginUseCaseResult.Success
         } catch (e: FirebaseAuthInvalidCredentialsException) {
             LoginUseCaseResult.ErrorAuth("Invalid Password")
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.d(TAG,"LoginUseCase:failed",e)
             LoginUseCaseResult.ErrorAuth("Unknown error: ${e.message}")
         }
     }
