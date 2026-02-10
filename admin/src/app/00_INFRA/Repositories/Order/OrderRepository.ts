@@ -46,6 +46,7 @@ export class OrderRepository implements IOrderRepository {
     driverId?: string | null
     status: OrderStatus
     items: { potionId: string; quantity: number }[]
+    driverStart?: { address?: string; lat: number; lng: number } | null
     dropoff: { address: string; lat: number; lng: number }
   }): Promise<Order> {
     try {

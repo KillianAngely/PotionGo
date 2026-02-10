@@ -64,6 +64,30 @@ export async function GET(
       if (snap.exists) productMap.set(snap.id, snap.data() || {})
     }
 
+    const items = validation.data.items.map((item) => {
+      const product = productMap.get(item.potionId)
+      const potionName =
+        typeof product?.name === "string" ? product.name : item.potionId
+      const potionImageUrl =
+        typeof product?.imageUrl === "string" ? product.imageUrl : undefined
+      const unitPrice = typeof product?.price === "number" ? product.price : null
+      const lineTotal = typeof unitPrice === "number" ? unitPrice * item.quantity : null
+
+      return {
+        ...item,
+        potionName,
+        potionImageUrl,
+        unitPrice,
+        lineTotal,
+      }
+    })
+
+    const totalPrice = items.reduce(
+      (sum, item) => (typeof item.lineTotal === "number" ? sum + item.lineTotal : sum),
+      0
+    )
+    const hasPrice = items.some((item) => typeof item.lineTotal === "number")
+
     const order: Order = {
       id: orderDoc.id,
       ...validation.data,
@@ -71,13 +95,8 @@ export async function GET(
       driverName: driverRef
         ? buildUserLabel(driverSnap?.data(), validation.data.driverId || "")
         : undefined,
-      items: validation.data.items.map((item) => ({
-        ...item,
-        potionName:
-          typeof productMap.get(item.potionId)?.name === "string"
-            ? productMap.get(item.potionId)?.name
-            : item.potionId,
-      })),
+      items,
+      totalPrice: hasPrice ? totalPrice : null,
     } as Order
 
     return new Response(

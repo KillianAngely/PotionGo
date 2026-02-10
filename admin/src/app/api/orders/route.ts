@@ -65,20 +65,41 @@ export async function GET(request: Request) {
       if (snap.exists) productMap.set(snap.id, snap.data() || {})
     }
 
-    const orders: Order[] = parsedOrders.map((order) => ({
-      ...order,
-      customerName: buildUserLabel(userMap.get(order.customerId), order.customerId),
-      driverName: order.driverId
-        ? buildUserLabel(userMap.get(order.driverId), order.driverId)
-        : undefined,
-      items: order.items.map((item) => ({
-        ...item,
-        potionName:
-          typeof productMap.get(item.potionId)?.name === "string"
-            ? productMap.get(item.potionId)?.name
-            : item.potionId,
-      })),
-    }))
+    const orders: Order[] = parsedOrders.map((order) => {
+      const items = order.items.map((item) => {
+        const product = productMap.get(item.potionId)
+        const potionName =
+          typeof product?.name === "string" ? product.name : item.potionId
+        const potionImageUrl =
+          typeof product?.imageUrl === "string" ? product.imageUrl : undefined
+        const unitPrice = typeof product?.price === "number" ? product.price : null
+        const lineTotal = typeof unitPrice === "number" ? unitPrice * item.quantity : null
+
+        return {
+          ...item,
+          potionName,
+          potionImageUrl,
+          unitPrice,
+          lineTotal,
+        }
+      })
+
+      const totalPrice = items.reduce(
+        (sum, item) => (typeof item.lineTotal === "number" ? sum + item.lineTotal : sum),
+        0
+      )
+      const hasPrice = items.some((item) => typeof item.lineTotal === "number")
+
+      return {
+        ...order,
+        customerName: buildUserLabel(userMap.get(order.customerId), order.customerId),
+        driverName: order.driverId
+          ? buildUserLabel(userMap.get(order.driverId), order.driverId)
+          : undefined,
+        items,
+        totalPrice: hasPrice ? totalPrice : null,
+      }
+    })
 
     return new Response(
       JSON.stringify({
