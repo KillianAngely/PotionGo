@@ -14,6 +14,8 @@ import com.example.potiongo.ui.screens.HomeScreen
 import com.example.potiongo.ui.screens.auth.emailVerif.EmailVerifScreen
 import com.example.potiongo.ui.screens.auth.login.LoginScreen
 import com.example.potiongo.ui.screens.auth.signup.SignUpScreen
+import com.example.potiongo.ui.screens.history.HistoryScreen
+import com.example.potiongo.ui.screens.profile.ProfileScreen
 
 @Composable
 fun AppNavHost(
@@ -33,12 +35,21 @@ fun AppNavHost(
                 onLoginSuccess = {navController.navigate(AppScreenDestination.Home.name)}
             )
         }
-        composable(route = AppScreenDestination.Home.name){
+        composable(route = AppScreenDestination.Home.name) {
             HomeScreen(
                 onSignOut = { navController.navigate(AppScreenDestination.Login.name) {
                     popUpTo(AppScreenDestination.Login.name) { inclusive = true }
-                } }
+                }},
+                goToHomeScreen = { navController.navigate(AppScreenDestination.Home.name) },
+                goToHistoryScreen = { navController.navigate(AppScreenDestination.History.name) },
+                goToProfileScreen = { navController.navigate(AppScreenDestination.Profile.name) }
             )
+        }
+        composable(route = AppScreenDestination.History.name){
+            HistoryScreen()
+        }
+        composable(route = AppScreenDestination.Profile.name){
+            ProfileScreen()
         }
         composable (route = AppScreenDestination.SignUp.name){
             SignUpScreen(

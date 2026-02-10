@@ -18,25 +18,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun BottomAppBar() {
+fun BottomAppBar(
+    goToHomePage : () -> Unit,
+    goToHistoryPage : () -> Unit,
+    goToProfilePage : () -> Unit,
+) {
     BottomAppBar {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            IconButton(onClick = {}) {
+            IconButton(onClick = goToHomePage) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Default.Home, contentDescription = "Home")
                     Text("Home", fontSize = 12.sp)
                 }
             }
-            IconButton(onClick = {}) {
+            IconButton(onClick = goToHistoryPage) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Default.History, contentDescription = "History")
                     Text("History", fontSize = 12.sp)
                 }
             }
-            IconButton(onClick = {}) {
+            IconButton(onClick = goToProfilePage) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Default.Person, contentDescription = "Profile")
                     Text("Profile", fontSize = 12.sp)

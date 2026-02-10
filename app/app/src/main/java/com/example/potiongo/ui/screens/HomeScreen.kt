@@ -1,6 +1,7 @@
 package com.example.potiongo.ui.screens
 
 
+import android.window.SplashScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +30,10 @@ import com.example.potiongo.ui.component.ProductGrid
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    goToHomeScreen: () -> Unit,
+    goToHistoryScreen: () -> Unit,
+    goToProfileScreen: () -> Unit
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val product by homeViewModel.products.collectAsState()
@@ -48,7 +52,11 @@ fun HomeScreen(
                 }
             )
         },
-        bottomBar = { BottomAppBar() }
+        bottomBar = { BottomAppBar(
+            goToHomeScreen,
+            goToHistoryScreen,
+            goToProfileScreen
+        ) }
         ,
     ) { innerPadding ->
         Column(
@@ -83,7 +91,10 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     PotionGoTheme {
         HomeScreen(
-            onSignOut = {}
+            onSignOut = {},
+            goToHomeScreen = {},
+            goToHistoryScreen = {},
+            goToProfileScreen = {}
         )
     }
 }
