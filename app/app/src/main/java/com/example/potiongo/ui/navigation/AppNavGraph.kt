@@ -1,20 +1,22 @@
 package com.example.potiongo.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navOptions
-import com.example.potiongo.services.IAuthService
+import androidx.navigation.navArgument
 import com.example.potiongo.ui.screens.HomeScreen
 import com.example.potiongo.ui.screens.auth.emailVerif.EmailVerifScreen
 import com.example.potiongo.ui.screens.auth.login.LoginScreen
 import com.example.potiongo.ui.screens.auth.signup.SignUpScreen
 import com.example.potiongo.ui.screens.history.HistoryScreen
+import com.example.potiongo.ui.screens.order.ProductDetailScreen
 import com.example.potiongo.ui.screens.profile.ProfileScreen
 
 @Composable
@@ -42,8 +44,19 @@ fun AppNavHost(
                 }},
                 goToHomeScreen = { navController.navigate(AppScreenDestination.Home.name) },
                 goToHistoryScreen = { navController.navigate(AppScreenDestination.History.name) },
-                goToProfileScreen = { navController.navigate(AppScreenDestination.Profile.name) }
+                goToProfileScreen = { navController.navigate(AppScreenDestination.Profile.name) },
+                onSelectProduct = { productId ->
+                    navController.navigate("product_detail/$productId")
+                    Log.d("AppNavGraph","product_detail/$productId")
+                }
             )
+        }
+        composable(
+            route = "product_detail/{productId}",
+            arguments = listOf(navArgument("productId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getString("productId") ?: ""
+            ProductDetailScreen(productId)
         }
         composable(route = AppScreenDestination.History.name){
             HistoryScreen()
