@@ -67,7 +67,22 @@ export default function ProductDetailPage() {
             </button>
 
             <div className="max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-glow">
-                <h1 className="text-xl font-semibold">Détails du produit</h1>
+                <div className="flex flex-wrap items-start gap-4">
+                    {product.imageUrl ? (
+                        <img
+                            src={product.imageUrl}
+                            alt={product.name}
+                            className="h-24 w-24 rounded-2xl object-cover"
+                            loading="lazy"
+                        />
+                    ) : (
+                        <div className="h-24 w-24 rounded-2xl border border-border bg-bg/60" />
+                    )}
+                    <div>
+                        <h1 className="text-xl font-semibold">Détails du produit</h1>
+                        <p className="mt-1 text-sm text-muted">{product.name}</p>
+                    </div>
+                </div>
 
                 <div className="mt-6 grid gap-4 text-sm text-muted">
                     <div>

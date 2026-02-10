@@ -1,8 +1,10 @@
 "use client"
-import { useEffect, useState, type FormEvent } from "react"
+import { useEffect, useState, type FormEvent, type ChangeEvent } from "react"
 import { useRouter } from "next/navigation"
 import { ProductRepository } from "../../00_INFRA/Repositories/Product/ProductRepository"
 import { Product } from "../../00_INFRA/types/Product"
+import { storage } from "../../../../config/firebase"
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 
 export default function Dashboard() {
     const router = useRouter()
@@ -14,6 +16,8 @@ export default function Dashboard() {
     const [deleteTarget, setDeleteTarget] = useState<Product | null>(null)
     const [isDeleting, setIsDeleting] = useState(false)
     const [deleteError, setDeleteError] = useState<string | null>(null)
+    const [imageFile, setImageFile] = useState<File | null>(null)
+    const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [createForm, setCreateForm] = useState({
         name: "",
         mood: "",
@@ -26,6 +30,12 @@ export default function Dashboard() {
     useEffect(() => {
         loadProducts()
     }, [])
+
+    useEffect(() => {
+        return () => {
+            if (imagePreview) URL.revokeObjectURL(imagePreview)
+        }
+    }, [imagePreview])
 
     const loadProducts = async () => {
         setLoading(true)
@@ -63,11 +73,22 @@ export default function Dashboard() {
         }
         setIsCreating(true)
         try {
+            let imageUrl: string | undefined
+            if (imageFile) {
+                const safeName = imageFile.name.replace(/[^a-zA-Z0-9._-]/g, "_")
+                const storageRef = ref(
+                    storage,
+                    `public/asset/${Date.now()}-${safeName}`
+                )
+                await uploadBytes(storageRef, imageFile)
+                imageUrl = await getDownloadURL(storageRef)
+            }
             await productRepository.create({
                 name: createForm.name.trim(),
                 mood: createForm.mood.trim(),
                 price: priceValue,
                 description: createForm.description.trim() || undefined,
+                imageUrl,
             })
             await loadProducts()
             setIsCreateOpen(false)
@@ -77,6 +98,8 @@ export default function Dashboard() {
                 price: "",
                 description: "",
             })
+            setImageFile(null)
+            setImagePreview(null)
         } catch (error) {
             setCreateError(
                 error instanceof Error
@@ -86,6 +109,13 @@ export default function Dashboard() {
         } finally {
             setIsCreating(false)
         }
+    }
+
+    const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0] || null
+        if (imagePreview) URL.revokeObjectURL(imagePreview)
+        setImageFile(file)
+        setImagePreview(file ? URL.createObjectURL(file) : null)
     }
 
     const handleDeleteConfirm = async () => {
@@ -139,6 +169,7 @@ export default function Dashboard() {
                 <table className="min-w-full divide-y divide-border text-sm">
                     <thead className="bg-bg/80 text-left text-xs uppercase tracking-[0.2em] text-muted">
                         <tr>
+                            <th className="px-4 py-3">Image</th>
                             <th className="px-4 py-3">Nom</th>
                             <th className="px-4 py-3">Humeur</th>
                             <th className="px-4 py-3">Prix</th>
@@ -149,7 +180,7 @@ export default function Dashboard() {
                     <tbody className="divide-y divide-border bg-card">
                         {products.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="px-4 py-8 text-center text-muted">
+                                <td colSpan={6} className="px-4 py-8 text-center text-muted">
                                     Aucun produit trouvé
                                 </td>
                             </tr>
@@ -160,6 +191,18 @@ export default function Dashboard() {
                                     onClick={() => handleRowClick(product.id)}
                                     className="cursor-pointer transition hover:bg-bg/80"
                                 >
+                                    <td className="px-4 py-3">
+                                        {product.imageUrl ? (
+                                            <img
+                                                src={product.imageUrl}
+                                                alt={product.name}
+                                                className="h-10 w-10 rounded-lg object-cover"
+                                                loading="lazy"
+                                            />
+                                        ) : (
+                                            <div className="h-10 w-10 rounded-lg border border-border bg-bg/60" />
+                                        )}
+                                    </td>
                                     <td className="px-4 py-3">{product.name}</td>
                                     <td className="px-4 py-3">
                                         <span className={getMoodBadgeClass(product.mood)}>
@@ -356,6 +399,33 @@ export default function Dashboard() {
                                         className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none"
                                     />
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label htmlFor="createImage" className="text-sm font-semibold">
+                                    Image produit
+                                </label>
+                                <div className="flex items-center gap-4">
+                                    {imagePreview ? (
+                                        <img
+                                            src={imagePreview}
+                                            alt="Aperçu du produit"
+                                            className="h-16 w-16 rounded-xl object-cover"
+                                        />
+                                    ) : (
+                                        <div className="h-16 w-16 rounded-xl border border-border bg-bg/60" />
+                                    )}
+                                    <input
+                                        id="createImage"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="text-sm text-muted file:mr-3 file:rounded-full file:border-0 file:bg-accent/20 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-accent"
+                                    />
+                                </div>
+                                <p className="text-xs text-muted">
+                                    Fichier stocké dans `public/asset/` sur Firebase Storage.
+                                </p>
                             </div>
 
                             {createError && (
