@@ -44,6 +44,7 @@ export class ProductRepository implements IProductRepository {
     mood: string
     price: number
     description?: string
+    imageUrl?: string
   }): Promise<Product> {
     try {
       const response = await fetch(this.baseUrl, {
