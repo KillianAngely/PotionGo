@@ -73,6 +73,13 @@ export default function OrderDetailPage() {
     }
 
     const itemsTotal = order.items.reduce((total, item) => total + item.quantity, 0)
+    const formatCurrency = (value: number | null | undefined) => {
+        if (typeof value !== "number") return "—"
+        return new Intl.NumberFormat("fr-FR", {
+            style: "currency",
+            currency: "EUR",
+        }).format(value)
+    }
 
     return (
         <div className="space-y-6">
@@ -133,23 +140,71 @@ export default function OrderDetailPage() {
 
                     <div>
                         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                            Départ livreur
+                        </p>
+                        {order.driverStart ? (
+                            <>
+                                {order.driverStart.address ? (
+                                    <p className="mt-1 text-sm text-fg">
+                                        {order.driverStart.address}
+                                    </p>
+                                ) : null}
+                                <p className="mt-1 text-xs text-muted">
+                                    {order.driverStart.lat}, {order.driverStart.lng}
+                                </p>
+                            </>
+                        ) : (
+                            <p className="mt-1 text-sm text-fg">—</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+                            Total commande
+                        </p>
+                        <p className="mt-1 text-sm text-fg">
+                            {formatCurrency(order.totalPrice)}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">
                             Articles ({itemsTotal})
                         </p>
                         <div className="mt-2 space-y-2">
                             {order.items.map((item, index) => (
                                 <div
                                     key={`${item.potionId}-${index}`}
-                                    className="flex items-center justify-between rounded-xl border border-border bg-bg/70 px-4 py-2"
+                                    className="flex items-center justify-between gap-3 rounded-xl border border-border bg-bg/70 px-4 py-2"
                                 >
-                                    <button
-                                        onClick={() =>
-                                            router.push(`/dashboard/products/${item.potionId}`)
-                                        }
-                                        className="text-left text-sm font-semibold text-accent2 transition hover:text-accent"
-                                    >
-                                        {item.potionName || item.potionId}
-                                    </button>
-                                    <span className="text-sm text-muted">x{item.quantity}</span>
+                                    <div className="flex items-center gap-3">
+                                        {item.potionImageUrl ? (
+                                            <img
+                                                src={item.potionImageUrl}
+                                                alt={item.potionName || item.potionId}
+                                                className="h-10 w-10 rounded-lg object-cover"
+                                                loading="lazy"
+                                            />
+                                        ) : (
+                                            <div className="h-10 w-10 rounded-lg border border-border bg-bg/60" />
+                                        )}
+                                        <button
+                                            onClick={() =>
+                                                router.push(`/dashboard/products/${item.potionId}`)
+                                            }
+                                            className="text-left text-sm font-semibold text-accent2 transition hover:text-accent"
+                                        >
+                                            {item.potionName || item.potionId}
+                                        </button>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm text-fg">
+                                            x{item.quantity}
+                                        </p>
+                                        <p className="text-xs text-muted">
+                                            {formatCurrency(item.lineTotal)}
+                                        </p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
