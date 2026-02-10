@@ -2,12 +2,9 @@ package com.example.potiongo.ui.screens
 
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -18,18 +15,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.flowWithLifecycle
-import com.example.potiongo.ui.screens.auth.login.LoginUiState
 import com.example.potiongo.ui.theme.PotionGoTheme
-import kotlinx.coroutines.flow.filter
+import com.example.potiongo.ui.component.BottomAppBar
+import com.example.potiongo.ui.component.ProductGrid
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,6 +32,7 @@ fun HomeScreen(
     onSignOut: () -> Unit
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
+    val product by homeViewModel.products.collectAsState()
 
     val currentOnUserLogIn by rememberUpdatedState(onSignOut)
     LaunchedEffect(uiState)  {
@@ -50,19 +44,12 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Top app bar")
+                    Text("PotionGo")
                 }
             )
         },
-        bottomBar = {
-            BottomAppBar(){
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    text = "Bottom app bar",
-                )
-            }
-        },
+        bottomBar = { BottomAppBar() }
+        ,
     ) { innerPadding ->
         Column(
         modifier = Modifier
@@ -72,7 +59,7 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
             if(uiState is HomeUiState.CustomerView){
-                Text("I am customer")
+                ProductGrid(product)
             }
             if(uiState is HomeUiState.DriverView){
                 Text("I am driver")
