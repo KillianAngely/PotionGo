@@ -1,7 +1,6 @@
 package com.example.potiongo.ui.screens
 
 
-import android.window.SplashScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +32,8 @@ fun HomeScreen(
     onSignOut: () -> Unit,
     goToHomeScreen: () -> Unit,
     goToHistoryScreen: () -> Unit,
-    goToProfileScreen: () -> Unit
+    goToProfileScreen: () -> Unit,
+    onSelectProduct: (String) -> Unit
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val product by homeViewModel.products.collectAsState()
@@ -67,7 +67,7 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
             if(uiState is HomeUiState.CustomerView){
-                ProductGrid(product)
+                ProductGrid(product,onProductClick = onSelectProduct)
             }
             if(uiState is HomeUiState.DriverView){
                 Text("I am driver")
@@ -94,7 +94,8 @@ fun HomeScreenPreview() {
             onSignOut = {},
             goToHomeScreen = {},
             goToHistoryScreen = {},
-            goToProfileScreen = {}
+            goToProfileScreen = {},
+            onSelectProduct = {}
         )
     }
 }

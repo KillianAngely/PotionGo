@@ -1,6 +1,7 @@
 package com.example.potiongo.data
 
 data class Product(
+    val id: String = "",
     val imageUrl: String = "",
     val description: String = "",
     val mood: String = "",
