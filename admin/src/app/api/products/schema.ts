@@ -5,6 +5,7 @@ export const productSchema = z.object({
     price: z.number().positive(),
     mood: z.string(),
     description: z.string().max(500).optional(),
+    imageUrl: z.string().min(1).optional(),
 })
 
 // Type data envoyées

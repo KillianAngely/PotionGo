@@ -40,6 +40,14 @@ export default function OrdersPage() {
         router.push(`/dashboard/orders/${orderId}`)
     }
 
+    const formatCurrency = (value: number | null | undefined) => {
+        if (typeof value !== "number") return "—"
+        return new Intl.NumberFormat("fr-FR", {
+            style: "currency",
+            currency: "EUR",
+        }).format(value)
+    }
+
     const getStatusBadgeClass = (status: string) => {
         const base =
             "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
@@ -115,6 +123,8 @@ export default function OrdersPage() {
                             <th className="px-4 py-3">Livreur</th>
                             <th className="px-4 py-3">Statut</th>
                             <th className="px-4 py-3">Articles</th>
+                            <th className="px-4 py-3">Total</th>
+                            <th className="px-4 py-3">Départ livreur</th>
                             <th className="px-4 py-3">Livraison</th>
                             <th className="px-4 py-3 text-right">Actions</th>
                         </tr>
@@ -122,7 +132,7 @@ export default function OrdersPage() {
                     <tbody className="divide-y divide-border bg-card">
                         {filteredOrders.length === 0 ? (
                             <tr>
-                                <td colSpan={7} className="px-4 py-8 text-center text-muted">
+                                <td colSpan={9} className="px-4 py-8 text-center text-muted">
                                     Aucune commande trouvée
                                 </td>
                             </tr>
@@ -149,6 +159,14 @@ export default function OrdersPage() {
                                     </td>
                                     <td className="px-4 py-3">
                                         {order.items.reduce((total, item) => total + item.quantity, 0)}
+                                    </td>
+                                    <td className="px-4 py-3">{formatCurrency(order.totalPrice)}</td>
+                                    <td className="px-4 py-3 text-muted">
+                                        {order.driverStart?.address
+                                            ? order.driverStart.address
+                                            : order.driverStart
+                                                ? `${order.driverStart.lat}, ${order.driverStart.lng}`
+                                                : "—"}
                                     </td>
                                     <td className="px-4 py-3 text-muted">
                                         {order.dropoff.address}
