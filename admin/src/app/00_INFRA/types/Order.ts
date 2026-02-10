@@ -9,6 +9,10 @@ export enum OrderStatus {
 export type OrderItem = {
     potionId: string
     quantity: number
+    potionName?: string
+    potionImageUrl?: string
+    unitPrice?: number | null
+    lineTotal?: number | null
 }
 
 export type OrderDropoff = {
@@ -20,8 +24,16 @@ export type OrderDropoff = {
 export type Order = {
     id: string
     customerId: string
+    customerName?: string
     driverId: string | null
+    driverName?: string
     status: OrderStatus
     items: OrderItem[]
+    totalPrice?: number | null
+    driverStart?: {
+        address?: string
+        lat: number
+        lng: number
+    } | null
     dropoff: OrderDropoff
 }

@@ -20,6 +20,14 @@ export const orderSchema = z.object({
       })
     )
     .min(1),
+  driverStart: z
+    .object({
+      address: z.string().min(1).optional(),
+      lat: z.number(),
+      lng: z.number(),
+    })
+    .nullable()
+    .optional(),
   dropoff: z.object({
     address: z.string().min(1),
     lat: z.number(),
