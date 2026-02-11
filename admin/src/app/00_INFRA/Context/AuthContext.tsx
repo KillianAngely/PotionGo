@@ -3,7 +3,7 @@ import { createContext, useContext, ReactNode, useState, useEffect } from 'react
 import { User } from 'firebase/auth'
 import { auth } from '../../../../config/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
-import { SESSION_EXPIRED_EVENT } from '../Repositories/_utils/http'
+import { SESSION_EXPIRED_EVENT, withCsrfHeaders } from '../Repositories/_utils/http'
 
 interface AuthContextType {
   user: User | null
@@ -22,7 +22,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const clearServerSession = async () => {
       try {
-        await fetch("/api/auth/session", { method: "DELETE", credentials: "include" })
+        await fetch("/api/auth/session", {
+          method: "DELETE",
+          credentials: "include",
+          headers: withCsrfHeaders(),
+        })
       } catch (error) {
         console.error("Session cleanup failed:", error)
       }
@@ -39,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const idToken = await currentUser.getIdToken(true)
             const response = await fetch("/api/auth/session", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: withCsrfHeaders({ "Content-Type": "application/json" }),
               credentials: "include",
               body: JSON.stringify({ idToken }),
             })
@@ -90,7 +94,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     let failed = false
     try {
-      await fetch("/api/auth/session", { method: "DELETE", credentials: "include" })
+      await fetch("/api/auth/session", {
+        method: "DELETE",
+        credentials: "include",
+        headers: withCsrfHeaders(),
+      })
     } catch (error) {
       failed = true
       console.error("Server logout failed:", error)

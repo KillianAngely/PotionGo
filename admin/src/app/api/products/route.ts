@@ -3,6 +3,7 @@ import admin from "../../../../config/firebase-admin"
 import { collection, getDocs } from "firebase/firestore"
 import { Product, productSchema } from "./schema"
 import { buildAuthErrorResponse, requireAdmin } from "../_utils/auth"
+import { requireCsrf } from "../_utils/csrf"
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
@@ -130,6 +131,8 @@ export async function POST(request: Request) {
     if (!auth.ok) {
       return buildAuthErrorResponse(auth)
     }
+    const csrfError = requireCsrf(request)
+    if (csrfError) return csrfError
 
     const body = await request.json()
     const validation = productSchema.safeParse(body)

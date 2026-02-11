@@ -1,5 +1,6 @@
 export const SESSION_EXPIRED_EVENT = "auth:session-expired"
 const SESSION_EXPIRED_MESSAGE = "Session expirée, veuillez vous reconnecter"
+const CSRF_COOKIE_NAME = "csrfToken"
 
 let isSessionExpiryHandlingInProgress = false
 
@@ -19,6 +20,25 @@ const readErrorMessage = async (response: Response, fallbackMessage: string) => 
     }
   }
   return fallbackMessage
+}
+
+const readCookie = (name: string) => {
+  if (typeof document === "undefined") return null
+  const cookie = document.cookie
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(`${name}=`))
+  if (!cookie) return null
+  return decodeURIComponent(cookie.slice(name.length + 1))
+}
+
+export const withCsrfHeaders = (headersInit?: HeadersInit) => {
+  const headers = new Headers(headersInit)
+  const csrfToken = readCookie(CSRF_COOKIE_NAME)
+  if (csrfToken) {
+    headers.set("x-csrf-token", csrfToken)
+  }
+  return headers
 }
 
 export const assertApiResponse = async (response: Response, fallbackMessage: string) => {

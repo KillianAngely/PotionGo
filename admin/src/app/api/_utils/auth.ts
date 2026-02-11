@@ -1,4 +1,5 @@
 import admin from "../../../../config/firebase-admin"
+import { buildClearCsrfCookie } from "./csrf"
 
 export const AUTH_COOKIE_NAME = "authToken"
 const ADMIN_ROLE_VALUE = "admin"
@@ -95,6 +96,7 @@ export const buildAuthErrorResponse = (auth: AuthFailure) => {
   const headers = new Headers({ "Content-Type": "application/json" })
   if (auth.status === 401 && auth.clearSessionCookie) {
     headers.append("Set-Cookie", buildClearSessionCookie())
+    headers.append("Set-Cookie", buildClearCsrfCookie())
   }
 
   return new Response(JSON.stringify({ error: auth.error }), {

@@ -1,6 +1,7 @@
 import admin from "../../../../config/firebase-admin"
 import { Order, orderSchema } from "./schema"
 import { buildAuthErrorResponse, requireAdmin } from "../_utils/auth"
+import { requireCsrf } from "../_utils/csrf"
 
 type OrderListItem = Order & {
   customerName?: string
@@ -233,6 +234,8 @@ export async function POST(request: Request) {
     if (!auth.ok) {
       return buildAuthErrorResponse(auth)
     }
+    const csrfError = requireCsrf(request)
+    if (csrfError) return csrfError
 
     const body = await request.json()
     const validation = orderSchema.safeParse(body)

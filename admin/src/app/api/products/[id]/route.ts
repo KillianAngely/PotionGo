@@ -3,6 +3,7 @@ import admin from "../../../../../config/firebase-admin"
 import { doc, getDoc } from "firebase/firestore"
 import { Product, productSchema } from "../schema"
 import { buildAuthErrorResponse, requireAdmin } from "../../_utils/auth"
+import { requireCsrf } from "../../_utils/csrf"
 
 export async function GET(
   request: Request,
@@ -69,6 +70,8 @@ export async function DELETE(
     if (!auth.ok) {
       return buildAuthErrorResponse(auth)
     }
+    const csrfError = requireCsrf(request)
+    if (csrfError) return csrfError
 
     const { id } = await params
 
