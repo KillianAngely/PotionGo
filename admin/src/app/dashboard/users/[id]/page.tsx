@@ -5,6 +5,7 @@ import { UserRepository } from "../../../00_INFRA/Repositories/User/UserReposito
 import { OrderRepository } from "../../../00_INFRA/Repositories/Order/OrderRepository"
 import { User, UserAdminRole, UserClientRole } from "../../../00_INFRA/types/User"
 import { Order, OrderStatus } from "../../../00_INFRA/types/Order"
+import { Rating, UserRatingStats } from "../../../00_INFRA/types/Rating"
 
 export default function UserDetailPage() {
     const router = useRouter()
@@ -16,6 +17,9 @@ export default function UserDetailPage() {
     const [orders, setOrders] = useState<Order[]>([])
     const [ordersLoading, setOrdersLoading] = useState(false)
     const [ordersError, setOrdersError] = useState<string | null>(null)
+    const [ratings, setRatings] = useState<Rating[]>([])
+    const [ratingStats, setRatingStats] = useState<UserRatingStats | null>(null)
+    const [ratingsLoading, setRatingsLoading] = useState(false)
 
     const userRepository = new UserRepository()
     const orderRepository = new OrderRepository()
@@ -31,8 +35,10 @@ export default function UserDetailPage() {
             setUser(fetchedUser)
             if (fetchedUser) {
                 await loadOrdersForUser(fetchedUser)
+                await loadRatingsForUser(fetchedUser)
             } else {
                 setOrders([])
+                setRatings([])
             }
         } catch (error) {
             console.error("Erreur lors du chargement de l'utilisateur:", error)
@@ -60,6 +66,22 @@ export default function UserDetailPage() {
             )
         } finally {
             setOrdersLoading(false)
+        }
+    }
+
+    const loadRatingsForUser = async (targetUser: User) => {
+        setRatingsLoading(true)
+        try {
+            const res = await fetch(`/api/users/${targetUser.uid}/ratings`)
+            const data = await res.json()
+            if (data.success) {
+                setRatings(data.ratings || [])
+                setRatingStats(data.stats || null)
+            }
+        } catch (error) {
+            console.error("Erreur lors du chargement des ratings:", error)
+        } finally {
+            setRatingsLoading(false)
         }
     }
 
@@ -92,6 +114,21 @@ export default function UserDetailPage() {
         if (status === OrderStatus.IN_TRANSIT) return `${base} bg-accent/20 text-accent`
         if (status === OrderStatus.DELIVERED) return `${base} bg-emerald-500/15 text-emerald-400`
         return `${base} bg-red-500/15 text-red-400`
+    }
+
+    const renderStars = (rating: number) => {
+        return (
+            <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                        key={star}
+                        className={star <= rating ? "text-yellow-400 text-lg" : "text-gray-400 text-lg"}
+                    >
+                        ★
+                    </span>
+                ))}
+            </div>
+        )
     }
 
     if (loading) {
@@ -173,6 +210,95 @@ export default function UserDetailPage() {
                     </button>
                 </div>
             </div>
+
+            {user.role !== UserAdminRole.ADMIN && (
+                <div className="max-w-4xl rounded-2xl border border-border bg-card p-6 shadow-glow">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-lg font-semibold">Évaluations</h2>
+                        {ratingsLoading && <span className="text-sm text-muted">Chargement...</span>}
+                    </div>
+
+                    {ratingStats && ratingStats.totalRatings > 0 ? (
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                                <div className="text-center p-4 rounded-lg bg-bg/50">
+                                    <div className="flex justify-center mb-2">
+                                        {renderStars(Math.round(ratingStats.averageRating))}
+                                    </div>
+                                    <div className="text-3xl font-bold text-yellow-500 mb-1">
+                                        {ratingStats.averageRating.toFixed(1)}
+                                    </div>
+                                    <div className="text-sm text-muted">Moyenne</div>
+                                </div>
+                                <div className="text-center p-4 rounded-lg bg-bg/50">
+                                    <div className="text-3xl font-bold mb-1">{ratingStats.totalRatings}</div>
+                                    <div className="text-sm text-muted">Total évaluations</div>
+                                </div>
+                                <div className="p-4 rounded-lg bg-bg/50">
+                                    <div className="text-sm font-semibold mb-2 text-muted">Distribution</div>
+                                    <div className="space-y-1">
+                                        {[5, 4, 3, 2, 1].map((star) => (
+                                            <div key={star} className="flex items-center gap-2 text-xs">
+                                                <span className="w-8">{star}★</span>
+                                                <div className="flex-1 bg-bg h-2 rounded-full overflow-hidden">
+                                                    <div
+                                                        className="bg-yellow-400 h-2"
+                                                        style={{
+                                                            width: `${
+                                                                (ratingStats.ratingDistribution[star as 1 | 2 | 3 | 4 | 5] /
+                                                                    ratingStats.totalRatings) *
+                                                                100
+                                                            }%`,
+                                                        }}
+                                                    />
+                                                </div>
+                                                <span className="w-8 text-right text-muted">
+                                                    {ratingStats.ratingDistribution[star as 1 | 2 | 3 | 4 | 5]}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 className="font-semibold mb-3 text-sm text-muted">
+                                    Derniers commentaires ({Math.min(5, ratings.length)})
+                                </h3>
+                                <div className="space-y-3">
+                                    {ratings.slice(0, 5).map((rating) => (
+                                        <div
+                                            key={rating.id}
+                                            className="border-l-4 border-yellow-400 pl-4 py-2 bg-bg/30 rounded-r"
+                                        >
+                                            <div className="flex items-center gap-3 mb-1">
+                                                {renderStars(rating.rating)}
+                                                <span className="text-xs text-muted">
+                                                    {rating.createdAt
+                                                        ? new Date(rating.createdAt).toLocaleDateString("fr-FR", {
+                                                              day: "2-digit",
+                                                              month: "short",
+                                                              year: "numeric",
+                                                          })
+                                                        : "-"}
+                                                </span>
+                                                <span className="text-xs text-muted">
+                                                    par {rating.reviewerRole === "CUSTOMER" ? "Client" : "Livreur"}
+                                                </span>
+                                            </div>
+                                            {rating.comment && (
+                                                <p className="text-sm text-fg mt-1">{rating.comment}</p>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <p className="text-sm text-muted">Aucune évaluation pour cet utilisateur</p>
+                    )}
+                </div>
+            )}
 
             {user.role !== UserAdminRole.ADMIN && (
                 <div className="max-w-4xl rounded-2xl border border-border bg-card p-6 shadow-glow">
