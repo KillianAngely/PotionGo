@@ -1,5 +1,9 @@
 import { Order, OrderStatus } from "../../types/Order"
-import { IOrderRepository } from "./OrderRepository.interface"
+import {
+  IOrderRepository,
+  OrderListQuery,
+  OrderListResponse,
+} from "./OrderRepository.interface"
 import { assertApiResponse } from "../_utils/http"
 
 export class OrderRepository implements IOrderRepository {
@@ -9,11 +13,33 @@ export class OrderRepository implements IOrderRepository {
     this.baseUrl = "/api/orders"
   }
 
+  async list(query: OrderListQuery = {}): Promise<OrderListResponse> {
+    const params = new URLSearchParams()
+    if (query.page) params.set("page", String(query.page))
+    if (query.pageSize) params.set("pageSize", String(query.pageSize))
+    if (query.status && query.status !== "all") params.set("status", query.status)
+    if (query.search) params.set("search", query.search)
+    if (typeof query.minTotal === "number" && Number.isFinite(query.minTotal)) {
+      params.set("minTotal", String(query.minTotal))
+    }
+    if (typeof query.maxTotal === "number" && Number.isFinite(query.maxTotal)) {
+      params.set("maxTotal", String(query.maxTotal))
+    }
+    if (query.sort && query.sort.length > 0) params.set("sort", query.sort.join(","))
+
+    const url = params.size > 0 ? `${this.baseUrl}?${params.toString()}` : this.baseUrl
+    const response = await fetch(url, { credentials: "include" })
+    await assertApiResponse(response, "Erreur lors de la récupération des commandes")
+    const data = await response.json()
+    return {
+      orders: data.orders ?? [],
+      pagination: data.pagination ?? { page: 1, pageSize: 10, total: 0, totalPages: 1 },
+    }
+  }
+
   async findAll(): Promise<Order[] | null> {
     try {
-      const response = await fetch(this.baseUrl, { credentials: "include" })
-      await assertApiResponse(response, "Erreur lors de la récupération des commandes")
-      const data = await response.json()
+      const data = await this.list({ page: 1, pageSize: 500 })
       return data.orders || null
     } catch (error) {
       console.error("Error finding all orders:", error)
