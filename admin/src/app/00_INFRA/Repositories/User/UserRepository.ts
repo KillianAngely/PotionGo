@@ -103,4 +103,15 @@ export class UserRepository implements IUserRepository {
       throw error
     }
   }
+
+  async export(): Promise<Blob> {
+    try {
+      const response = await fetch(`${this.baseUrl}/export`, { credentials: "include" })
+      await assertApiResponse(response, "Erreur lors de l'export des utilisateurs")
+      return await response.blob()
+    } catch (error) {
+      console.error("Error exporting users:", error)
+      throw error
+    }
+  }
 }

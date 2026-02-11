@@ -137,11 +137,7 @@ export default function DashboardUsersPage() {
   const handleExportUsers = async () => {
     setIsExporting(true)
     try {
-      const response = await fetch("/api/users/export", { credentials: "include" })
-      if (!response.ok) {
-        throw new Error("Impossible d'exporter les utilisateurs")
-      }
-      const blob = await response.blob()
+      const blob = await userRepository.export()
       const url = URL.createObjectURL(blob)
       const link = document.createElement("a")
       link.href = url
