@@ -1,5 +1,9 @@
 import { User, UserRole } from "../../types/User"
-import { IUserRepository } from "./UserRepository.interface"
+import {
+  IUserRepository,
+  UserListQuery,
+  UserListResponse,
+} from "./UserRepository.interface"
 import { assertApiResponse } from "../_utils/http"
 
 export class UserRepository implements IUserRepository {
@@ -9,11 +13,27 @@ export class UserRepository implements IUserRepository {
     this.baseUrl = "/api/users"
   }
 
+  async list(query: UserListQuery = {}): Promise<UserListResponse> {
+    const params = new URLSearchParams()
+    if (query.page) params.set("page", String(query.page))
+    if (query.pageSize) params.set("pageSize", String(query.pageSize))
+    if (query.role && query.role !== "all") params.set("role", query.role)
+    if (query.search) params.set("search", query.search)
+    if (query.sort && query.sort.length > 0) params.set("sort", query.sort.join(","))
+
+    const url = params.size > 0 ? `${this.baseUrl}?${params.toString()}` : this.baseUrl
+    const response = await fetch(url, { credentials: "include" })
+    await assertApiResponse(response, "Erreur lors de la récupération des utilisateurs")
+    const data = await response.json()
+    return {
+      users: data.users ?? [],
+      pagination: data.pagination ?? { page: 1, pageSize: 10, total: 0, totalPages: 1 },
+    }
+  }
+
   async findAll(): Promise<User[] | null> {
     try {
-      const response = await fetch(this.baseUrl, { credentials: "include" })
-      await assertApiResponse(response, "Erreur lors de la récupération des utilisateurs")
-      const data = await response.json()
+      const data = await this.list({ page: 1, pageSize: 500 })
       return data.users || null
     } catch (error) {
       console.error(`Error finding all users:`, error)
@@ -38,9 +58,7 @@ export class UserRepository implements IUserRepository {
 
   async findAllByRole(role: UserRole): Promise<User[] | null> {
     try {
-      const response = await fetch(`${this.baseUrl}?role=${role}`, { credentials: "include" })
-      await assertApiResponse(response, "Erreur lors de la récupération des utilisateurs par rôle")
-      const data = await response.json()
+      const data = await this.list({ role, page: 1, pageSize: 500 })
       return data.users || null
     } catch (error) {
       console.error(`Error finding users by role ${role}:`, error)
