@@ -1,6 +1,6 @@
 import admin from "../../../../config/firebase-admin"
 import { Order, orderSchema } from "./schema"
-import { requireAdmin } from "../_utils/auth"
+import { buildAuthErrorResponse, requireAdmin } from "../_utils/auth"
 
 const buildUserLabel = (data: admin.firestore.DocumentData | undefined, fallback: string) => {
   const firstName = typeof data?.firstName === "string" ? data.firstName.trim() : ""
@@ -15,10 +15,7 @@ export async function GET(request: Request) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
-      return new Response(JSON.stringify({ error: auth.error }), {
-        status: auth.status,
-        headers: { "Content-Type": "application/json" },
-      })
+      return buildAuthErrorResponse(auth)
     }
 
     const snapshot = await admin.firestore().collection("orders").get()
@@ -123,10 +120,7 @@ export async function POST(request: Request) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
-      return new Response(JSON.stringify({ error: auth.error }), {
-        status: auth.status,
-        headers: { "Content-Type": "application/json" },
-      })
+      return buildAuthErrorResponse(auth)
     }
 
     const body = await request.json()

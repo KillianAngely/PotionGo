@@ -1,5 +1,6 @@
 import { Order, OrderStatus } from "../../types/Order"
 import { IOrderRepository } from "./OrderRepository.interface"
+import { assertApiResponse } from "../_utils/http"
 
 export class OrderRepository implements IOrderRepository {
   private baseUrl: string
@@ -11,9 +12,7 @@ export class OrderRepository implements IOrderRepository {
   async findAll(): Promise<Order[] | null> {
     try {
       const response = await fetch(this.baseUrl, { credentials: "include" })
-      if (!response.ok) {
-        throw new Error("Erreur lors de la récupération des commandes")
-      }
+      await assertApiResponse(response, "Erreur lors de la récupération des commandes")
       const data = await response.json()
       return data.orders || null
     } catch (error) {
@@ -30,9 +29,7 @@ export class OrderRepository implements IOrderRepository {
       if (response.status === 404) {
         return null
       }
-      if (!response.ok) {
-        throw new Error("Erreur lors de la récupération de la commande")
-      }
+      await assertApiResponse(response, "Erreur lors de la récupération de la commande")
       const data = await response.json()
       return data.order || null
     } catch (error) {
@@ -56,12 +53,7 @@ export class OrderRepository implements IOrderRepository {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => null)
-        const message = data?.error || "Erreur lors de la création de la commande"
-        throw new Error(message)
-      }
+      await assertApiResponse(response, "Erreur lors de la création de la commande")
 
       const data = await response.json()
       return data.order as Order
@@ -77,9 +69,7 @@ export class OrderRepository implements IOrderRepository {
         method: "DELETE",
         credentials: "include",
       })
-      if (!response.ok) {
-        throw new Error("Erreur lors de la suppression de la commande")
-      }
+      await assertApiResponse(response, "Erreur lors de la suppression de la commande")
     } catch (error) {
       console.error(`Error deleting order ${orderId}:`, error)
       throw error
