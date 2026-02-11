@@ -1,6 +1,7 @@
 import admin from "../../../../../config/firebase-admin"
 import { Order, orderSchema } from "../schema"
 import { buildAuthErrorResponse, requireAdmin } from "../../_utils/auth"
+import { requireCsrf } from "../../_utils/csrf"
 
 const buildUserLabel = (data: admin.firestore.DocumentData | undefined, fallback: string) => {
   const firstName = typeof data?.firstName === "string" ? data.firstName.trim() : ""
@@ -123,6 +124,8 @@ export async function DELETE(
     if (!auth.ok) {
       return buildAuthErrorResponse(auth)
     }
+    const csrfError = requireCsrf(request)
+    if (csrfError) return csrfError
 
     const { id } = await params
 

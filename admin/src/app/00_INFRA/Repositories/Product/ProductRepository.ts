@@ -4,7 +4,7 @@ import {
   ProductListQuery,
   ProductListResponse,
 } from "./ProductRepository.interface"
-import { assertApiResponse } from "../_utils/http"
+import { assertApiResponse, withCsrfHeaders } from "../_utils/http"
 
 export class ProductRepository implements IProductRepository {
   private baseUrl: string
@@ -73,7 +73,7 @@ export class ProductRepository implements IProductRepository {
       const response = await fetch(this.baseUrl, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: withCsrfHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(payload),
       })
       await assertApiResponse(response, "Erreur lors de la création du produit")
@@ -91,6 +91,7 @@ export class ProductRepository implements IProductRepository {
       const response = await fetch(`${this.baseUrl}/${productId}`, {
         method: "DELETE",
         credentials: "include",
+        headers: withCsrfHeaders(),
       })
       await assertApiResponse(response, "Erreur lors de la suppression du produit")
     } catch (error) {

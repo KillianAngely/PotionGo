@@ -4,7 +4,7 @@ import {
   UserListQuery,
   UserListResponse,
 } from "./UserRepository.interface"
-import { assertApiResponse } from "../_utils/http"
+import { assertApiResponse, withCsrfHeaders } from "../_utils/http"
 
 export class UserRepository implements IUserRepository {
   private baseUrl: string
@@ -77,7 +77,7 @@ export class UserRepository implements IUserRepository {
       const response = await fetch(this.baseUrl, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: withCsrfHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(payload),
       })
       await assertApiResponse(response, "Erreur lors de la création de l'utilisateur")
@@ -95,6 +95,7 @@ export class UserRepository implements IUserRepository {
       const response = await fetch(`${this.baseUrl}/${userId}`, {
         method: "DELETE",
         credentials: "include",
+        headers: withCsrfHeaders(),
       })
       await assertApiResponse(response, "Erreur lors de la suppression de l'utilisateur")
     } catch (error) {
