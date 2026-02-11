@@ -1,8 +1,11 @@
 import admin from "../../../../../config/firebase-admin"
 import { z } from "zod"
 import {
+  AUTH_COOKIE_NAME,
   buildClearSessionCookie,
   buildSessionCookie,
+  getCookieValue,
+  SESSION_MAX_AGE_SECONDS,
 } from "../../_utils/auth"
 
 export const runtime = "nodejs"
@@ -10,6 +13,14 @@ export const runtime = "nodejs"
 const sessionSchema = z.object({
   idToken: z.string().min(1),
 })
+
+const getRemainingSessionSeconds = (decoded: admin.auth.DecodedIdToken) => {
+  const authTimeSeconds = Number(decoded.auth_time)
+  if (!Number.isFinite(authTimeSeconds)) return 0
+
+  const nowSeconds = Math.floor(Date.now() / 1000)
+  return Math.max(0, authTimeSeconds + SESSION_MAX_AGE_SECONDS - nowSeconds)
+}
 
 export async function POST(request: Request) {
   try {
@@ -25,7 +36,7 @@ export async function POST(request: Request) {
     const { idToken } = validation.data
     let decoded: admin.auth.DecodedIdToken
     try {
-      decoded = await admin.auth().verifyIdToken(idToken)
+      decoded = await admin.auth().verifyIdToken(idToken, true)
     } catch (error) {
       console.error("[POST /api/auth/session] verifyIdToken error:", error)
       return new Response(JSON.stringify({ error: "Token invalide" }), {
@@ -41,8 +52,21 @@ export async function POST(request: Request) {
       })
     }
 
+    const remainingSessionSeconds = getRemainingSessionSeconds(decoded)
+    if (remainingSessionSeconds <= 0) {
+      const headers = new Headers({ "Content-Type": "application/json" })
+      headers.append("Set-Cookie", buildClearSessionCookie())
+      return new Response(JSON.stringify({ error: "Session expirée, veuillez vous reconnecter" }), {
+        status: 401,
+        headers,
+      })
+    }
+
+    const sessionCookie = await admin.auth().createSessionCookie(idToken, {
+      expiresIn: remainingSessionSeconds * 1000,
+    })
     const headers = new Headers({ "Content-Type": "application/json" })
-    headers.append("Set-Cookie", buildSessionCookie(idToken, 60 * 60))
+    headers.append("Set-Cookie", buildSessionCookie(sessionCookie, remainingSessionSeconds))
 
     return new Response(JSON.stringify({ success: true }), { status: 200, headers })
   } catch (error) {
@@ -58,8 +82,18 @@ export async function POST(request: Request) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request: Request) {
   try {
+    const sessionCookie = getCookieValue(request.headers.get("cookie"), AUTH_COOKIE_NAME)
+    if (sessionCookie) {
+      try {
+        const decoded = await admin.auth().verifySessionCookie(sessionCookie)
+        await admin.auth().revokeRefreshTokens(decoded.uid)
+      } catch (error) {
+        console.warn("[DELETE /api/auth/session] revoke session skipped:", error)
+      }
+    }
+
     const headers = new Headers({ "Content-Type": "application/json" })
     headers.append("Set-Cookie", buildClearSessionCookie())
     return new Response(JSON.stringify({ success: true }), { status: 200, headers })
