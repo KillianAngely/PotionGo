@@ -4,10 +4,15 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "../00_INFRA/Context/AuthContext"
 
 type DashboardStats = {
-  totals: { users: number; products: number; orders: number }
+  totals: { users: number; products: number; orders: number; ratings: number }
   roles: Record<string, number>
   orderStatuses: Record<string, number>
   estimatedUnitsSold: number
+  ratings: {
+    total: number
+    average: number
+    distribution: { 1: number; 2: number; 3: number; 4: number; 5: number }
+  }
 }
 
 const toChartData = (record: Record<string, number>) =>
@@ -35,6 +40,7 @@ export default function Dashboard() {
           roles: data.roles,
           orderStatuses: data.orderStatuses,
           estimatedUnitsSold: data.estimatedUnitsSold,
+          ratings: data.ratings,
         })
       } catch (error) {
         setStatsError(error instanceof Error ? error.message : "Erreur de chargement")
@@ -83,6 +89,11 @@ export default function Dashboard() {
             <h3 className="mt-2 text-lg font-semibold">Suivre les potions</h3>
             <p className="mt-2 text-sm text-muted">Inventaire, mood et détails des offres.</p>
           </button>
+          <button onClick={() => router.push("/dashboard/ratings")} className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Évaluations</p>
+            <h3 className="mt-2 text-lg font-semibold">Gérer les ratings</h3>
+            <p className="mt-2 text-sm text-muted">Notes, commentaires et satisfaction client.</p>
+          </button>
         </div>
       </div>
 
@@ -95,13 +106,14 @@ export default function Dashboard() {
         {statsError && <p className="mt-3 text-sm text-red-500">{statsError}</p>}
 
         {stats && (
-          <div className="mt-5 grid gap-6 lg:grid-cols-3">
+          <div className="mt-5 grid gap-6 lg:grid-cols-4">
             <div className="rounded-xl border border-border bg-bg/70 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-muted">Totaux</p>
               <div className="mt-3 grid gap-2 text-sm">
                 <p>Utilisateurs: <strong>{stats.totals.users}</strong></p>
                 <p>Produits: <strong>{stats.totals.products}</strong></p>
                 <p>Commandes: <strong>{stats.totals.orders}</strong></p>
+                <p>Évaluations: <strong>{stats.totals.ratings}</strong></p>
                 <p>Unités vendues (estimé): <strong>{stats.estimatedUnitsSold}</strong></p>
               </div>
             </div>
@@ -152,6 +164,52 @@ export default function Dashboard() {
                       </div>
                     )
                   })
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-border bg-bg/70 p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted">Évaluations</p>
+              <div className="mt-3">
+                {stats.ratings.total === 0 ? (
+                  <p className="text-sm text-muted">Aucune évaluation</p>
+                ) : (
+                  <>
+                    <div className="mb-3 text-center">
+                      <div className="flex items-center justify-center gap-1 mb-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={star <= Math.round(stats.ratings.average) ? "text-yellow-400" : "text-gray-400"}
+                          >
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <div className="text-2xl font-bold text-yellow-500">
+                        {stats.ratings.average.toFixed(1)}
+                      </div>
+                      <div className="text-xs text-muted">{stats.ratings.total} avis</div>
+                    </div>
+                    <div className="space-y-1">
+                      {[5, 4, 3, 2, 1].map((star) => {
+                        const count = stats.ratings.distribution[star as 1 | 2 | 3 | 4 | 5]
+                        const max = Math.max(...Object.values(stats.ratings.distribution))
+                        const width = max > 0 ? `${Math.max(8, Math.round((count / max) * 100))}%` : '0%'
+                        return (
+                          <div key={star}>
+                            <div className="mb-1 flex justify-between text-xs text-muted">
+                              <span>{star}★</span>
+                              <span>{count}</span>
+                            </div>
+                            <div className="h-2 rounded-full bg-border/70">
+                              <div className="h-2 rounded-full bg-yellow-400" style={{ width }} />
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
                 )}
               </div>
             </div>

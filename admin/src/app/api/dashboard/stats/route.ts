@@ -8,10 +8,11 @@ export async function GET(request: Request) {
   }
 
   try {
-    const [usersSnap, productsSnap, ordersSnap] = await Promise.all([
+    const [usersSnap, productsSnap, ordersSnap, ratingsSnap] = await Promise.all([
       admin.firestore().collection("users").get(),
       admin.firestore().collection("products").get(),
       admin.firestore().collection("orders").get(),
+      admin.firestore().collection("ratings").get(),
     ])
 
     const roleCounts = { ADMIN: 0, CUSTOMER: 0, DRIVER: 0 }
@@ -44,6 +45,18 @@ export async function GET(request: Request) {
       revenue += quantityTotal
     }
 
+    // Rating statistics
+    const allRatings = ratingsSnap.docs.map((doc) => doc.data().rating as number)
+    const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+    allRatings.forEach((rating) => {
+      if (rating >= 1 && rating <= 5) {
+        ratingDistribution[rating as 1 | 2 | 3 | 4 | 5]++
+      }
+    })
+    const averageRating = allRatings.length
+      ? allRatings.reduce((sum, r) => sum + r, 0) / allRatings.length
+      : 0
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -51,10 +64,16 @@ export async function GET(request: Request) {
           users: usersSnap.size,
           products: productsSnap.size,
           orders: ordersSnap.size,
+          ratings: ratingsSnap.size,
         },
         roles: roleCounts,
         orderStatuses: statusCounts,
         estimatedUnitsSold: revenue,
+        ratings: {
+          total: ratingsSnap.size,
+          average: Math.round(averageRating * 100) / 100,
+          distribution: ratingDistribution,
+        },
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     )
