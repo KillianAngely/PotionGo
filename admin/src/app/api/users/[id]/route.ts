@@ -4,19 +4,19 @@ import { doc, getDoc } from "firebase/firestore"
 import { User } from "../../../00_INFRA/types/User"
 import { userSchema } from "../schema"
 import { buildAuthErrorResponse, requireAdmin } from "../../_utils/auth"
+import { requireCsrf } from "../../_utils/csrf"
 
-interface Params {
-  id: string
-}
-
-export async function GET(request: Request, { params }: { params: Params }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
       return buildAuthErrorResponse(auth)
     }
 
-    const { id } = params
+    const { id } = await params
 
     if (!id) {
       return new Response(JSON.stringify({ error: "ID utilisateur requis" }), {
@@ -67,14 +67,19 @@ export async function GET(request: Request, { params }: { params: Params }) {
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: Params }) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
       return buildAuthErrorResponse(auth)
     }
+    const csrfError = requireCsrf(request)
+    if (csrfError) return csrfError
 
-    const { id } = params
+    const { id } = await params
 
     if (!id) {
       return new Response(JSON.stringify({ error: "ID utilisateur requis" }), {
