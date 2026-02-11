@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto"
-import { AUTH_COOKIE_NAME, getCookieValue } from "./auth"
+import { AUTH_COOKIE_NAME, buildClearSessionCookie, getCookieValue } from "./auth"
 
 export const CSRF_COOKIE_NAME = "csrfToken"
 
@@ -32,6 +32,7 @@ export const requireCsrf = (request: Request) => {
   if (verifyCsrfToken(request)) return null
 
   const headers = new Headers({ "Content-Type": "application/json" })
+  headers.append("Set-Cookie", buildClearSessionCookie())
   headers.append("Set-Cookie", buildClearCsrfCookie())
   return new Response(JSON.stringify({ error: "CSRF invalide" }), {
     status: 403,
