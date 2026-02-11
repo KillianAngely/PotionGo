@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { UserRepository } from "../../../00_INFRA/Repositories/User/UserRepository"
 import { OrderRepository } from "../../../00_INFRA/Repositories/Order/OrderRepository"
+import { RatingRepository } from "../../../00_INFRA/Repositories/Rating/RatingRepository"
 import { User, UserAdminRole, UserClientRole } from "../../../00_INFRA/types/User"
 import { Order, OrderStatus } from "../../../00_INFRA/types/Order"
 import { Rating, UserRatingStats } from "../../../00_INFRA/types/Rating"
@@ -23,6 +24,7 @@ export default function UserDetailPage() {
 
     const userRepository = new UserRepository()
     const orderRepository = new OrderRepository()
+    const ratingRepository = new RatingRepository()
 
     useEffect(() => {
         loadUser()
@@ -72,12 +74,9 @@ export default function UserDetailPage() {
     const loadRatingsForUser = async (targetUser: User) => {
         setRatingsLoading(true)
         try {
-            const res = await fetch(`/api/users/${targetUser.uid}/ratings`)
-            const data = await res.json()
-            if (data.success) {
-                setRatings(data.ratings || [])
-                setRatingStats(data.stats || null)
-            }
+            const response = await ratingRepository.findByUserId(targetUser.uid)
+            setRatings(response.ratings)
+            setRatingStats(response.stats)
         } catch (error) {
             console.error("Erreur lors du chargement des ratings:", error)
         } finally {

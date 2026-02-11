@@ -2,18 +2,10 @@
 import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "../00_INFRA/Context/AuthContext"
+import { DashboardRepository } from "../00_INFRA/Repositories/Dashboard/DashboardRepository"
+import { DashboardStats } from "../00_INFRA/Repositories/Dashboard/DashboardRepository.interface"
 
-type DashboardStats = {
-  totals: { users: number; products: number; orders: number; ratings: number }
-  roles: Record<string, number>
-  orderStatuses: Record<string, number>
-  estimatedUnitsSold: number
-  ratings: {
-    total: number
-    average: number
-    distribution: { 1: number; 2: number; 3: number; 4: number; 5: number }
-  }
-}
+const dashboardRepo = new DashboardRepository()
 
 const toChartData = (record: Record<string, number>) =>
   Object.entries(record).sort((a, b) => b[1] - a[1])
@@ -30,18 +22,8 @@ export default function Dashboard() {
       setStatsLoading(true)
       setStatsError(null)
       try {
-        const response = await fetch("/api/dashboard/stats", { credentials: "include" })
-        if (!response.ok) {
-          throw new Error("Impossible de charger les statistiques")
-        }
-        const data = await response.json()
-        setStats({
-          totals: data.totals,
-          roles: data.roles,
-          orderStatuses: data.orderStatuses,
-          estimatedUnitsSold: data.estimatedUnitsSold,
-          ratings: data.ratings,
-        })
+        const data = await dashboardRepo.getStats()
+        setStats(data)
       } catch (error) {
         setStatsError(error instanceof Error ? error.message : "Erreur de chargement")
       } finally {
@@ -88,11 +70,6 @@ export default function Dashboard() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Produits</p>
             <h3 className="mt-2 text-lg font-semibold">Suivre les potions</h3>
             <p className="mt-2 text-sm text-muted">Inventaire, mood et détails des offres.</p>
-          </button>
-          <button onClick={() => router.push("/dashboard/ratings")} className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Évaluations</p>
-            <h3 className="mt-2 text-lg font-semibold">Gérer les ratings</h3>
-            <p className="mt-2 text-sm text-muted">Notes, commentaires et satisfaction client.</p>
           </button>
         </div>
       </div>
