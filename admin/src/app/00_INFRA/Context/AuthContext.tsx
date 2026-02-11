@@ -3,6 +3,7 @@ import { createContext, useContext, ReactNode, useState, useEffect } from 'react
 import { User } from 'firebase/auth'
 import { auth } from '../../../../config/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
+import { SESSION_EXPIRED_EVENT } from '../Repositories/_utils/http'
 
 interface AuthContextType {
   user: User | null
@@ -19,49 +20,88 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        const tokenResult = await currentUser.getIdTokenResult()
+    const clearServerSession = async () => {
+      try {
+        await fetch("/api/auth/session", { method: "DELETE", credentials: "include" })
+      } catch (error) {
+        console.error("Session cleanup failed:", error)
+      }
+    }
 
-        if (tokenResult.claims.role === 'admin') {
-          setUser(currentUser)
-          setIsAdmin(true)
-          const idToken = await currentUser.getIdToken(true)
-          const response = await fetch("/api/auth/session", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ idToken }),
-          })
-          if (!response.ok) {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      try {
+        if (currentUser) {
+          const tokenResult = await currentUser.getIdTokenResult()
+
+          if (tokenResult.claims.role === 'admin') {
+            setUser(currentUser)
+            setIsAdmin(true)
+            const idToken = await currentUser.getIdToken(true)
+            const response = await fetch("/api/auth/session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ idToken }),
+            })
+            if (!response.ok) {
+              setUser(null)
+              setIsAdmin(false)
+              await auth.signOut()
+            }
+          } else {
+            setUser(null)
             setIsAdmin(false)
+            await clearServerSession()
             await auth.signOut()
           }
         } else {
-          setUser(currentUser)
+          setUser(null)
           setIsAdmin(false)
-          await fetch("/api/auth/session", { method: "DELETE", credentials: "include" })
-          await auth.signOut()
+          await clearServerSession()
         }
-      } else {
+      } catch (error) {
+        console.error("Auth state initialization failed:", error)
         setUser(null)
         setIsAdmin(false)
-        await fetch("/api/auth/session", { method: "DELETE", credentials: "include" })
+        await clearServerSession()
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     })
 
     return () => unsubscribe()
   }, [])
 
+  useEffect(() => {
+    const handleSessionExpired = async () => {
+      setUser(null)
+      setIsAdmin(false)
+      try {
+        await auth.signOut()
+      } catch (error) {
+        console.error("Client signOut after session expiry failed:", error)
+      }
+    }
+
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
+  }, [])
+
   const logout = async () => {
+    let failed = false
     try {
       await fetch("/api/auth/session", { method: "DELETE", credentials: "include" })
+    } catch (error) {
+      failed = true
+      console.error("Server logout failed:", error)
+    } finally {
       await auth.signOut()
       setUser(null)
       setIsAdmin(false)
-    } catch (error) {
-      throw error
+    }
+
+    if (failed) {
+      throw new Error("Déconnexion partielle: session locale fermée, nettoyage serveur en échec")
     }
   }
 

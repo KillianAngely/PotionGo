@@ -1,5 +1,6 @@
 import { Product } from "../../types/Product"
 import { IProductRepository } from "./ProductRepository.interface"
+import { assertApiResponse } from "../_utils/http"
 
 export class ProductRepository implements IProductRepository {
   private baseUrl: string
@@ -11,9 +12,7 @@ export class ProductRepository implements IProductRepository {
   async findAll(): Promise<Product[] | null> {
     try {
       const response = await fetch(this.baseUrl, { credentials: "include" })
-      if (!response.ok) {
-        throw new Error("Erreur lors de la récupération des produits")
-      }
+      await assertApiResponse(response, "Erreur lors de la récupération des produits")
       const data = await response.json()
       return data.products || null
     } catch (error) {
@@ -28,9 +27,7 @@ export class ProductRepository implements IProductRepository {
       if (response.status === 404) {
         return null
       }
-      if (!response.ok) {
-        throw new Error("Erreur lors de la récupération du produit")
-      }
+      await assertApiResponse(response, "Erreur lors de la récupération du produit")
       const data = await response.json()
       return data.product || null
     } catch (error) {
@@ -53,12 +50,7 @@ export class ProductRepository implements IProductRepository {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => null)
-        const message = data?.error || "Erreur lors de la création du produit"
-        throw new Error(message)
-      }
+      await assertApiResponse(response, "Erreur lors de la création du produit")
 
       const data = await response.json()
       return data.product as Product
@@ -74,9 +66,7 @@ export class ProductRepository implements IProductRepository {
         method: "DELETE",
         credentials: "include",
       })
-      if (!response.ok) {
-        throw new Error("Erreur lors de la suppression du produit")
-      }
+      await assertApiResponse(response, "Erreur lors de la suppression du produit")
     } catch (error) {
       console.error(`Error deleting product ${productId}:`, error)
       throw error
