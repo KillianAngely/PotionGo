@@ -2,7 +2,7 @@ import { firestore } from "../../../../../config/firebase"
 import admin from "../../../../../config/firebase-admin"
 import { doc, getDoc } from "firebase/firestore"
 import { Product, productSchema } from "../schema"
-import { requireAdmin } from "../../_utils/auth"
+import { buildAuthErrorResponse, requireAdmin } from "../../_utils/auth"
 
 export async function GET(
   request: Request,
@@ -11,10 +11,7 @@ export async function GET(
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
-      return new Response(JSON.stringify({ error: auth.error }), {
-        status: auth.status,
-        headers: { "Content-Type": "application/json" },
-      })
+      return buildAuthErrorResponse(auth)
     }
 
     const { id } = await params
@@ -53,7 +50,7 @@ export async function GET(
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     )
-  } catch (error) {
+  } catch {
     return new Response(
       JSON.stringify({
         error: "Impossible de récupérer le produit",
@@ -70,10 +67,7 @@ export async function DELETE(
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
-      return new Response(JSON.stringify({ error: auth.error }), {
-        status: auth.status,
-        headers: { "Content-Type": "application/json" },
-      })
+      return buildAuthErrorResponse(auth)
     }
 
     const { id } = await params
