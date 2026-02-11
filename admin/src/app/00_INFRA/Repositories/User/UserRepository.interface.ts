@@ -31,4 +31,5 @@ export interface IUserRepository {
     role: UserRole
   }): Promise<User>
   removeById(userId: string): Promise<void>
+  export(): Promise<Blob>
 }
