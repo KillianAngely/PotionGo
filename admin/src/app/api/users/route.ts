@@ -5,6 +5,36 @@ import { User, UserRole } from "../../00_INFRA/types/User"
 import { userCreateSchema, userSchema } from "./schema"
 import { buildAuthErrorResponse, requireAdmin } from "../_utils/auth"
 
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
+
+const parsePositiveInt = (value: string | null, fallback: number) => {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed) || parsed <= 0) return fallback
+  return Math.floor(parsed)
+}
+
+const parseSorts = (sortRaw: string | null, allowedFields: readonly string[]) => {
+  if (!sortRaw) return [] as Array<{ field: string; direction: "asc" | "desc" }>
+
+  return sortRaw
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const [fieldRaw, directionRaw] = part.split(":")
+      const field = (fieldRaw || "").trim()
+      const direction = directionRaw === "desc" ? "desc" : "asc"
+      if (!allowedFields.includes(field)) return null
+      return { field, direction } as const
+    })
+    .filter(Boolean) as Array<{ field: string; direction: "asc" | "desc" }>
+}
+
+const compareValues = (a: unknown, b: unknown) => {
+  if (typeof a === "number" && typeof b === "number") return a - b
+  return String(a ?? "").localeCompare(String(b ?? ""), "fr", { sensitivity: "base" })
+}
+
 export async function GET(request: Request) {
   try {
     const auth = await requireAdmin(request)
@@ -13,15 +43,24 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url)
-    const roleFilterRaw = searchParams.get("role")
+    const roleFilterRaw = searchParams.get("role")?.toUpperCase() ?? null
     const roleFilter = roleFilterRaw
       ? (roleFilterRaw.toUpperCase() as UserRole)
       : null
+    const search = searchParams.get("search")?.trim().toLowerCase() ?? ""
+    const page = parsePositiveInt(searchParams.get("page"), 1)
+    const pageSize = clamp(parsePositiveInt(searchParams.get("pageSize"), 10), 1, 100)
+    const sorts = parseSorts(searchParams.get("sort"), [
+      "email",
+      "firstName",
+      "lastName",
+      "role",
+    ])
 
     const usersRef = collection(firestore, "users")
     const snapshot = await getDocs(usersRef)
 
-    let users: User[] = snapshot.docs
+    const users: User[] = snapshot.docs
       .map((doc) => ({
         uid: doc.id,
         email: doc.data().email,
@@ -34,14 +73,43 @@ export async function GET(request: Request) {
         return validation.success
       }) as User[]
 
-    if (roleFilter) {
-      users = users.filter((user) => user.role === roleFilter)
-    }
+    const filteredUsers = users.filter((user) => {
+      if (roleFilter && user.role !== roleFilter) return false
+      if (!search) return true
+      return (
+        user.email.toLowerCase().includes(search) ||
+        user.firstName.toLowerCase().includes(search) ||
+        user.lastName.toLowerCase().includes(search)
+      )
+    })
+
+    const sortedUsers = [...filteredUsers]
+    sortedUsers.sort((a, b) => {
+      for (const sort of sorts) {
+        const comparison = compareValues(a[sort.field as keyof User], b[sort.field as keyof User])
+        if (comparison !== 0) {
+          return sort.direction === "asc" ? comparison : -comparison
+        }
+      }
+      return a.uid.localeCompare(b.uid)
+    })
+
+    const total = sortedUsers.length
+    const totalPages = Math.max(1, Math.ceil(total / pageSize))
+    const safePage = clamp(page, 1, totalPages)
+    const start = (safePage - 1) * pageSize
+    const pagedUsers = sortedUsers.slice(start, start + pageSize)
 
     return new Response(
       JSON.stringify({
         success: true,
-        users,
+        users: pagedUsers,
+        pagination: {
+          page: safePage,
+          pageSize,
+          total,
+          totalPages,
+        },
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
     )
