@@ -7,6 +7,12 @@ import {
   getCookieValue,
   SESSION_MAX_AGE_SECONDS,
 } from "../../_utils/auth"
+import {
+  buildClearCsrfCookie,
+  buildCsrfCookie,
+  generateCsrfToken,
+  requireCsrf,
+} from "../../_utils/csrf"
 
 export const runtime = "nodejs"
 
@@ -24,6 +30,11 @@ const getRemainingSessionSeconds = (decoded: admin.auth.DecodedIdToken) => {
 
 export async function POST(request: Request) {
   try {
+    const csrfError = requireCsrf(request)
+    if (csrfError) {
+      return csrfError
+    }
+
     const body = await request.json()
     const validation = sessionSchema.safeParse(body)
     if (!validation.success) {
@@ -56,6 +67,7 @@ export async function POST(request: Request) {
     if (remainingSessionSeconds <= 0) {
       const headers = new Headers({ "Content-Type": "application/json" })
       headers.append("Set-Cookie", buildClearSessionCookie())
+      headers.append("Set-Cookie", buildClearCsrfCookie())
       return new Response(JSON.stringify({ error: "Session expirée, veuillez vous reconnecter" }), {
         status: 401,
         headers,
@@ -66,9 +78,11 @@ export async function POST(request: Request) {
       expiresIn: remainingSessionSeconds * 1000,
     })
     const headers = new Headers({ "Content-Type": "application/json" })
+    const csrfToken = generateCsrfToken()
     headers.append("Set-Cookie", buildSessionCookie(sessionCookie, remainingSessionSeconds))
+    headers.append("Set-Cookie", buildCsrfCookie(csrfToken, remainingSessionSeconds))
 
-    return new Response(JSON.stringify({ success: true }), { status: 200, headers })
+    return new Response(JSON.stringify({ success: true, csrfToken }), { status: 200, headers })
   } catch (error) {
     console.error("[POST /api/auth/session] Error:", error)
     const message =
@@ -84,6 +98,11 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const csrfError = requireCsrf(request)
+    if (csrfError) {
+      return csrfError
+    }
+
     const sessionCookie = getCookieValue(request.headers.get("cookie"), AUTH_COOKIE_NAME)
     if (sessionCookie) {
       try {
@@ -96,6 +115,7 @@ export async function DELETE(request: Request) {
 
     const headers = new Headers({ "Content-Type": "application/json" })
     headers.append("Set-Cookie", buildClearSessionCookie())
+    headers.append("Set-Cookie", buildClearCsrfCookie())
     return new Response(JSON.stringify({ success: true }), { status: 200, headers })
   } catch (error) {
     console.error("[DELETE /api/auth/session] Error:", error)
