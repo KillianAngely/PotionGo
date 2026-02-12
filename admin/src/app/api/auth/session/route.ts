@@ -1,15 +1,12 @@
 import admin from "../../../../../config/firebase-admin"
+import { NextResponse } from "next/server"
 import { z } from "zod"
 import {
   AUTH_COOKIE_NAME,
-  buildClearSessionCookie,
-  buildSessionCookie,
   getCookieValue,
   SESSION_MAX_AGE_SECONDS,
 } from "../../_utils/auth"
 import {
-  buildClearCsrfCookie,
-  buildCsrfCookie,
   generateCsrfToken,
   requireCsrf,
 } from "../../_utils/csrf"
@@ -56,7 +53,7 @@ export async function POST(request: Request) {
       })
     }
 
-    if (decoded.role !== "admin") {
+    if (String(decoded.role).toUpperCase() !== "ADMIN") {
       return new Response(JSON.stringify({ error: "Accès interdit" }), {
         status: 403,
         headers: { "Content-Type": "application/json" },
@@ -64,25 +61,42 @@ export async function POST(request: Request) {
     }
 
     const remainingSessionSeconds = getRemainingSessionSeconds(decoded)
+
     if (remainingSessionSeconds <= 0) {
-      const headers = new Headers({ "Content-Type": "application/json" })
-      headers.append("Set-Cookie", buildClearSessionCookie())
-      headers.append("Set-Cookie", buildClearCsrfCookie())
-      return new Response(JSON.stringify({ error: "Session expirée, veuillez vous reconnecter" }), {
-        status: 401,
-        headers,
-      })
+      const response = NextResponse.json(
+        { error: "Session expirée, veuillez vous reconnecter" },
+        { status: 401 }
+      )
+      response.cookies.delete(AUTH_COOKIE_NAME)
+      response.cookies.delete("csrfToken")
+      return response
     }
 
     const sessionCookie = await admin.auth().createSessionCookie(idToken, {
       expiresIn: remainingSessionSeconds * 1000,
     })
-    const headers = new Headers({ "Content-Type": "application/json" })
-    const csrfToken = generateCsrfToken()
-    headers.append("Set-Cookie", buildSessionCookie(sessionCookie, remainingSessionSeconds))
-    headers.append("Set-Cookie", buildCsrfCookie(csrfToken, remainingSessionSeconds))
 
-    return new Response(JSON.stringify({ success: true, csrfToken }), { status: 200, headers })
+    const csrfToken = generateCsrfToken()
+    const response = NextResponse.json({ success: true, csrfToken }, { status: 200 })
+
+    // Set cookies using NextResponse API
+    response.cookies.set(AUTH_COOKIE_NAME, sessionCookie, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: remainingSessionSeconds,
+      path: "/",
+    })
+
+    response.cookies.set("csrfToken", csrfToken, {
+      httpOnly: false,  // MUST be false so JavaScript can read it
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: remainingSessionSeconds,
+      path: "/",
+    })
+
+    return response
   } catch (error) {
     console.error("[POST /api/auth/session] Error:", error)
     const message =
@@ -113,10 +127,13 @@ export async function DELETE(request: Request) {
       }
     }
 
-    const headers = new Headers({ "Content-Type": "application/json" })
-    headers.append("Set-Cookie", buildClearSessionCookie())
-    headers.append("Set-Cookie", buildClearCsrfCookie())
-    return new Response(JSON.stringify({ success: true }), { status: 200, headers })
+    const response = NextResponse.json({ success: true }, { status: 200 })
+
+    // Clear cookies using NextResponse API
+    response.cookies.delete(AUTH_COOKIE_NAME)
+    response.cookies.delete("csrfToken")
+
+    return response
   } catch (error) {
     console.error("[DELETE /api/auth/session] Error:", error)
     return new Response(JSON.stringify({ error: "Impossible de supprimer la session" }), {

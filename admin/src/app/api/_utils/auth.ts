@@ -2,7 +2,7 @@ import admin from "../../../../config/firebase-admin"
 import { buildClearCsrfCookie } from "./csrf"
 
 export const AUTH_COOKIE_NAME = "authToken"
-const ADMIN_ROLE_VALUE = "admin"
+const ADMIN_ROLE_VALUE = "ADMIN"
 export const SESSION_MAX_AGE_SECONDS = 12 * 60 * 60
 
 type AuthSuccess = { ok: true; decoded: admin.auth.DecodedIdToken }
@@ -39,6 +39,7 @@ const getSessionCookieFromRequest = (request: Request) => {
 export const requireAdmin = async (request: Request): Promise<AuthResult> => {
   const sessionCookie = getSessionCookieFromRequest(request)
   const bearerToken = getBearerTokenFromRequest(request)
+
   if (!sessionCookie && !bearerToken) {
     return { ok: false, status: 401, error: "Non autorisé" }
   }
@@ -53,7 +54,7 @@ export const requireAdmin = async (request: Request): Promise<AuthResult> => {
       return { ok: false, status: 401, error: "Non autorisé" }
     }
 
-    if (decoded.role !== ADMIN_ROLE_VALUE) {
+    if (String(decoded.role).toUpperCase() !== ADMIN_ROLE_VALUE) {
       return { ok: false, status: 403, error: "Accès interdit" }
     }
     return { ok: true, decoded }

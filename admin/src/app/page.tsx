@@ -60,20 +60,20 @@ export default function Home() {
         <p className={styles.subtitle}>Réservé aux administrateurs.</p>
 
         <div className={styles.field}>
-          <input 
-            {...register("email")} 
-            type="email" 
-            placeholder="Email" 
+          <input
+            {...register("email")}
+            type="email"
+            placeholder="Email"
             className={styles.input}
           />
           {errors.email && <p className={styles.errorText}>{errors.email.message}</p>}
         </div>
 
         <div className={styles.field}>
-          <input 
-            {...register("password")} 
-            type="password" 
-            placeholder="Password" 
+          <input
+            {...register("password")}
+            type="password"
+            placeholder="Password"
             className={styles.input}
           />
           {errors.password && <p className={styles.errorText}>{errors.password.message}</p>}

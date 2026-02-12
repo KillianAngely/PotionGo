@@ -45,7 +45,8 @@ export default function Dashboard() {
     try {
       await logout()
       router.push("/")
-    } catch {
+    } catch (error) {
+      console.error("Logout error:", error)
       router.push("/")
     }
   }
