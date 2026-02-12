@@ -127,7 +127,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   item.href === "/dashboard"
                     ? pathname === item.href
                     : pathname === item.href ||
-                      pathname?.startsWith(item.href + "/")
+                    pathname?.startsWith(item.href + "/")
                 return (
                   <Link
                     key={item.href}
