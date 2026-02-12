@@ -18,9 +18,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.potiongo.ui.theme.PotionGoTheme
+import com.example.potiongo.repository.CartRepository
 import com.example.potiongo.ui.component.BottomAppBar
 import com.example.potiongo.ui.component.ProductGrid
 
@@ -33,6 +32,8 @@ fun HomeScreen(
     goToHomeScreen: () -> Unit,
     goToHistoryScreen: () -> Unit,
     goToProfileScreen: () -> Unit,
+    goToCartScreen: () -> Unit,
+    cartRepository: CartRepository,
     onSelectProduct: (String) -> Unit
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
@@ -53,9 +54,11 @@ fun HomeScreen(
             )
         },
         bottomBar = { BottomAppBar(
-            goToHomeScreen,
-            goToHistoryScreen,
-            goToProfileScreen
+            goToHomePage = goToHomeScreen,
+            goToHistoryPage = goToHistoryScreen,
+            goToProfilePage = goToProfileScreen,
+            goToCartPage = goToCartScreen,
+            cartRepository = cartRepository
         ) }
         ,
     ) { innerPadding ->
@@ -83,19 +86,5 @@ fun HomeScreen(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    PotionGoTheme {
-        HomeScreen(
-            onSignOut = {},
-            goToHomeScreen = {},
-            goToHistoryScreen = {},
-            goToProfileScreen = {},
-            onSelectProduct = {}
-        )
     }
 }

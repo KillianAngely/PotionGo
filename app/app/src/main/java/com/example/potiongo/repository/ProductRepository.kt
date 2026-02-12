@@ -21,7 +21,7 @@ class ProductRepository @Inject constructor(private val firestore : FirebaseFire
 
     override suspend fun getProductById(id: String): Product? {
         val snapshot = firestore.collection("products").document(id).get().await()
-        return snapshot.toObject(Product::class.java)
+        return snapshot.toObject(Product::class.java)?.copy(id = snapshot.id)
     }
 }
 
