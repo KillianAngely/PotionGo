@@ -38,8 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const tokenResult = await currentUser.getIdTokenResult()
 
           if (tokenResult.claims.role === 'admin') {
-            setUser(currentUser)
-            setIsAdmin(true)
             const idToken = await currentUser.getIdToken(true)
             const response = await fetch("/api/auth/session", {
               method: "POST",
@@ -47,7 +45,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               credentials: "include",
               body: JSON.stringify({ idToken }),
             })
-            if (!response.ok) {
+            if (response.ok) {
+              setUser(currentUser)
+              setIsAdmin(true)
+            } else {
               setUser(null)
               setIsAdmin(false)
               await auth.signOut()
