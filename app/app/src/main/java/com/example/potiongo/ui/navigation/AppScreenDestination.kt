@@ -7,5 +7,5 @@ enum class AppScreenDestination() {
     EmailVerif,
     History,
     Profile,
-    productDetail
+    Cart
 }
