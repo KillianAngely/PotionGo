@@ -17,6 +17,7 @@ import com.example.potiongo.ui.screens.auth.emailVerif.EmailVerifScreen
 import com.example.potiongo.ui.screens.auth.login.LoginScreen
 import com.example.potiongo.ui.screens.auth.signup.SignUpScreen
 import com.example.potiongo.ui.screens.cart.CartScreen
+import com.example.potiongo.ui.screens.checkout.CheckoutScreen
 import com.example.potiongo.ui.screens.history.HistoryScreen
 import com.example.potiongo.ui.screens.order.ProductDetailScreen
 import com.example.potiongo.ui.screens.profile.ProfileScreen
@@ -65,7 +66,19 @@ fun AppNavHost(
             )
         }
         composable(route = AppScreenDestination.Cart.name) {
-            CartScreen()
+            CartScreen(
+                onClickPay = { navController.navigate(AppScreenDestination.Checkout.name) }
+            )
+        }
+        composable(route = AppScreenDestination.Checkout.name) {
+            CheckoutScreen(
+                onBack = { navController.popBackStack() },
+                onOrderPlaced = {
+                    navController.navigate(AppScreenDestination.Home.name) {
+                        popUpTo(AppScreenDestination.Home.name) { inclusive = true }
+                    }
+                }
+            )
         }
         composable(route = AppScreenDestination.History.name){
             HistoryScreen()
