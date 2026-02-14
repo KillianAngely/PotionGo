@@ -50,9 +50,7 @@ fun AppNavHost(
         }
         composable(route = AppScreenDestination.Home.name) {
             HomeScreen(
-                onSignOut = { navController.navigate(AppScreenDestination.Login.name) {
-                    popUpTo(AppScreenDestination.Login.name) { inclusive = true }
-                }},
+
                 bottomBarNavigation = bottomBarNavigation,
                 onSelectProduct = { productId ->
                     navController.navigate("product_detail/$productId")
@@ -88,7 +86,10 @@ fun AppNavHost(
             HistoryScreen(bottomBarNavigation = bottomBarNavigation)
         }
         composable(route = AppScreenDestination.Profile.name){
-            ProfileScreen(bottomBarNavigation = bottomBarNavigation)
+            ProfileScreen(bottomBarNavigation = bottomBarNavigation,
+                onSignOut = { navController.navigate(AppScreenDestination.Login.name) {
+                popUpTo(AppScreenDestination.Login.name) { inclusive = true }
+            }},)
         }
         composable (route = AppScreenDestination.SignUp.name){
             SignUpScreen(

@@ -7,12 +7,6 @@ import com.example.potiongo.domain.GetAllProductUseCase
 import com.example.potiongo.domain.GetAllProductUseCaseResult
 import com.example.potiongo.domain.GetRoleUseCase
 import com.example.potiongo.domain.GetRoleUseCaseResult
-import com.example.potiongo.domain.LogoutUseCase
-import com.example.potiongo.domain.LogoutUseCaseResult
-import com.example.potiongo.repository.ProductRepository
-import com.example.potiongo.services.AuthService
-import com.example.potiongo.ui.screens.auth.login.LoginUiState
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +16,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    val logoutUseCase: LogoutUseCase ,
     val getRoleUseCase: GetRoleUseCase ,
     val getAllProductUseCase: GetAllProductUseCase
 ): ViewModel() {
@@ -62,20 +55,6 @@ class HomeViewModel @Inject constructor(
                 is GetAllProductUseCaseResult.Error -> {
                     _uiState.value = HomeUiState.ErrorProduct
 
-                }
-            }
-        }
-    }
-
-
-    fun signOut(){
-        viewModelScope.launch {
-            when(val res = logoutUseCase()){
-                is LogoutUseCaseResult.ErrorAuth -> {
-                    _uiState.value = HomeUiState.Error(res.errorMessage)
-                }
-                is LogoutUseCaseResult.Success -> {
-                    _uiState.value = HomeUiState.IsSignOut
                 }
             }
         }
