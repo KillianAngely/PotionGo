@@ -11,13 +11,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.potiongo.repository.CartRepository
+import com.example.potiongo.ui.component.BottomBarNavigation
 import com.example.potiongo.ui.screens.HomeScreen
 import com.example.potiongo.ui.screens.auth.emailVerif.EmailVerifScreen
 import com.example.potiongo.ui.screens.auth.login.LoginScreen
 import com.example.potiongo.ui.screens.auth.signup.SignUpScreen
 import com.example.potiongo.ui.screens.cart.CartScreen
-//import com.example.potiongo.ui.screens.checkout.CheckoutScreen
+import com.example.potiongo.ui.screens.checkout.CheckoutScreen
 import com.example.potiongo.ui.screens.history.HistoryScreen
 import com.example.potiongo.ui.screens.order.ProductDetailScreen
 import com.example.potiongo.ui.screens.profile.ProfileScreen
@@ -25,11 +25,18 @@ import com.example.potiongo.ui.screens.profile.ProfileScreen
 @Composable
 fun AppNavHost(
     navController: NavHostController,
-    cartRepository: CartRepository,
     modifier: Modifier = Modifier,
     appNavHostViewModel: AppNavHostViewModel = hiltViewModel()
 ){
     val isAuthenticated by appNavHostViewModel.isAuthenticated.collectAsState()
+
+    val bottomBarNavigation = BottomBarNavigation(
+        goToHome = { navController.navigate(AppScreenDestination.Home.name) },
+        goToCart = { navController.navigate(AppScreenDestination.Cart.name) },
+        goToHistory = { navController.navigate(AppScreenDestination.History.name) },
+        goToProfile = { navController.navigate(AppScreenDestination.Profile.name) }
+    )
+
     NavHost(
         navController = navController,
         startDestination = if (isAuthenticated) AppScreenDestination.Home.name else AppScreenDestination.Login.name,
@@ -46,11 +53,7 @@ fun AppNavHost(
                 onSignOut = { navController.navigate(AppScreenDestination.Login.name) {
                     popUpTo(AppScreenDestination.Login.name) { inclusive = true }
                 }},
-                goToHomeScreen = { navController.navigate(AppScreenDestination.Home.name) },
-                goToHistoryScreen = { navController.navigate(AppScreenDestination.History.name) },
-                goToProfileScreen = { navController.navigate(AppScreenDestination.Profile.name) },
-                goToCartScreen = { navController.navigate(AppScreenDestination.Cart.name) },
-                cartRepository = cartRepository,
+                bottomBarNavigation = bottomBarNavigation,
                 onSelectProduct = { productId ->
                     navController.navigate("product_detail/$productId")
                     Log.d("AppNavGraph","product_detail/$productId")
@@ -67,24 +70,25 @@ fun AppNavHost(
         }
         composable(route = AppScreenDestination.Cart.name) {
             CartScreen(
-                onClickPay = { navController.navigate(AppScreenDestination.Checkout.name) }
+                onClickPay = { navController.navigate(AppScreenDestination.Checkout.name) },
+                bottomBarNavigation = bottomBarNavigation
             )
         }
-//        composable(route = AppScreenDestination.Checkout.name) {
-//            CheckoutScreen(
-//                onBack = { navController.popBackStack() },
-//                onOrderPlaced = {
-//                    navController.navigate(AppScreenDestination.Home.name) {
-//                        popUpTo(AppScreenDestination.Home.name) { inclusive = true }
-//                    }
-//                }
-//            )
-//        }
+        composable(route = AppScreenDestination.Checkout.name) {
+           CheckoutScreen(
+               onBack = { navController.popBackStack() },
+               onOrderPlaced = {
+                   navController.navigate(AppScreenDestination.Home.name) {
+                       popUpTo(AppScreenDestination.Home.name) { inclusive = true }
+                   }
+               }
+           )
+        }
         composable(route = AppScreenDestination.History.name){
-            HistoryScreen()
+            HistoryScreen(bottomBarNavigation = bottomBarNavigation)
         }
         composable(route = AppScreenDestination.Profile.name){
-            ProfileScreen()
+            ProfileScreen(bottomBarNavigation = bottomBarNavigation)
         }
         composable (route = AppScreenDestination.SignUp.name){
             SignUpScreen(
