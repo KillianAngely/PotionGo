@@ -3,38 +3,36 @@ name: Admin CI
 on:
   push:
     branches: [main, develop]
-      paths:
+    paths:
       - "admin/**"
-    pull_request:
-      paths:
-        - "admin/**"
+  pull_request:
+    paths:
+      - "admin/**"
 
 jobs:
-  build:
+  lint-and-build:
+    name: Lint & Build
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./admin
 
-    lint-and-build:
-      name: Lint & Build
-      runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: admin/package-lock.json
 
-        - name: Setup Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: 20
-            cache: npm
+      - name: Install dependencies
+        run: npm ci
 
-        - name: Install dependencies
-          run: npm ci
+      - name: Static analysis
+        run: npm run test:static
 
-        - name: Static analysis
-          run: npm run test:static
-
-        - name: Build
-          run: npm run build
+      - name: Build
+        run: npm run build
