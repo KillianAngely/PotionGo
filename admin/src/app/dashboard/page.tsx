@@ -1,6 +1,6 @@
 "use client"
 import { useRouter } from "next/navigation"
-import { useAuth } from "../../context/AuthContext"
+import { useAuth } from "../00_INFRA/Context/AuthContext"
 
 export default function Dashboard() {
   const router = useRouter()
@@ -13,9 +13,9 @@ export default function Dashboard() {
   const handleLogout = async () => {
     try {
       await logout()
-      router.push('/')
+      router.push("/")
     } catch (error) {
-      console.log('Erreur lors de la déconnexion:', error)
+      console.log("Erreur lors de la déconnexion:", error)
     }
   }
 
