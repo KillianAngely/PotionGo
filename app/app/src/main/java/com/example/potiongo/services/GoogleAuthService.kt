@@ -68,7 +68,7 @@ class GoogleAuthService @Inject constructor(
                 GetGoogleIdTokenCredentialResult.Error("Type de credential inattendu")
             }
         } catch (e: GetCredentialCancellationException) {
-            Log.d(TAG, "Connexion annulée")
+            Log.d(TAG, "Connexion annulée" ,e )
             GetGoogleIdTokenCredentialResult.Error("Connexion annulée")
 
         } catch (e: GetCredentialException) {

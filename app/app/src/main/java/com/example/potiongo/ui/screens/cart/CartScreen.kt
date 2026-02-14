@@ -33,76 +33,80 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.potiongo.data.Cart
+import com.example.potiongo.ui.component.BottomBarNavigation
+import com.example.potiongo.ui.component.PotionGoScaffold
 
 @Composable
 fun CartScreen(
     viewModel: CartViewModel = hiltViewModel(),
-    onClickPay: () -> Unit = {}
+    onClickPay: () -> Unit = {},
+    bottomBarNavigation: BottomBarNavigation
 ) {
     val items by viewModel.items.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Mon Panier",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        if (items.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Votre panier est vide",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(items) { cart ->
-                    CartItemCard(
-                        cart = cart,
-                        onRemove = { viewModel.removeProduct(cart.product.id) }
+    PotionGoScaffold(
+        title = "Mon Panier",
+        showBottomBar = true,
+        bottomBarNavigation = bottomBarNavigation
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+        ) {
+            if (items.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Votre panier est vide",
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
-            }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(items) { cart ->
+                        CartItemCard(
+                            cart = cart,
+                            onRemove = { viewModel.removeProduct(cart.product.id) }
+                        )
+                    }
+                }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Total",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "%.2f €".format(viewModel.getTotal()),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Total",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "%.2f €".format(viewModel.getTotal()),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = onClickPay,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Payer")
+                Button(
+                    onClick = onClickPay,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Payer")
+                }
             }
         }
     }
