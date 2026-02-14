@@ -18,13 +18,13 @@ class SignUpUseCase @Inject constructor(
     private val auth: AuthService,
     private val cFunction: CloudFunctionsService
 ) {
-    suspend operator fun invoke(email: String,password: String,firstName: String,lastName: String): SignUpUseCaseResult {
+    suspend operator fun invoke(email: String,password: String,firstName: String,lastName: String, role: String): SignUpUseCaseResult {
         return try {
             val user = auth.signUp(email, password).user
                 ?: return SignUpUseCaseResult.ErrorAuth("Unknown user")
             Log.d(TAG, "User après signup: ${auth.currentUser()}")
                 auth.sendEmailVerification(user)
-                cFunction.createUser("customer", email, firstName, lastName)
+                cFunction.createUser(role, email, firstName, lastName)
                 Log.d(TAG, "SignUpUseCaseResult:success")
                 SignUpUseCaseResult.Success
 

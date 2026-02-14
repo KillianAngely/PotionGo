@@ -12,6 +12,7 @@ import javax.inject.Singleton
 
 interface IOrderRepository {
     suspend fun placeOrder(order: Order): String
+    suspend fun getUnassignedOrders(): List<Order>
 }
 
 class OrderRepository @Inject constructor(
@@ -21,6 +22,14 @@ class OrderRepository @Inject constructor(
     override suspend fun placeOrder(order: Order): String {
         val docRef = firestore.collection("orders").add(order).await()
         return docRef.id
+    }
+
+    override suspend fun getUnassignedOrders(): List<Order> {
+        val snapshot = firestore.collection("orders")
+            .whereEqualTo("driverId", "")
+            .get()
+            .await()
+        return snapshot.toObjects(Order::class.java)
     }
 }
 
