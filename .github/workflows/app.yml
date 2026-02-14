@@ -11,10 +11,12 @@ on:
 
 jobs:
   build:
-    working-directory: ./app
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: ./app
 
     steps:
       - uses: actions/checkout@v4
