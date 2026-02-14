@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -19,21 +16,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.potiongo.repository.CartRepository
-import com.example.potiongo.ui.component.BottomAppBar
+import com.example.potiongo.ui.component.BottomBarNavigation
+import com.example.potiongo.ui.component.PotionGoScaffold
 import com.example.potiongo.ui.component.ProductGrid
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
     onSignOut: () -> Unit,
-    goToHomeScreen: () -> Unit,
-    goToHistoryScreen: () -> Unit,
-    goToProfileScreen: () -> Unit,
-    goToCartScreen: () -> Unit,
-    cartRepository: CartRepository,
+    bottomBarNavigation: BottomBarNavigation,
     onSelectProduct: (String) -> Unit
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
@@ -45,22 +37,10 @@ fun HomeScreen(
                 currentOnUserLogIn()
         }
     }
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text("PotionGo")
-                }
-            )
-        },
-        bottomBar = { BottomAppBar(
-            goToHomePage = goToHomeScreen,
-            goToHistoryPage = goToHistoryScreen,
-            goToProfilePage = goToProfileScreen,
-            goToCartPage = goToCartScreen,
-            cartRepository = cartRepository
-        ) }
-        ,
+    PotionGoScaffold(
+        title = "PotionGo",
+        showBottomBar = true,
+        bottomBarNavigation = bottomBarNavigation
     ) { innerPadding ->
         Column(
         modifier = Modifier
