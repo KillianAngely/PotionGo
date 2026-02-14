@@ -27,5 +27,4 @@ class AppNavHostViewModel @Inject constructor(
             }
         }
     }
-
 }

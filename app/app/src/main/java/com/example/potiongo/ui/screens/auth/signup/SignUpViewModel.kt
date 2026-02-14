@@ -41,6 +41,13 @@ class SignUpViewModel @Inject constructor(
     var lastName by mutableStateOf("")
         private set
 
+    var role by mutableStateOf("customer")
+        private set
+
+    fun updateRole(roleInput: String) {
+        role = roleInput
+    }
+
     fun updateFirstname(firstNameInput: String){
         firstName = firstNameInput
     }
@@ -73,7 +80,7 @@ class SignUpViewModel @Inject constructor(
 
     fun signUp() {
         viewModelScope.launch {
-            when(val res = signUpUseCase(email,password,firstName,lastName)){
+            when(val res = signUpUseCase(email,password,firstName,lastName,role)){
                 is SignUpUseCaseResult.Success -> {
                     _uiState.value = SignUpUiState.Success
                 }

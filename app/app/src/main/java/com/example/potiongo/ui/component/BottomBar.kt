@@ -27,17 +27,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.potiongo.domain.GetRoleUseCase
+import com.example.potiongo.domain.GetRoleUseCaseResult
 import com.example.potiongo.repository.CartRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class BottomBarViewModel @Inject constructor(
-    cartRepository: CartRepository
+    cartRepository: CartRepository,
+    getRoleUseCase: GetRoleUseCase
 ) : ViewModel() {
     val cartCount = cartRepository.items.map { items ->
         items.sumOf { it.quantity }
+    }
+
+    private val _isDriver = MutableStateFlow(false)
+    val isDriver: StateFlow<Boolean> = _isDriver
+
+    init {
+        viewModelScope.launch {
+            when (getRoleUseCase()) {
+                is GetRoleUseCaseResult.Driver -> _isDriver.value = true
+                else -> _isDriver.value = false
+            }
+        }
     }
 }
 
@@ -47,6 +66,7 @@ fun PotionGoBottomBar(
     viewModel: BottomBarViewModel = hiltViewModel()
 ) {
     val cartCount by viewModel.cartCount.collectAsState(initial = 0)
+    val isDriver by viewModel.isDriver.collectAsState()
 
     BottomAppBar {
         Row(
@@ -66,25 +86,27 @@ fun PotionGoBottomBar(
                 Icon(Icons.Default.Home, contentDescription = "Home")
                 Text("Home", fontSize = 12.sp)
             }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                    role = Role.Button,
-                    onClick = navigation.goToCart
-                )
-            ) {
-                BadgedBox(
-                    badge = {
-                        if (cartCount > 0) {
-                            Badge { Text("$cartCount") }
-                        }
-                    }
+            if (!isDriver) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        role = Role.Button,
+                        onClick = navigation.goToCart
+                    )
                 ) {
-                    Icon(Icons.Default.ShoppingCart, contentDescription = "Panier")
+                    BadgedBox(
+                        badge = {
+                            if (cartCount > 0) {
+                                Badge { Text("$cartCount") }
+                            }
+                        }
+                    ) {
+                        Icon(Icons.Default.ShoppingCart, contentDescription = "Panier")
+                    }
+                    Text("Panier", fontSize = 12.sp)
                 }
-                Text("Panier", fontSize = 12.sp)
             }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

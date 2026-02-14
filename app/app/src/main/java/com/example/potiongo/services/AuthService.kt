@@ -30,6 +30,8 @@ interface IAuthService {
     suspend fun sendEmailVerification(user: FirebaseUser)
 
     suspend fun signInWithCredential(credential: AuthCredential): AuthResult
+
+    fun getUid(): String?
 }
 
 private val TAG : String = "AuthService"
@@ -37,6 +39,8 @@ class AuthService @Inject constructor(private val auth : FirebaseAuth) : IAuthSe
 
 
     override fun isAuthenticated() = auth.currentUser != null
+
+    override fun getUid(): String? = auth.currentUser?.uid
 
     fun currentUser(){
         auth.currentUser?.providerData?.forEach { profile ->
