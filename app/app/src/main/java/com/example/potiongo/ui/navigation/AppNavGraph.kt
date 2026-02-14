@@ -15,6 +15,7 @@ import com.example.potiongo.ui.component.BottomBarNavigation
 import com.example.potiongo.ui.screens.HomeScreen
 import com.example.potiongo.ui.screens.auth.emailVerif.EmailVerifScreen
 import com.example.potiongo.ui.screens.auth.login.LoginScreen
+import com.example.potiongo.ui.screens.auth.roleSelection.RoleSelectionScreen
 import com.example.potiongo.ui.screens.auth.signup.SignUpScreen
 import com.example.potiongo.ui.screens.cart.CartScreen
 import com.example.potiongo.ui.screens.checkout.CheckoutScreen
@@ -44,15 +45,19 @@ fun AppNavHost(
     ) {
         composable(route = AppScreenDestination.Login.name) {
             LoginScreen(
-                onClickCreateAccount = {navController.navigate(AppScreenDestination.SignUp.name)},
+                onClickCreateAccount = {navController.navigate(AppScreenDestination.RoleSelection.name)},
                 onLoginSuccess = {navController.navigate(AppScreenDestination.Home.name)}
+            )
+        }
+        composable(route = AppScreenDestination.RoleSelection.name) {
+            RoleSelectionScreen(
+                onRoleSelected = { selectedRole ->
+                    navController.navigate("${AppScreenDestination.SignUp.name}/$selectedRole")
+                }
             )
         }
         composable(route = AppScreenDestination.Home.name) {
             HomeScreen(
-                onSignOut = { navController.navigate(AppScreenDestination.Login.name) {
-                    popUpTo(AppScreenDestination.Login.name) { inclusive = true }
-                }},
                 bottomBarNavigation = bottomBarNavigation,
                 onSelectProduct = { productId ->
                     navController.navigate("product_detail/$productId")
@@ -88,10 +93,22 @@ fun AppNavHost(
             HistoryScreen(bottomBarNavigation = bottomBarNavigation)
         }
         composable(route = AppScreenDestination.Profile.name){
-            ProfileScreen(bottomBarNavigation = bottomBarNavigation)
+            ProfileScreen(
+                bottomBarNavigation = bottomBarNavigation,
+                onSignOut = {
+                    navController.navigate(AppScreenDestination.Login.name) {
+                        popUpTo(AppScreenDestination.Login.name) { inclusive = true }
+                    }
+                }
+            )
         }
-        composable (route = AppScreenDestination.SignUp.name){
+        composable(
+            route = "${AppScreenDestination.SignUp.name}/{role}",
+            arguments = listOf(navArgument("role") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val selectedRole = backStackEntry.arguments?.getString("role") ?: "customer"
             SignUpScreen(
+                role = selectedRole,
                 onSignUpSuccess = { navController.navigate(AppScreenDestination.EmailVerif.name)},
             )
         }

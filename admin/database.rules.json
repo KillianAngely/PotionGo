@@ -1,6 +1,13 @@
 {
-  /* Visit https://firebase.google.com/docs/database/security to learn more about security rules. */
   "rules": {
+    "drivers": {
+      "$driverId": {
+        "location": {
+          ".read": "auth != null",
+          ".write": "auth != null && auth.uid === $driverId"
+        }
+      }
+    },
     ".read": false,
     ".write": false
   }

@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun SignUpScreen(
+    role: String,
     modifier: Modifier = Modifier ,
     signUpViewModel: SignUpViewModel = hiltViewModel() ,
     onSignUpSuccess: () -> Unit
@@ -26,6 +27,10 @@ fun SignUpScreen(
 {
     val uiState by signUpViewModel.uiState.collectAsState()
     val activityContext = LocalContext.current
+
+    LaunchedEffect(role) {
+        signUpViewModel.updateRole(role)
+    }
 
     LaunchedEffect(uiState) {
         if (uiState is SignUpUiState.Success) {
