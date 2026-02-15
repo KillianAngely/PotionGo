@@ -45,8 +45,9 @@ export default function Home() {
     setServerError(null)
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password)
-    } catch (err: any) {
-      setServerError("Erreur d'authentification : " + err.message)
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Erreur inconnue"
+      setServerError("Erreur d'authentification : " + message)
     }
   }
 
@@ -60,12 +61,7 @@ export default function Home() {
         <p className={styles.subtitle}>Réservé aux administrateurs.</p>
 
         <div className={styles.field}>
-          <input
-            {...register("email")}
-            type="email"
-            placeholder="Email"
-            className={styles.input}
-          />
+          <input {...register("email")} type="email" placeholder="Email" className={styles.input} />
           {errors.email && <p className={styles.errorText}>{errors.email.message}</p>}
         </div>
 

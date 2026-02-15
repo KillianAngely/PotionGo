@@ -81,7 +81,8 @@ export default function DashboardUsersPage() {
   }, [loadUsers])
 
   const getRoleBadgeClass = (role: string) => {
-    const base = "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
+    const base =
+      "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
     if (role === UserAdminRole.ADMIN) return `${base} bg-accent/15 text-accent`
     if (role === UserClientRole.DRIVER) return `${base} bg-accent2/15 text-accent2`
     return `${base} bg-accent3/15 text-accent3`
@@ -157,7 +158,9 @@ export default function DashboardUsersPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Utilisateurs</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
+            Utilisateurs
+          </p>
           <h2 className="text-xl font-semibold">Gestion des utilisateurs</h2>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -180,7 +183,9 @@ export default function DashboardUsersPage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-bg/80 px-4 py-3">
-        <label htmlFor="roleFilter" className="text-sm font-semibold">Rôle</label>
+        <label htmlFor="roleFilter" className="text-sm font-semibold">
+          Rôle
+        </label>
         <select
           id="roleFilter"
           value={roleFilter}
@@ -196,7 +201,9 @@ export default function DashboardUsersPage() {
           <option value={UserClientRole.DRIVER}>Driver</option>
         </select>
 
-        <label htmlFor="userSearch" className="text-sm font-semibold">Recherche</label>
+        <label htmlFor="userSearch" className="text-sm font-semibold">
+          Recherche
+        </label>
         <input
           id="userSearch"
           type="text"
@@ -209,7 +216,9 @@ export default function DashboardUsersPage() {
           className="w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm"
         />
 
-        <label htmlFor="primarySort" className="text-sm font-semibold">Tri 1</label>
+        <label htmlFor="primarySort" className="text-sm font-semibold">
+          Tri 1
+        </label>
         <select
           id="primarySort"
           value={primaryField}
@@ -236,7 +245,9 @@ export default function DashboardUsersPage() {
           <option value="desc">Desc</option>
         </select>
 
-        <label htmlFor="secondarySort" className="text-sm font-semibold">Tri 2</label>
+        <label htmlFor="secondarySort" className="text-sm font-semibold">
+          Tri 2
+        </label>
         <select
           id="secondarySort"
           value={secondaryField}
@@ -265,7 +276,9 @@ export default function DashboardUsersPage() {
           <option value="desc">Desc</option>
         </select>
 
-        <label htmlFor="pageSize" className="text-sm font-semibold">Par page</label>
+        <label htmlFor="pageSize" className="text-sm font-semibold">
+          Par page
+        </label>
         <select
           id="pageSize"
           value={pageSize}
@@ -276,7 +289,9 @@ export default function DashboardUsersPage() {
           className="rounded-lg border border-border bg-card px-3 py-2 text-sm"
         >
           {PAGE_SIZE_OPTIONS.map((option) => (
-            <option key={option} value={option}>{option}</option>
+            <option key={option} value={option}>
+              {option}
+            </option>
           ))}
         </select>
 
@@ -297,7 +312,9 @@ export default function DashboardUsersPage() {
           <tbody className="divide-y divide-border bg-card">
             {!loading && users.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted">Aucun utilisateur trouvé</td>
+                <td colSpan={5} className="px-4 py-8 text-center text-muted">
+                  Aucun utilisateur trouvé
+                </td>
               </tr>
             ) : (
               users.map((user) => (
@@ -309,7 +326,9 @@ export default function DashboardUsersPage() {
                   <td className="px-4 py-3">{user.email}</td>
                   <td className="px-4 py-3">{user.firstName}</td>
                   <td className="px-4 py-3">{user.lastName}</td>
-                  <td className="px-4 py-3"><span className={getRoleBadgeClass(user.role)}>{user.role}</span></td>
+                  <td className="px-4 py-3">
+                    <span className={getRoleBadgeClass(user.role)}>{user.role}</span>
+                  </td>
                   <td className="px-4 py-3 text-right">
                     <button
                       type="button"
@@ -330,7 +349,9 @@ export default function DashboardUsersPage() {
       </div>
 
       <div className="flex items-center justify-between rounded-2xl border border-border bg-bg/70 px-4 py-3">
-        <p className="text-sm text-muted">Page {page} / {totalPages}</p>
+        <p className="text-sm text-muted">
+          Page {page} / {totalPages}
+        </p>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -353,14 +374,32 @@ export default function DashboardUsersPage() {
 
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <button type="button" className="absolute inset-0 bg-black/40" onClick={() => setDeleteTarget(null)} aria-label="Fermer" />
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setDeleteTarget(null)}
+            aria-label="Fermer"
+          />
           <div className="relative w-[min(92vw,460px)] rounded-2xl border border-border bg-card p-6 shadow-xl">
             <h3 className="text-lg font-semibold">Supprimer ce compte ?</h3>
-            <p className="mt-3 text-sm text-muted">{deleteTarget.firstName} {deleteTarget.lastName} — {deleteTarget.email}</p>
+            <p className="mt-3 text-sm text-muted">
+              {deleteTarget.firstName} {deleteTarget.lastName} — {deleteTarget.email}
+            </p>
             {deleteError && <p className="mt-3 text-sm text-red-600">{deleteError}</p>}
             <div className="mt-6 flex justify-end gap-3">
-              <button type="button" onClick={() => setDeleteTarget(null)} className="rounded-full border border-border px-4 py-2 text-sm font-semibold">Annuler</button>
-              <button type="button" onClick={handleDeleteConfirm} disabled={isDeleting} className="rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="rounded-full border border-border px-4 py-2 text-sm font-semibold"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+                className="rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+              >
                 {isDeleting ? "Suppression..." : "Supprimer"}
               </button>
             </div>
@@ -370,24 +409,73 @@ export default function DashboardUsersPage() {
 
       {isCreateOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <button type="button" className="absolute inset-0 bg-black/40" onClick={() => setIsCreateOpen(false)} aria-label="Fermer" />
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setIsCreateOpen(false)}
+            aria-label="Fermer"
+          />
           <div className="relative w-[min(92vw,520px)] rounded-2xl border border-border bg-card p-6 shadow-xl">
             <h3 className="text-lg font-semibold">Ajouter un utilisateur</h3>
             <form className="mt-6 space-y-4" onSubmit={handleCreateSubmit}>
               <div className="grid gap-4 sm:grid-cols-2">
-                <input type="text" value={createForm.firstName} onChange={(e) => setCreateForm((p) => ({ ...p, firstName: e.target.value }))} placeholder="Prénom" className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm" required />
-                <input type="text" value={createForm.lastName} onChange={(e) => setCreateForm((p) => ({ ...p, lastName: e.target.value }))} placeholder="Nom" className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm" required />
+                <input
+                  type="text"
+                  value={createForm.firstName}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, firstName: e.target.value }))}
+                  placeholder="Prénom"
+                  className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm"
+                  required
+                />
+                <input
+                  type="text"
+                  value={createForm.lastName}
+                  onChange={(e) => setCreateForm((p) => ({ ...p, lastName: e.target.value }))}
+                  placeholder="Nom"
+                  className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm"
+                  required
+                />
               </div>
-              <input type="email" value={createForm.email} onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))} placeholder="Email" className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm" required />
-              <input type="password" value={createForm.password} onChange={(e) => setCreateForm((p) => ({ ...p, password: e.target.value }))} placeholder="Mot de passe" className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm" required />
-              <select value={createForm.role} onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value as UserClientRole }))} className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm">
+              <input
+                type="email"
+                value={createForm.email}
+                onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))}
+                placeholder="Email"
+                className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm"
+                required
+              />
+              <input
+                type="password"
+                value={createForm.password}
+                onChange={(e) => setCreateForm((p) => ({ ...p, password: e.target.value }))}
+                placeholder="Mot de passe"
+                className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm"
+                required
+              />
+              <select
+                value={createForm.role}
+                onChange={(e) =>
+                  setCreateForm((p) => ({ ...p, role: e.target.value as UserClientRole }))
+                }
+                className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm"
+              >
                 <option value={UserClientRole.CUSTOMER}>Customer</option>
                 <option value={UserClientRole.DRIVER}>Driver</option>
               </select>
               {createError && <p className="text-sm text-red-600">{createError}</p>}
               <div className="flex justify-end gap-3">
-                <button type="button" onClick={() => setIsCreateOpen(false)} className="rounded-full border border-border px-4 py-2 text-sm font-semibold">Annuler</button>
-                <button type="submit" disabled={isCreating} className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-bg disabled:opacity-60">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="rounded-full border border-border px-4 py-2 text-sm font-semibold"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreating}
+                  className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-bg disabled:opacity-60"
+                >
                   {isCreating ? "Création..." : "Créer"}
                 </button>
               </div>

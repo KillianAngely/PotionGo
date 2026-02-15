@@ -1,9 +1,9 @@
 "use client"
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react'
-import { User } from 'firebase/auth'
-import { auth } from '../../../../config/firebase'
-import { onAuthStateChanged } from 'firebase/auth'
-import { SESSION_EXPIRED_EVENT, withCsrfHeaders } from '../Repositories/_utils/http'
+import { createContext, useContext, ReactNode, useState, useEffect } from "react"
+import { User } from "firebase/auth"
+import { auth } from "../../../../config/firebase"
+import { onAuthStateChanged } from "firebase/auth"
+import { SESSION_EXPIRED_EVENT, withCsrfHeaders } from "../Repositories/_utils/http"
 
 interface AuthContextType {
   user: User | null
@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (currentUser) {
           const tokenResult = await currentUser.getIdTokenResult()
 
-          if (tokenResult.claims.role === 'admin') {
+          if (tokenResult.claims.role === "admin") {
             const idToken = await currentUser.getIdToken(true)
             const response = await fetch("/api/auth/session", {
               method: "POST",
@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext)
   if (context === undefined) {
-    throw new Error('useAuth doit être utilisé dans AuthProvider')
+    throw new Error("useAuth doit être utilisé dans AuthProvider")
   }
   return context
 }

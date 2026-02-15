@@ -45,18 +45,11 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url)
     const roleFilterRaw = searchParams.get("role")?.toUpperCase() ?? null
-    const roleFilter = roleFilterRaw
-      ? (roleFilterRaw.toUpperCase() as UserRole)
-      : null
+    const roleFilter = roleFilterRaw ? (roleFilterRaw.toUpperCase() as UserRole) : null
     const search = searchParams.get("search")?.trim().toLowerCase() ?? ""
     const page = parsePositiveInt(searchParams.get("page"), 1)
     const pageSize = clamp(parsePositiveInt(searchParams.get("pageSize"), 10), 1, 100)
-    const sorts = parseSorts(searchParams.get("sort"), [
-      "email",
-      "firstName",
-      "lastName",
-      "role",
-    ])
+    const sorts = parseSorts(searchParams.get("sort"), ["email", "firstName", "lastName", "role"])
 
     const usersRef = collection(firestore, "users")
     const snapshot = await getDocs(usersRef)
@@ -112,7 +105,7 @@ export async function GET(request: Request) {
           totalPages,
         },
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } },
     )
   } catch (error) {
     console.error("[GET /api/users] Error:", error)
@@ -120,7 +113,7 @@ export async function GET(request: Request) {
       JSON.stringify({
         error: "Erreur lors de la récupération des utilisateurs",
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     )
   }
 }
@@ -142,7 +135,7 @@ export async function POST(request: Request) {
           error: "Données utilisateur invalides",
           details: validation.error.flatten().fieldErrors,
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } },
       )
     }
 
@@ -175,7 +168,7 @@ export async function POST(request: Request) {
         success: true,
         user,
       }),
-      { status: 201, headers: { "Content-Type": "application/json" } }
+      { status: 201, headers: { "Content-Type": "application/json" } },
     )
   } catch (error) {
     console.error("[POST /api/users] Error:", error)
@@ -183,7 +176,7 @@ export async function POST(request: Request) {
       JSON.stringify({
         error: "Erreur lors de la création de l'utilisateur",
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     )
   }
 }

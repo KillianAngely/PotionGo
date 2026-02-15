@@ -87,7 +87,7 @@ export async function GET(request: Request) {
       for (const sort of sorts) {
         const comparison = compareValues(
           a[sort.field as keyof Product],
-          b[sort.field as keyof Product]
+          b[sort.field as keyof Product],
         )
         if (comparison !== 0) {
           return sort.direction === "asc" ? comparison : -comparison
@@ -113,14 +113,14 @@ export async function GET(request: Request) {
           totalPages,
         },
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } },
     )
   } catch {
     return new Response(
       JSON.stringify({
         error: "Impossible d'afficher les produits",
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     )
   }
 }
@@ -142,14 +142,17 @@ export async function POST(request: Request) {
           error: "Données produit invalides",
           details: validation.error.flatten().fieldErrors,
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } },
       )
     }
 
-    const docRef = await admin.firestore().collection("products").add({
-      ...validation.data,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    })
+    const docRef = await admin
+      .firestore()
+      .collection("products")
+      .add({
+        ...validation.data,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      })
 
     const product: Product = {
       id: docRef.id,
@@ -162,9 +165,9 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error("[POST /api/products] Error:", error)
-    return new Response(
-      JSON.stringify({ error: "Impossible de créer le produit" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ error: "Impossible de créer le produit" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }

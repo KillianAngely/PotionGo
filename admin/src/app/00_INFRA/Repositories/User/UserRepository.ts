@@ -1,9 +1,5 @@
 import { User, UserRole } from "../../types/User"
-import {
-  IUserRepository,
-  UserListQuery,
-  UserListResponse,
-} from "./UserRepository.interface"
+import { IUserRepository, UserListQuery, UserListResponse } from "./UserRepository.interface"
 import { assertApiResponse, withCsrfHeaders } from "../_utils/http"
 
 export class UserRepository implements IUserRepository {

@@ -1,18 +1,18 @@
 export enum UserAdminRole {
-    ADMIN = "ADMIN",
+  ADMIN = "ADMIN",
 }
 
 export enum UserClientRole {
-    CUSTOMER = "CUSTOMER",
-    DRIVER = "DRIVER",
+  CUSTOMER = "CUSTOMER",
+  DRIVER = "DRIVER",
 }
 
-export type UserRole = UserAdminRole | UserClientRole;
+export type UserRole = UserAdminRole | UserClientRole
 
 export type User = {
-    uid: string
-    email: string
-    firstName: string
-    lastName: string
-    role: UserRole
+  uid: string
+  email: string
+  firstName: string
+  lastName: string
+  role: UserRole
 }

@@ -79,7 +79,8 @@ export default function OrdersPage() {
   }
 
   const getStatusBadgeClass = (status: string) => {
-    const base = "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
+    const base =
+      "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
     if (status === OrderStatus.PENDING) return `${base} bg-accent2/15 text-accent2`
     if (status === OrderStatus.ASSIGNED) return `${base} bg-accent/15 text-accent`
     if (status === OrderStatus.IN_TRANSIT) return `${base} bg-accent/20 text-accent`
@@ -112,7 +113,9 @@ export default function OrdersPage() {
       </div>
 
       <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-bg/80 px-4 py-3">
-        <label htmlFor="statusFilter" className="text-sm font-semibold">Statut</label>
+        <label htmlFor="statusFilter" className="text-sm font-semibold">
+          Statut
+        </label>
         <select
           id="statusFilter"
           value={statusFilter}
@@ -124,11 +127,15 @@ export default function OrdersPage() {
         >
           <option value="all">Tous</option>
           {Object.values(OrderStatus).map((status) => (
-            <option key={status} value={status}>{status}</option>
+            <option key={status} value={status}>
+              {status}
+            </option>
           ))}
         </select>
 
-        <label htmlFor="orderSearch" className="text-sm font-semibold">Recherche</label>
+        <label htmlFor="orderSearch" className="text-sm font-semibold">
+          Recherche
+        </label>
         <input
           id="orderSearch"
           value={searchTerm}
@@ -140,8 +147,18 @@ export default function OrdersPage() {
           className="w-64 rounded-lg border border-border bg-card px-3 py-2 text-sm"
         />
 
-        <label htmlFor="primarySort" className="text-sm font-semibold">Tri 1</label>
-        <select id="primarySort" value={primaryField} onChange={(e) => { setPage(1); setPrimaryField(e.target.value as SortField) }} className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
+        <label htmlFor="primarySort" className="text-sm font-semibold">
+          Tri 1
+        </label>
+        <select
+          id="primarySort"
+          value={primaryField}
+          onChange={(e) => {
+            setPage(1)
+            setPrimaryField(e.target.value as SortField)
+          }}
+          className="rounded-lg border border-border bg-card px-3 py-2 text-sm"
+        >
           <option value="id">ID</option>
           <option value="status">Statut</option>
           <option value="customerName">Client</option>
@@ -149,13 +166,30 @@ export default function OrdersPage() {
           <option value="itemCount">Nb articles</option>
           <option value="totalPrice">Total</option>
         </select>
-        <select value={primaryDir} onChange={(e) => { setPage(1); setPrimaryDir(e.target.value as SortDir) }} className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
+        <select
+          value={primaryDir}
+          onChange={(e) => {
+            setPage(1)
+            setPrimaryDir(e.target.value as SortDir)
+          }}
+          className="rounded-lg border border-border bg-card px-3 py-2 text-sm"
+        >
           <option value="asc">Asc</option>
           <option value="desc">Desc</option>
         </select>
 
-        <label htmlFor="secondarySort" className="text-sm font-semibold">Tri 2</label>
-        <select id="secondarySort" value={secondaryField} onChange={(e) => { setPage(1); setSecondaryField(e.target.value as SortField | "none") }} className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
+        <label htmlFor="secondarySort" className="text-sm font-semibold">
+          Tri 2
+        </label>
+        <select
+          id="secondarySort"
+          value={secondaryField}
+          onChange={(e) => {
+            setPage(1)
+            setSecondaryField(e.target.value as SortField | "none")
+          }}
+          className="rounded-lg border border-border bg-card px-3 py-2 text-sm"
+        >
           <option value="none">Aucun</option>
           <option value="id">ID</option>
           <option value="status">Statut</option>
@@ -164,15 +198,35 @@ export default function OrdersPage() {
           <option value="itemCount">Nb articles</option>
           <option value="totalPrice">Total</option>
         </select>
-        <select value={secondaryDir} onChange={(e) => { setPage(1); setSecondaryDir(e.target.value as SortDir) }} disabled={secondaryField === "none"} className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
+        <select
+          value={secondaryDir}
+          onChange={(e) => {
+            setPage(1)
+            setSecondaryDir(e.target.value as SortDir)
+          }}
+          disabled={secondaryField === "none"}
+          className="rounded-lg border border-border bg-card px-3 py-2 text-sm"
+        >
           <option value="asc">Asc</option>
           <option value="desc">Desc</option>
         </select>
 
-        <label htmlFor="pageSize" className="text-sm font-semibold">Par page</label>
-        <select id="pageSize" value={pageSize} onChange={(e) => { setPage(1); setPageSize(Number(e.target.value)) }} className="rounded-lg border border-border bg-card px-3 py-2 text-sm">
+        <label htmlFor="pageSize" className="text-sm font-semibold">
+          Par page
+        </label>
+        <select
+          id="pageSize"
+          value={pageSize}
+          onChange={(e) => {
+            setPage(1)
+            setPageSize(Number(e.target.value))
+          }}
+          className="rounded-lg border border-border bg-card px-3 py-2 text-sm"
+        >
           {PAGE_SIZE_OPTIONS.map((option) => (
-            <option key={option} value={option}>{option}</option>
+            <option key={option} value={option}>
+              {option}
+            </option>
           ))}
         </select>
 
@@ -196,16 +250,28 @@ export default function OrdersPage() {
           <tbody className="divide-y divide-border bg-card">
             {!loading && orders.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-muted">Aucune commande trouvée</td>
+                <td colSpan={8} className="px-4 py-8 text-center text-muted">
+                  Aucune commande trouvée
+                </td>
               </tr>
             ) : (
               orders.map((order) => (
-                <tr key={order.id} onClick={() => handleRowClick(order.id)} className="cursor-pointer transition hover:bg-bg/80">
+                <tr
+                  key={order.id}
+                  onClick={() => handleRowClick(order.id)}
+                  className="cursor-pointer transition hover:bg-bg/80"
+                >
                   <td className="px-4 py-3 text-xs text-muted">{order.id}</td>
                   <td className="px-4 py-3">{order.customerName || order.customerId}</td>
-                  <td className="px-4 py-3">{order.driverName || order.driverId || "Non assigné"}</td>
-                  <td className="px-4 py-3"><span className={getStatusBadgeClass(order.status)}>{order.status}</span></td>
-                  <td className="px-4 py-3">{order.items.reduce((sum, item) => sum + item.quantity, 0)}</td>
+                  <td className="px-4 py-3">
+                    {order.driverName || order.driverId || "Non assigné"}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={getStatusBadgeClass(order.status)}>{order.status}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    {order.items.reduce((sum, item) => sum + item.quantity, 0)}
+                  </td>
                   <td className="px-4 py-3">{formatCurrency(order.totalPrice)}</td>
                   <td className="px-4 py-3 text-muted">{order.dropoff.address}</td>
                   <td className="px-4 py-3 text-right">
@@ -228,23 +294,57 @@ export default function OrdersPage() {
       </div>
 
       <div className="flex items-center justify-between rounded-2xl border border-border bg-bg/70 px-4 py-3">
-        <p className="text-sm text-muted">Page {page} / {totalPages}</p>
+        <p className="text-sm text-muted">
+          Page {page} / {totalPages}
+        </p>
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => setPage((prev) => Math.max(1, prev - 1))} disabled={page <= 1} className="rounded-full border border-border px-4 py-2 text-sm font-semibold disabled:opacity-50">Précédent</button>
-          <button type="button" onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))} disabled={page >= totalPages} className="rounded-full border border-border px-4 py-2 text-sm font-semibold disabled:opacity-50">Suivant</button>
+          <button
+            type="button"
+            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            disabled={page <= 1}
+            className="rounded-full border border-border px-4 py-2 text-sm font-semibold disabled:opacity-50"
+          >
+            Précédent
+          </button>
+          <button
+            type="button"
+            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+            disabled={page >= totalPages}
+            className="rounded-full border border-border px-4 py-2 text-sm font-semibold disabled:opacity-50"
+          >
+            Suivant
+          </button>
         </div>
       </div>
 
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <button type="button" className="absolute inset-0 bg-black/40" onClick={() => setDeleteTarget(null)} aria-label="Fermer" />
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/40"
+            onClick={() => setDeleteTarget(null)}
+            aria-label="Fermer"
+          />
           <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-glow">
             <h3 className="text-lg font-semibold">Supprimer cette commande ?</h3>
-            <p className="mt-2 text-sm text-muted">Cette action est définitive. ID: {deleteTarget.id}</p>
+            <p className="mt-2 text-sm text-muted">
+              Cette action est définitive. ID: {deleteTarget.id}
+            </p>
             {deleteError && <p className="mt-3 text-sm text-red-500">{deleteError}</p>}
             <div className="mt-6 flex justify-end gap-3">
-              <button type="button" onClick={() => setDeleteTarget(null)} className="rounded-full border border-border px-4 py-2 text-sm font-semibold">Annuler</button>
-              <button type="button" onClick={handleDeleteConfirm} disabled={isDeleting} className="rounded-full border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-500 disabled:opacity-60">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="rounded-full border border-border px-4 py-2 text-sm font-semibold"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+                className="rounded-full border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-500 disabled:opacity-60"
+              >
                 {isDeleting ? "Suppression..." : "Supprimer"}
               </button>
             </div>

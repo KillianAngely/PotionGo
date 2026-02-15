@@ -1,15 +1,8 @@
 import admin from "../../../../../config/firebase-admin"
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import {
-  AUTH_COOKIE_NAME,
-  getCookieValue,
-  SESSION_MAX_AGE_SECONDS,
-} from "../../_utils/auth"
-import {
-  generateCsrfToken,
-  requireCsrf,
-} from "../../_utils/csrf"
+import { AUTH_COOKIE_NAME, getCookieValue, SESSION_MAX_AGE_SECONDS } from "../../_utils/auth"
+import { generateCsrfToken, requireCsrf } from "../../_utils/csrf"
 
 export const runtime = "nodejs"
 
@@ -65,7 +58,7 @@ export async function POST(request: Request) {
     if (remainingSessionSeconds <= 0) {
       const response = NextResponse.json(
         { error: "Session expirée, veuillez vous reconnecter" },
-        { status: 401 }
+        { status: 401 },
       )
       response.cookies.delete(AUTH_COOKIE_NAME)
       response.cookies.delete("csrfToken")
@@ -89,7 +82,7 @@ export async function POST(request: Request) {
     })
 
     response.cookies.set("csrfToken", csrfToken, {
-      httpOnly: false,  // MUST be false so JavaScript can read it
+      httpOnly: false, // MUST be false so JavaScript can read it
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: remainingSessionSeconds,

@@ -63,15 +63,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
 
-  const displayName =
-    user?.displayName || user?.email || (loading ? "Chargement..." : "Invité")
+  const displayName = user?.displayName || user?.email || (loading ? "Chargement..." : "Invité")
 
   const activeLabel = useMemo(() => {
     for (const section of navSections) {
       const match = section.items.find((item) =>
         item.href === "/dashboard"
           ? pathname === item.href
-          : pathname === item.href || pathname?.startsWith(item.href + "/")
+          : pathname === item.href || pathname?.startsWith(item.href + "/"),
       )
       if (match) return match.label
     }
@@ -126,8 +125,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 const isActive =
                   item.href === "/dashboard"
                     ? pathname === item.href
-                    : pathname === item.href ||
-                    pathname?.startsWith(item.href + "/")
+                    : pathname === item.href || pathname?.startsWith(item.href + "/")
                 return (
                   <Link
                     key={item.href}
