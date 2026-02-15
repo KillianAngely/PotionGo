@@ -5,13 +5,12 @@ import { useAuth } from "../00_INFRA/Context/AuthContext"
 import { DashboardRepository } from "../00_INFRA/Repositories/Dashboard/DashboardRepository"
 import { DashboardStats } from "../00_INFRA/Repositories/Dashboard/DashboardRepository.interface"
 
-const dashboardRepo = new DashboardRepository()
-
 const toChartData = (record: Record<string, number>) =>
   Object.entries(record).sort((a, b) => b[1] - a[1])
 
 export default function Dashboard() {
   const router = useRouter()
+  const dashboardRepo = useMemo(() => new DashboardRepository(), [])
   const { logout, loading } = useAuth()
   const [statsLoading, setStatsLoading] = useState(true)
   const [statsError, setStatsError] = useState<string | null>(null)
@@ -32,7 +31,7 @@ export default function Dashboard() {
     }
 
     loadStats()
-  }, [])
+  }, [dashboardRepo])
 
   const roleData = useMemo(() => toChartData(stats?.roles ?? {}), [stats])
   const statusData = useMemo(() => toChartData(stats?.orderStatuses ?? {}), [stats])
