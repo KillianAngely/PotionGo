@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { OrderRepository } from "../../../00_INFRA/Repositories/Order/OrderRepository"
 import { Order, OrderStatus } from "../../../00_INFRA/types/Order"
@@ -11,14 +11,13 @@ export default function OrderDetailPage() {
 
     const [order, setOrder] = useState<Order | null>(null)
     const [loading, setLoading] = useState(true)
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
+    const [deleteError, setDeleteError] = useState<string | null>(null)
 
-    const orderRepository = new OrderRepository()
+    const orderRepository = useMemo(() => new OrderRepository(), [])
 
-    useEffect(() => {
-        loadOrder()
-    }, [orderId])
-
-    const loadOrder = async () => {
+    const loadOrder = useCallback(async () => {
         setLoading(true)
         try {
             const fetchedOrder = await orderRepository.findById(orderId)
@@ -28,19 +27,27 @@ export default function OrderDetailPage() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [orderId, orderRepository])
 
-    const handleDelete = async () => {
-        if (!confirm("Êtes-vous sûr de vouloir supprimer cette commande ?")) {
-            return
-        }
+    useEffect(() => {
+        void loadOrder()
+    }, [loadOrder])
 
+    const handleDeleteConfirm = async () => {
+        setDeleteError(null)
+        setIsDeleting(true)
         try {
             await orderRepository.removeById(orderId)
             router.push("/dashboard/orders")
         } catch (error) {
             console.error("Erreur lors de la suppression:", error)
-            alert("Erreur lors de la suppression de la commande")
+            setDeleteError(
+                error instanceof Error
+                    ? error.message
+                    : "Erreur lors de la suppression de la commande"
+            )
+        } finally {
+            setIsDeleting(false)
         }
     }
 
@@ -213,13 +220,54 @@ export default function OrderDetailPage() {
 
                 <div className="mt-6">
                     <button
-                        onClick={handleDelete}
+                        onClick={() => setIsDeleteOpen(true)}
                         className="rounded-full border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-500 transition hover:bg-red-500/20"
                     >
                         Supprimer la commande
                     </button>
                 </div>
             </div>
+
+            {isDeleteOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <button
+                        type="button"
+                        className="absolute inset-0 bg-black/40"
+                        onClick={() => {
+                            setIsDeleteOpen(false)
+                            setDeleteError(null)
+                        }}
+                        aria-label="Fermer"
+                    />
+                    <div className="relative w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-glow">
+                        <h3 className="text-lg font-semibold">Supprimer cette commande ?</h3>
+                        <p className="mt-2 text-sm text-muted">
+                            Cette action est définitive. ID: {order.id}
+                        </p>
+                        {deleteError && <p className="mt-3 text-sm text-red-500">{deleteError}</p>}
+                        <div className="mt-6 flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsDeleteOpen(false)
+                                    setDeleteError(null)
+                                }}
+                                className="rounded-full border border-border px-4 py-2 text-sm font-semibold"
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDeleteConfirm}
+                                disabled={isDeleting}
+                                className="rounded-full border border-red-500/40 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-500 disabled:opacity-60"
+                            >
+                                {isDeleting ? "Suppression..." : "Supprimer"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
