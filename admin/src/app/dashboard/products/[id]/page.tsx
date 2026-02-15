@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { ProductRepository } from "../../../00_INFRA/Repositories/Product/ProductRepository"
 import { Product } from "../../../00_INFRA/types/Product"
@@ -12,13 +12,9 @@ export default function ProductDetailPage() {
     const [product, setProduct] = useState<Product | null>(null)
     const [loading, setLoading] = useState(true)
 
-    const productRepository = new ProductRepository()
+    const productRepository = useMemo(() => new ProductRepository(), [])
 
-    useEffect(() => {
-        loadProduct()
-    }, [productId])
-
-    const loadProduct = async () => {
+    const loadProduct = useCallback(async () => {
         setLoading(true)
         try {
             const fetchedProduct = await productRepository.findById(productId)
@@ -28,7 +24,11 @@ export default function ProductDetailPage() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [productId, productRepository])
+
+    useEffect(() => {
+        void loadProduct()
+    }, [loadProduct])
 
     const getMoodBadgeStyle = (mood: string) => {
         const base = "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
