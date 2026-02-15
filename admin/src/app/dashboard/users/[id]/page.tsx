@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { UserRepository } from "../../../00_INFRA/Repositories/User/UserRepository"
 import { OrderRepository } from "../../../00_INFRA/Repositories/Order/OrderRepository"
@@ -21,35 +21,15 @@ export default function UserDetailPage() {
     const [ratings, setRatings] = useState<Rating[]>([])
     const [ratingStats, setRatingStats] = useState<UserRatingStats | null>(null)
     const [ratingsLoading, setRatingsLoading] = useState(false)
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
+    const [deleteError, setDeleteError] = useState<string | null>(null)
 
-    const userRepository = new UserRepository()
-    const orderRepository = new OrderRepository()
-    const ratingRepository = new RatingRepository()
+    const userRepository = useMemo(() => new UserRepository(), [])
+    const orderRepository = useMemo(() => new OrderRepository(), [])
+    const ratingRepository = useMemo(() => new RatingRepository(), [])
 
-    useEffect(() => {
-        loadUser()
-    }, [userId])
-
-    const loadUser = async () => {
-        setLoading(true)
-        try {
-            const fetchedUser = await userRepository.findById(userId)
-            setUser(fetchedUser)
-            if (fetchedUser) {
-                await loadOrdersForUser(fetchedUser)
-                await loadRatingsForUser(fetchedUser)
-            } else {
-                setOrders([])
-                setRatings([])
-            }
-        } catch (error) {
-            console.error("Erreur lors du chargement de l'utilisateur:", error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const loadOrdersForUser = async (targetUser: User) => {
+    const loadOrdersForUser = useCallback(async (targetUser: User) => {
         setOrdersLoading(true)
         setOrdersError(null)
         try {
@@ -69,9 +49,9 @@ export default function UserDetailPage() {
         } finally {
             setOrdersLoading(false)
         }
-    }
+    }, [orderRepository])
 
-    const loadRatingsForUser = async (targetUser: User) => {
+    const loadRatingsForUser = useCallback(async (targetUser: User) => {
         setRatingsLoading(true)
         try {
             const response = await ratingRepository.findByUserId(targetUser.uid)
@@ -82,19 +62,46 @@ export default function UserDetailPage() {
         } finally {
             setRatingsLoading(false)
         }
-    }
+    }, [ratingRepository])
 
-    const handleDelete = async () => {
-        if (!confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")) {
-            return
+    const loadUser = useCallback(async () => {
+        setLoading(true)
+        try {
+            const fetchedUser = await userRepository.findById(userId)
+            setUser(fetchedUser)
+            if (fetchedUser) {
+                await loadOrdersForUser(fetchedUser)
+                await loadRatingsForUser(fetchedUser)
+            } else {
+                setOrders([])
+                setRatings([])
+            }
+        } catch (error) {
+            console.error("Erreur lors du chargement de l'utilisateur:", error)
+        } finally {
+            setLoading(false)
         }
+    }, [loadOrdersForUser, loadRatingsForUser, userId, userRepository])
 
+    useEffect(() => {
+        void loadUser()
+    }, [loadUser])
+
+    const handleDeleteConfirm = async () => {
+        setDeleteError(null)
+        setIsDeleting(true)
         try {
             await userRepository.removeById(userId)
             router.push("/dashboard/users")
         } catch (error) {
             console.error("Erreur lors de la suppression:", error)
-            alert("Erreur lors de la suppression de l'utilisateur")
+            setDeleteError(
+                error instanceof Error
+                    ? error.message
+                    : "Erreur lors de la suppression de l'utilisateur"
+            )
+        } finally {
+            setIsDeleting(false)
         }
     }
 
@@ -158,7 +165,7 @@ export default function UserDetailPage() {
             </button>
 
             <div className="max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-glow">
-                <h1 className="text-xl font-semibold">Détails de l'utilisateur</h1>
+                <h1 className="text-xl font-semibold">Détails de l&apos;utilisateur</h1>
 
                 <div className="mt-6 grid gap-4 text-sm text-muted">
                     <div>
@@ -202,10 +209,10 @@ export default function UserDetailPage() {
 
                 <div className="mt-6">
                     <button
-                        onClick={handleDelete}
+                        onClick={() => setIsDeleteOpen(true)}
                         className="rounded-full border border-accent/30 bg-accent px-4 py-2 text-sm font-semibold text-white shadow-glow transition hover:bg-accent/90"
                     >
-                        Supprimer l'utilisateur
+                        Supprimer l&apos;utilisateur
                     </button>
                 </div>
             </div>
@@ -368,6 +375,47 @@ export default function UserDetailPage() {
                             </table>
                         </div>
                     )}
+                </div>
+            )}
+
+            {isDeleteOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center">
+                    <button
+                        type="button"
+                        className="absolute inset-0 bg-black/40"
+                        onClick={() => {
+                            setIsDeleteOpen(false)
+                            setDeleteError(null)
+                        }}
+                        aria-label="Fermer"
+                    />
+                    <div className="relative w-[min(92vw,460px)] rounded-2xl border border-border bg-card p-6 shadow-xl">
+                        <h3 className="text-lg font-semibold">Supprimer ce compte ?</h3>
+                        <p className="mt-3 text-sm text-muted">
+                            {user.firstName} {user.lastName} — {user.email}
+                        </p>
+                        {deleteError && <p className="mt-3 text-sm text-red-600">{deleteError}</p>}
+                        <div className="mt-6 flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsDeleteOpen(false)
+                                    setDeleteError(null)
+                                }}
+                                className="rounded-full border border-border px-4 py-2 text-sm font-semibold"
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDeleteConfirm}
+                                disabled={isDeleting}
+                                className="rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+                            >
+                                {isDeleting ? "Suppression..." : "Supprimer"}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
