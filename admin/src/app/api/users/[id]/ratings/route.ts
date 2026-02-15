@@ -3,10 +3,7 @@ import { buildAuthErrorResponse, requireAdmin } from "../../../_utils/auth"
 import { Rating } from "../../../../00_INFRA/types/Rating"
 
 // GET /api/users/[id]/ratings - Tous les ratings d'un user
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) return buildAuthErrorResponse(auth)
@@ -60,13 +57,13 @@ export async function GET(
           ratingDistribution: distribution,
         },
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } },
     )
   } catch (error) {
     console.error("[GET /api/users/[id]/ratings] Error:", error)
-    return new Response(
-      JSON.stringify({ error: "Erreur lors de la récupération des ratings" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ error: "Erreur lors de la récupération des ratings" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }

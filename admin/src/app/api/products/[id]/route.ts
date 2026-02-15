@@ -5,10 +5,7 @@ import { Product, productSchema } from "../schema"
 import { buildAuthErrorResponse, requireAdmin } from "../../_utils/auth"
 import { requireCsrf } from "../../_utils/csrf"
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
@@ -25,7 +22,7 @@ export async function GET(
         JSON.stringify({
           error: "Produit non trouvé",
         }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
+        { status: 404, headers: { "Content-Type": "application/json" } },
       )
     }
 
@@ -35,7 +32,7 @@ export async function GET(
         JSON.stringify({
           error: "Données produit invalides",
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } },
       )
     }
 
@@ -49,22 +46,19 @@ export async function GET(
         success: true,
         product,
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } },
     )
   } catch {
     return new Response(
       JSON.stringify({
         error: "Impossible de récupérer le produit",
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     )
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
@@ -90,9 +84,9 @@ export async function DELETE(
     })
   } catch (error) {
     console.error("[DELETE /api/products/[id]] Error:", error)
-    return new Response(
-      JSON.stringify({ error: "Impossible de supprimer le produit" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ error: "Impossible de supprimer le produit" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }

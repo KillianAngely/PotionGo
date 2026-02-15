@@ -4,8 +4,13 @@ import { requireCsrf } from "../_utils/csrf"
 import { ratingCreateSchema } from "./schema"
 import { Rating } from "../../00_INFRA/types/Rating"
 
-const clamp = (value: number, min: number, max: number) =>
-  Math.min(max, Math.max(min, value))
+type RatingDocument = Omit<Rating, "id" | "createdAt" | "updatedAt"> & {
+  comment?: string | null
+  createdAt?: FirebaseFirestore.Timestamp
+  updatedAt?: FirebaseFirestore.Timestamp
+}
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 const parsePositiveInt = (value: string | null, fallback: number) => {
   const parsed = Number(value)
@@ -27,7 +32,9 @@ export async function GET(request: Request) {
     const page = parsePositiveInt(searchParams.get("page"), 1)
     const pageSize = clamp(parsePositiveInt(searchParams.get("pageSize"), 10), 1, 100)
 
-    let query = admin.firestore().collection("ratings") as any
+    let query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> = admin
+      .firestore()
+      .collection("ratings")
 
     if (orderId) {
       query = query.where("orderId", "==", orderId)
@@ -39,18 +46,21 @@ export async function GET(request: Request) {
     const snapshot = await query.get()
 
     const ratings: Rating[] = snapshot.docs
-      .map((doc: any) => ({
-        id: doc.id,
-        orderId: doc.data().orderId,
-        reviewerId: doc.data().reviewerId,
-        reviewerRole: doc.data().reviewerRole,
-        revieweeId: doc.data().revieweeId,
-        revieweeRole: doc.data().revieweeRole,
-        rating: doc.data().rating,
-        comment: doc.data().comment,
-        createdAt: doc.data().createdAt?.toDate(),
-        updatedAt: doc.data().updatedAt?.toDate(),
-      }))
+      .map((doc) => {
+        const data = doc.data() as RatingDocument
+        return {
+          id: doc.id,
+          orderId: data.orderId,
+          reviewerId: data.reviewerId,
+          reviewerRole: data.reviewerRole,
+          revieweeId: data.revieweeId,
+          revieweeRole: data.revieweeRole,
+          rating: data.rating,
+          comment: data.comment ?? undefined,
+          createdAt: data.createdAt?.toDate(),
+          updatedAt: data.updatedAt?.toDate(),
+        }
+      })
       .filter((r: Rating) => r.rating >= minRating && r.rating <= maxRating)
       .sort((a, b) => {
         // Tri par date décroissante (plus récent d'abord)
@@ -71,14 +81,14 @@ export async function GET(request: Request) {
         ratings: pagedRatings,
         pagination: { page: safePage, pageSize, total, totalPages },
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } },
     )
   } catch (error) {
     console.error("[GET /api/ratings] Error:", error)
-    return new Response(
-      JSON.stringify({ error: "Erreur lors de la récupération des ratings" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ error: "Erreur lors de la récupération des ratings" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }
 
@@ -100,7 +110,7 @@ export async function POST(request: Request) {
           error: "Données de rating invalides",
           details: validation.error.flatten().fieldErrors,
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } },
       )
     }
 
@@ -110,10 +120,10 @@ export async function POST(request: Request) {
     // Vérifier que l'order existe
     const orderDoc = await admin.firestore().collection("orders").doc(orderId).get()
     if (!orderDoc.exists) {
-      return new Response(
-        JSON.stringify({ error: "Commande introuvable" }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
-      )
+      return new Response(JSON.stringify({ error: "Commande introuvable" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      })
     }
 
     // Créer le rating
@@ -141,15 +151,15 @@ export async function POST(request: Request) {
       comment,
     }
 
-    return new Response(
-      JSON.stringify({ success: true, rating: createdRating }),
-      { status: 201, headers: { "Content-Type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ success: true, rating: createdRating }), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    })
   } catch (error) {
     console.error("[POST /api/ratings] Error:", error)
-    return new Response(
-      JSON.stringify({ error: "Erreur lors de la création du rating" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ error: "Erreur lors de la création du rating" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }

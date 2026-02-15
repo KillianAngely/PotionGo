@@ -54,19 +54,34 @@ export default function Dashboard() {
     <div className="grid gap-6">
       <div className="rounded-2xl border border-border bg-bg/80 p-6">
         <h2 className="text-lg font-semibold">Accès rapide</h2>
-        <p className="mt-1 text-sm text-muted">Choisis un module pour gérer les données principales.</p>
+        <p className="mt-1 text-sm text-muted">
+          Choisis un module pour gérer les données principales.
+        </p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <button onClick={() => router.push("/dashboard/users")} className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Utilisateurs</p>
+          <button
+            onClick={() => router.push("/dashboard/users")}
+            className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              Utilisateurs
+            </p>
             <h3 className="mt-2 text-lg font-semibold">Gérer les comptes</h3>
             <p className="mt-2 text-sm text-muted">Parcourir, filtrer et consulter les profils.</p>
           </button>
-          <button onClick={() => router.push("/dashboard/orders")} className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Commandes</p>
+          <button
+            onClick={() => router.push("/dashboard/orders")}
+            className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              Commandes
+            </p>
             <h3 className="mt-2 text-lg font-semibold">Suivre les livraisons</h3>
             <p className="mt-2 text-sm text-muted">Statuts, clients et détails de livraison.</p>
           </button>
-          <button onClick={() => router.push("/dashboard/products")} className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60">
+          <button
+            onClick={() => router.push("/dashboard/products")}
+            className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60"
+          >
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Produits</p>
             <h3 className="mt-2 text-lg font-semibold">Suivre les potions</h3>
             <p className="mt-2 text-sm text-muted">Inventaire, mood et détails des offres.</p>
@@ -87,11 +102,21 @@ export default function Dashboard() {
             <div className="rounded-xl border border-border bg-bg/70 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-muted">Totaux</p>
               <div className="mt-3 grid gap-2 text-sm">
-                <p>Utilisateurs: <strong>{stats.totals.users}</strong></p>
-                <p>Produits: <strong>{stats.totals.products}</strong></p>
-                <p>Commandes: <strong>{stats.totals.orders}</strong></p>
-                <p>Évaluations: <strong>{stats.totals.ratings}</strong></p>
-                <p>Unités vendues (estimé): <strong>{stats.estimatedUnitsSold}</strong></p>
+                <p>
+                  Utilisateurs: <strong>{stats.totals.users}</strong>
+                </p>
+                <p>
+                  Produits: <strong>{stats.totals.products}</strong>
+                </p>
+                <p>
+                  Commandes: <strong>{stats.totals.orders}</strong>
+                </p>
+                <p>
+                  Évaluations: <strong>{stats.totals.ratings}</strong>
+                </p>
+                <p>
+                  Unités vendues (estimé): <strong>{stats.estimatedUnitsSold}</strong>
+                </p>
               </div>
             </div>
 
@@ -157,7 +182,11 @@ export default function Dashboard() {
                         {[1, 2, 3, 4, 5].map((star) => (
                           <span
                             key={star}
-                            className={star <= Math.round(stats.ratings.average) ? "text-yellow-400" : "text-gray-400"}
+                            className={
+                              star <= Math.round(stats.ratings.average)
+                                ? "text-yellow-400"
+                                : "text-gray-400"
+                            }
                           >
                             ★
                           </span>
@@ -172,7 +201,8 @@ export default function Dashboard() {
                       {[5, 4, 3, 2, 1].map((star) => {
                         const count = stats.ratings.distribution[star as 1 | 2 | 3 | 4 | 5]
                         const max = Math.max(...Object.values(stats.ratings.distribution))
-                        const width = max > 0 ? `${Math.max(8, Math.round((count / max) * 100))}%` : '0%'
+                        const width =
+                          max > 0 ? `${Math.max(8, Math.round((count / max) * 100))}%` : "0%"
                         return (
                           <div key={star}>
                             <div className="mb-1 flex justify-between text-xs text-muted">
@@ -199,7 +229,10 @@ export default function Dashboard() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Session</p>
           <p className="mt-1 text-sm text-muted">Déconnexion sécurisée.</p>
         </div>
-        <button onClick={handleLogout} className="rounded-full border border-accent/30 bg-accent px-4 py-2 text-sm font-semibold text-white shadow-glow transition hover:bg-accent/90">
+        <button
+          onClick={handleLogout}
+          className="rounded-full border border-accent/30 bg-accent px-4 py-2 text-sm font-semibold text-white shadow-glow transition hover:bg-accent/90"
+        >
           Déconnexion
         </button>
       </div>

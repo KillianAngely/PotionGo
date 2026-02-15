@@ -6,10 +6,7 @@ import { userSchema } from "../schema"
 import { buildAuthErrorResponse, requireAdmin } from "../../_utils/auth"
 import { requireCsrf } from "../../_utils/csrf"
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
@@ -56,21 +53,18 @@ export async function GET(
         success: true,
         user,
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } },
     )
   } catch (error) {
     console.error("[GET /api/users/[id]] Error:", error)
     return new Response(
       JSON.stringify({ error: "Erreur lors de la récupération de l'utilisateur" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     )
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
@@ -91,9 +85,7 @@ export async function DELETE(
     try {
       await admin.auth().deleteUser(id)
     } catch (error: unknown) {
-      const maybeError = error as
-        | { errorInfo?: { code?: string }; code?: string }
-        | undefined
+      const maybeError = error as { errorInfo?: { code?: string }; code?: string } | undefined
       const code = maybeError?.errorInfo?.code ?? maybeError?.code
       if (code !== "auth/user-not-found") {
         throw error
@@ -110,7 +102,7 @@ export async function DELETE(
     console.error("[DELETE /api/users/[id]] Error:", error)
     return new Response(
       JSON.stringify({ error: "Erreur lors de la suppression de l'utilisateur" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     )
   }
 }

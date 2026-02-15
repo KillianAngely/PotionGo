@@ -21,10 +21,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         </svg>
       ) : (
         <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
-          <path
-            d="M21 14.5A7.5 7.5 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z"
-            fill="currentColor"
-          />
+          <path d="M21 14.5A7.5 7.5 0 0 1 9.5 3a9 9 0 1 0 11.5 11.5z" fill="currentColor" />
         </svg>
       )}
     </button>

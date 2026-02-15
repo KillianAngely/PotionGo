@@ -101,14 +101,11 @@ export async function GET(request: Request) {
     }
 
     const userRefs = [...customerIds, ...driverIds].map((id) =>
-      admin.firestore().collection("users").doc(id)
+      admin.firestore().collection("users").doc(id),
     )
-    const productRefs = [...potionIds].map((id) =>
-      admin.firestore().collection("products").doc(id)
-    )
+    const productRefs = [...potionIds].map((id) => admin.firestore().collection("products").doc(id))
 
-    const userSnaps =
-      userRefs.length > 0 ? await admin.firestore().getAll(...userRefs) : []
+    const userSnaps = userRefs.length > 0 ? await admin.firestore().getAll(...userRefs) : []
     const productSnaps =
       productRefs.length > 0 ? await admin.firestore().getAll(...productRefs) : []
 
@@ -125,10 +122,8 @@ export async function GET(request: Request) {
     const orders: OrderListItem[] = parsedOrders.map((order) => {
       const items = order.items.map((item) => {
         const product = productMap.get(item.potionId)
-        const potionName =
-          typeof product?.name === "string" ? product.name : item.potionId
-        const potionImageUrl =
-          typeof product?.imageUrl === "string" ? product.imageUrl : undefined
+        const potionName = typeof product?.name === "string" ? product.name : item.potionId
+        const potionImageUrl = typeof product?.imageUrl === "string" ? product.imageUrl : undefined
         const unitPrice = typeof product?.price === "number" ? product.price : null
         const lineTotal = typeof unitPrice === "number" ? unitPrice * item.quantity : null
 
@@ -143,7 +138,7 @@ export async function GET(request: Request) {
 
       const totalPrice = items.reduce(
         (sum, item) => (typeof item.lineTotal === "number" ? sum + item.lineTotal : sum),
-        0
+        0,
       )
       const hasPrice = items.some((item) => typeof item.lineTotal === "number")
 
@@ -161,10 +156,18 @@ export async function GET(request: Request) {
 
     const filteredOrders = orders.filter((order) => {
       if (statusFilter && order.status !== statusFilter) return false
-      if (typeof minTotal === "number" && typeof order.totalPrice === "number" && order.totalPrice < minTotal) {
+      if (
+        typeof minTotal === "number" &&
+        typeof order.totalPrice === "number" &&
+        order.totalPrice < minTotal
+      ) {
         return false
       }
-      if (typeof maxTotal === "number" && typeof order.totalPrice === "number" && order.totalPrice > maxTotal) {
+      if (
+        typeof maxTotal === "number" &&
+        typeof order.totalPrice === "number" &&
+        order.totalPrice > maxTotal
+      ) {
         return false
       }
       if (search) {
@@ -189,7 +192,7 @@ export async function GET(request: Request) {
       for (const sort of sorts) {
         const comparison = compareValues(
           a[sort.field as keyof OrderListItem],
-          b[sort.field as keyof OrderListItem]
+          b[sort.field as keyof OrderListItem],
         )
         if (comparison !== 0) {
           return sort.direction === "asc" ? comparison : -comparison
@@ -215,7 +218,7 @@ export async function GET(request: Request) {
           totalPages,
         },
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } },
     )
   } catch (error) {
     console.error("[GET /api/orders] Error:", error)
@@ -223,7 +226,7 @@ export async function GET(request: Request) {
       JSON.stringify({
         error: "Impossible d'afficher les commandes",
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     )
   }
 }
@@ -245,13 +248,16 @@ export async function POST(request: Request) {
           error: "Données commande invalides",
           details: validation.error.flatten().fieldErrors,
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } },
       )
     }
 
-    const docRef = await admin.firestore().collection("orders").add({
-      ...validation.data,
-    })
+    const docRef = await admin
+      .firestore()
+      .collection("orders")
+      .add({
+        ...validation.data,
+      })
 
     const order: Order = {
       id: docRef.id,
@@ -264,9 +270,9 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error("[POST /api/orders] Error:", error)
-    return new Response(
-      JSON.stringify({ error: "Impossible de créer la commande" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ error: "Impossible de créer la commande" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }

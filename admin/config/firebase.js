@@ -14,8 +14,8 @@ const firebaseConfig = {
   projectId: "potiongo-f85b7",
   storageBucket: "potiongo-f85b7.firebasestorage.app",
   messagingSenderId: "925160551434",
-  appId: "1:925160551434:web:1de4f8607354e1ed8fdbf3"
-};
+  appId: "1:925160551434:web:1de4f8607354e1ed8fdbf3",
+}
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig)
 export const firestore = getFirestore(app)
