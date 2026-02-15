@@ -1,9 +1,5 @@
 import { Order, OrderStatus } from "../../types/Order"
-import {
-  IOrderRepository,
-  OrderListQuery,
-  OrderListResponse,
-} from "./OrderRepository.interface"
+import { IOrderRepository, OrderListQuery, OrderListResponse } from "./OrderRepository.interface"
 import { assertApiResponse, withCsrfHeaders } from "../_utils/http"
 
 export class OrderRepository implements IOrderRepository {

@@ -4,7 +4,6 @@ import "./globals.css"
 import { Providers } from "./providers"
 import { AdminShell } from "./00_INFRA/Components/AdminShell"
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

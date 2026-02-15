@@ -34,7 +34,7 @@ export async function GET(request: Request) {
         escapeCsvValue(user.firstName),
         escapeCsvValue(user.lastName),
         escapeCsvValue(user.role),
-      ].join(",")
+      ].join(","),
     )
     const csv = [header, ...rows].join("\n")
     const filename = `users-export-${new Date().toISOString().slice(0, 10)}.csv`
@@ -47,9 +47,9 @@ export async function GET(request: Request) {
     return new Response(csv, { status: 200, headers })
   } catch (error) {
     console.error("[GET /api/users/export] Error:", error)
-    return new Response(
-      JSON.stringify({ error: "Erreur lors de l'export des utilisateurs" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ error: "Erreur lors de l'export des utilisateurs" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }

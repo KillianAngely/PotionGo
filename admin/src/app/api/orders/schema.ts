@@ -60,28 +60,21 @@ export const orderSchema = z.object({
       z.object({
         potionId: z.string().min(1),
         quantity: z.number().int().positive(),
-      })
+      }),
     )
     .min(1),
   driverStart: z.preprocess(
     normalizeDriverStart,
     z
       .object({
-        address: z
-          .string()
-          .min(1)
-          .refine(noHtmlTags, "Adresse de départ invalide")
-          .optional(),
+        address: z.string().min(1).refine(noHtmlTags, "Adresse de départ invalide").optional(),
         lat: z.number(),
         lng: z.number(),
       })
-      .nullable()
+      .nullable(),
   ),
   dropoff: z.object({
-    address: z
-      .string()
-      .min(1)
-      .refine(noHtmlTags, "Adresse de livraison invalide"),
+    address: z.string().min(1).refine(noHtmlTags, "Adresse de livraison invalide"),
     lat: z.number(),
     lng: z.number(),
   }),

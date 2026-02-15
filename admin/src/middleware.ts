@@ -29,10 +29,7 @@ export function middleware(_request: NextRequest) {
   response.headers.set("X-Frame-Options", "DENY")
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin")
   response.headers.set("Cross-Origin-Resource-Policy", "same-origin")
-  response.headers.set(
-    "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=(), payment=()"
-  )
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()")
 
   return response
 }

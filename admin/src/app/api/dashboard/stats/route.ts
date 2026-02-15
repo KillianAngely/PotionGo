@@ -35,9 +35,7 @@ export async function GET(request: Request) {
       // Revenue estimate based on current product prices.
       const quantityTotal = items.reduce((sum: number, item: unknown) => {
         const quantity =
-          typeof item === "object" &&
-          item !== null &&
-          "quantity" in item
+          typeof item === "object" && item !== null && "quantity" in item
             ? Number((item as { quantity?: unknown }).quantity)
             : NaN
         return sum + (Number.isFinite(quantity) ? quantity : 0)
@@ -75,13 +73,13 @@ export async function GET(request: Request) {
           distribution: ratingDistribution,
         },
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } },
     )
   } catch (error) {
     console.error("[GET /api/dashboard/stats] Error:", error)
-    return new Response(
-      JSON.stringify({ error: "Impossible de charger les statistiques" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ error: "Impossible de charger les statistiques" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }

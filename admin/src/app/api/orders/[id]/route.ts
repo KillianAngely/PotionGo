@@ -12,10 +12,7 @@ const buildUserLabel = (data: admin.firestore.DocumentData | undefined, fallback
   return fallback
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
@@ -31,7 +28,7 @@ export async function GET(
         JSON.stringify({
           error: "Commande non trouvée",
         }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
+        { status: 404, headers: { "Content-Type": "application/json" } },
       )
     }
 
@@ -41,7 +38,7 @@ export async function GET(
         JSON.stringify({
           error: "Données commande invalides",
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } },
       )
     }
 
@@ -50,7 +47,7 @@ export async function GET(
       ? admin.firestore().collection("users").doc(validation.data.driverId)
       : null
     const productRefs = validation.data.items.map((item) =>
-      admin.firestore().collection("products").doc(item.potionId)
+      admin.firestore().collection("products").doc(item.potionId),
     )
 
     const [customerSnap, driverSnap, ...productSnaps] = await admin
@@ -64,10 +61,8 @@ export async function GET(
 
     const items = validation.data.items.map((item) => {
       const product = productMap.get(item.potionId)
-      const potionName =
-        typeof product?.name === "string" ? product.name : item.potionId
-      const potionImageUrl =
-        typeof product?.imageUrl === "string" ? product.imageUrl : undefined
+      const potionName = typeof product?.name === "string" ? product.name : item.potionId
+      const potionImageUrl = typeof product?.imageUrl === "string" ? product.imageUrl : undefined
       const unitPrice = typeof product?.price === "number" ? product.price : null
       const lineTotal = typeof unitPrice === "number" ? unitPrice * item.quantity : null
 
@@ -82,7 +77,7 @@ export async function GET(
 
     const totalPrice = items.reduce(
       (sum, item) => (typeof item.lineTotal === "number" ? sum + item.lineTotal : sum),
-      0
+      0,
     )
     const hasPrice = items.some((item) => typeof item.lineTotal === "number")
 
@@ -102,7 +97,7 @@ export async function GET(
         success: true,
         order,
       }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: { "Content-Type": "application/json" } },
     )
   } catch (error) {
     console.error("[GET /api/orders/[id]] Error:", error)
@@ -110,15 +105,12 @@ export async function GET(
       JSON.stringify({
         error: "Impossible de récupérer la commande",
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     )
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireAdmin(request)
     if (!auth.ok) {
@@ -144,9 +136,9 @@ export async function DELETE(
     })
   } catch (error) {
     console.error("[DELETE /api/orders/[id]] Error:", error)
-    return new Response(
-      JSON.stringify({ error: "Impossible de supprimer la commande" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ error: "Impossible de supprimer la commande" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }

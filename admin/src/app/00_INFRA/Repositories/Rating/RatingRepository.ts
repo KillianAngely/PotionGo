@@ -61,11 +61,18 @@ export class RatingRepository implements IRatingRepository {
   async findByUserId(userId: string): Promise<UserRatingsResponse> {
     try {
       const response = await fetch(`/api/users/${userId}/ratings`, { credentials: "include" })
-      await assertApiResponse(response, "Erreur lors de la récupération des ratings de l'utilisateur")
+      await assertApiResponse(
+        response,
+        "Erreur lors de la récupération des ratings de l'utilisateur",
+      )
       const data = await response.json()
       return {
         ratings: data.ratings ?? [],
-        stats: data.stats ?? { averageRating: 0, totalRatings: 0, ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } },
+        stats: data.stats ?? {
+          averageRating: 0,
+          totalRatings: 0,
+          ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+        },
       }
     } catch (error) {
       console.error(`Error finding ratings for user ${userId}:`, error)
