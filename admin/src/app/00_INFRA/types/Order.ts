@@ -36,4 +36,6 @@ export type Order = {
     lng: number
   } | null
   dropoff: OrderDropoff
+  validationCode?: string
+  createdAt?: number | null
 }

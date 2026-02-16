@@ -19,6 +19,8 @@ import com.example.potiongo.ui.screens.auth.roleSelection.RoleSelectionScreen
 import com.example.potiongo.ui.screens.auth.signup.SignUpScreen
 import com.example.potiongo.ui.screens.cart.CartScreen
 import com.example.potiongo.ui.screens.checkout.CheckoutScreen
+import com.example.potiongo.ui.screens.driver.ActiveDeliveryScreen
+import com.example.potiongo.ui.screens.driver.OrderRequestScreen
 import com.example.potiongo.ui.screens.history.HistoryScreen
 import com.example.potiongo.ui.screens.order.ProductDetailScreen
 import com.example.potiongo.ui.screens.profile.ProfileScreen
@@ -63,6 +65,12 @@ fun AppNavHost(
                 onSelectProduct = { productId ->
                     navController.navigate("product_detail/$productId")
                     Log.d("AppNavGraph","product_detail/$productId")
+                },
+                onOrderClick = { order ->
+                    val address = order.dropoff.address.ifEmpty { "Adresse inconnue" }
+                    navController.navigate(
+                        "order_request/${order.id}/$address/${order.dropoff.lat}/${order.dropoff.lng}/${order.items.size}"
+                    )
                 }
             )
         }
@@ -116,6 +124,38 @@ fun AppNavHost(
         composable (route = AppScreenDestination.EmailVerif.name){
             EmailVerifScreen(
                 onEmailVerif = { navController.navigate(AppScreenDestination.Home.name)},
+            )
+        }
+        composable(
+            route = "order_request/{orderId}/{dropoffAddress}/{dropoffLat}/{dropoffLng}/{itemCount}",
+            arguments = listOf(
+                navArgument("orderId") { type = NavType.StringType },
+                navArgument("dropoffAddress") { type = NavType.StringType },
+                navArgument("dropoffLat") { type = NavType.StringType },
+                navArgument("dropoffLng") { type = NavType.StringType },
+                navArgument("itemCount") { type = NavType.StringType },
+            )
+        ) {
+            OrderRequestScreen(
+                onAccepted = { orderId ->
+                    navController.navigate("active_delivery/$orderId") {
+                        popUpTo(AppScreenDestination.Home.name)
+                    }
+                },
+                onRejected = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = "active_delivery/{orderId}",
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) {
+            ActiveDeliveryScreen(
+                onDeliveryCompleted = {
+                    navController.navigate(AppScreenDestination.Home.name) {
+                        popUpTo(AppScreenDestination.Home.name) { inclusive = true }
+                    }
+                },
+                onBack = { navController.popBackStack() }
             )
         }
     }

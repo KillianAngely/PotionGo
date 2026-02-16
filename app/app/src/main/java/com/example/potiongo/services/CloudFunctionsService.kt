@@ -18,7 +18,10 @@ import javax.inject.Singleton
 
 
 interface ICloudFunctionsService {
-    suspend fun createUser(role: String, email : String, firstName : String, lastName: String)
+    suspend fun createUser(role: String, email: String, firstName: String, lastName: String)
+    suspend fun createOrder(items: List<Map<String, Any>>, dropoff: Map<String, Any>): Map<String, Any>
+    suspend fun acceptOrder(orderId: String)
+    suspend fun validateOrder(orderId: String, validationCode: String)
 }
 
 private const val TAG : String = "CloudFunctionsService"
@@ -47,6 +50,35 @@ class CloudFunctionsService @Inject constructor(private val cloudFunction: Fireb
                 }
                 Log.d(TAG, "createUser:success")
             }.await()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override suspend fun createOrder(
+        items: List<Map<String, Any>>,
+        dropoff: Map<String, Any>
+    ): Map<String, Any> {
+        val data = hashMapOf(
+            "items" to items,
+            "dropoff" to dropoff
+        )
+        val result = cloudFunction.getHttpsCallable("createOrder")
+            .call(data).await()
+        return result.data as Map<String, Any>
+    }
+
+    override suspend fun acceptOrder(orderId: String) {
+        val data = hashMapOf("orderId" to orderId)
+        cloudFunction.getHttpsCallable("acceptOrder")
+            .call(data).await()
+    }
+
+    override suspend fun validateOrder(orderId: String, validationCode: String) {
+        val data = hashMapOf(
+            "orderId" to orderId,
+            "validationCode" to validationCode
+        )
+        cloudFunction.getHttpsCallable("validateOrder")
+            .call(data).await()
     }
 
 }
