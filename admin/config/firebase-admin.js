@@ -4,13 +4,13 @@ const getServiceAccountFromEnv = () => {
   const jsonString = process.env.CLIENT_SERVICE_ACCOUNT_JSON
 
   if (!jsonString) {
-    throw new Error("CLIENT_SERVICE_ACCOUNT_JSON environment variable is required")
+    return null
   }
 
   try {
     return JSON.parse(jsonString)
   } catch (error) {
-    throw new Error("Invalid JSON in CLIENT_SERVICE_ACCOUNT_JSON")
+    return null
   }
 }
 
