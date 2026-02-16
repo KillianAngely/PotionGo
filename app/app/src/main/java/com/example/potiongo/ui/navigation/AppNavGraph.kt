@@ -22,6 +22,7 @@ import com.example.potiongo.ui.screens.checkout.CheckoutScreen
 import com.example.potiongo.ui.screens.driver.ActiveDeliveryScreen
 import com.example.potiongo.ui.screens.driver.OrderRequestScreen
 import com.example.potiongo.ui.screens.history.HistoryScreen
+import com.example.potiongo.ui.screens.history.OrderDetailScreen
 import com.example.potiongo.ui.screens.order.ProductDetailScreen
 import com.example.potiongo.ui.screens.profile.ProfileScreen
 
@@ -99,7 +100,20 @@ fun AppNavHost(
            )
         }
         composable(route = AppScreenDestination.History.name){
-            HistoryScreen(bottomBarNavigation = bottomBarNavigation)
+            HistoryScreen(
+                bottomBarNavigation = bottomBarNavigation,
+                onOrderClick = { orderId ->
+                    navController.navigate("order_detail/$orderId")
+                }
+            )
+        }
+        composable(
+            route = "order_detail/{orderId}",
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) {
+            OrderDetailScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
         composable(route = AppScreenDestination.Profile.name){
             ProfileScreen(
