@@ -3,8 +3,11 @@ package com.example.potiongo.repository
 import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
+import com.google.firebase.database.ValueEventListener
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,6 +18,8 @@ import javax.inject.Singleton
 
 interface ILocationRepository {
     fun updateDriverLocation(driverId: String, lat: Double, lng: Double)
+    fun listenToDriverLocation(driverId: String, onUpdate: (lat: Double, lng: Double) -> Unit): ValueEventListener
+    fun stopListeningDriverLocation(driverId: String, listener: ValueEventListener)
 }
 
 class LocationRepository @Inject constructor(
@@ -32,6 +37,28 @@ class LocationRepository @Inject constructor(
             .child(driverId)
             .child("location")
             .setValue(locationData)
+    }
+
+    override fun listenToDriverLocation(
+        driverId: String,
+        onUpdate: (lat: Double, lng: Double) -> Unit
+    ): ValueEventListener {
+        val ref = database.reference.child("drivers").child(driverId).child("location")
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val lat = snapshot.child("lat").getValue(Double::class.java) ?: return
+                val lng = snapshot.child("lng").getValue(Double::class.java) ?: return
+                onUpdate(lat, lng)
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        ref.addValueEventListener(listener)
+        return listener
+    }
+
+    override fun stopListeningDriverLocation(driverId: String, listener: ValueEventListener) {
+        database.reference.child("drivers").child(driverId).child("location")
+            .removeEventListener(listener)
     }
 }
 

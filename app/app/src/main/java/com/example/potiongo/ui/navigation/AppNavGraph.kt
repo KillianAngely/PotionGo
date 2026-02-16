@@ -25,6 +25,7 @@ import com.example.potiongo.ui.screens.history.HistoryScreen
 import com.example.potiongo.ui.screens.history.OrderDetailScreen
 import com.example.potiongo.ui.screens.order.ProductDetailScreen
 import com.example.potiongo.ui.screens.profile.ProfileScreen
+import com.example.potiongo.ui.screens.tracking.OrderTrackingScreen
 
 @Composable
 fun AppNavHost(
@@ -69,6 +70,9 @@ fun AppNavHost(
                 },
                 onOrderClick = { order ->
                     navController.navigate("order_request/${order.id}")
+                },
+                onTrackOrder = { orderId ->
+                    navController.navigate("order_tracking/$orderId")
                 }
             )
         }
@@ -162,6 +166,14 @@ fun AppNavHost(
                         popUpTo(AppScreenDestination.Home.name) { inclusive = true }
                     }
                 },
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = "order_tracking/{orderId}",
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) {
+            OrderTrackingScreen(
                 onBack = { navController.popBackStack() }
             )
         }
