@@ -23,6 +23,7 @@ interface ICloudFunctionsService {
     suspend fun acceptOrder(orderId: String)
     suspend fun validateOrder(orderId: String, validationCode: String)
     suspend fun updateUser(firstName: String, lastName: String, email: String?): Map<String, Any>
+    suspend fun submitRating(orderId: String, rating: Int, comment: String?)
 }
 
 private const val TAG : String = "CloudFunctionsService"
@@ -79,6 +80,18 @@ class CloudFunctionsService @Inject constructor(private val cloudFunction: Fireb
             "validationCode" to validationCode
         )
         cloudFunction.getHttpsCallable("validateOrder")
+            .call(data).await()
+    }
+
+    override suspend fun submitRating(orderId: String, rating: Int, comment: String?) {
+        val data = hashMapOf<String, Any>(
+            "orderId" to orderId,
+            "rating" to rating
+        )
+        if (comment != null) {
+            data["comment"] = comment
+        }
+        cloudFunction.getHttpsCallable("submitRating")
             .call(data).await()
     }
 

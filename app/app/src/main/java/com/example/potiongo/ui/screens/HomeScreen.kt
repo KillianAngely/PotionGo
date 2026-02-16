@@ -60,7 +60,8 @@ fun HomeScreen(
     bottomBarNavigation: BottomBarNavigation,
     onSelectProduct: (String) -> Unit,
     onOrderClick: (Order) -> Unit = {},
-    onTrackOrder: (String) -> Unit = {}
+    onTrackOrder: (String) -> Unit = {},
+    onRateOrder: (String) -> Unit = {}
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val product by homeViewModel.products.collectAsState()
@@ -80,6 +81,15 @@ fun HomeScreen(
         ) {
             when (val state = uiState) {
                 is HomeUiState.CustomerView -> {
+                    // Navigate to rating when delivery is complete
+                    val deliveredOrderId = state.lastDeliveredOrderId
+                    if (deliveredOrderId != null) {
+                        LaunchedEffect(deliveredOrderId) {
+                            homeViewModel.clearDeliveredFlag()
+                            onRateOrder(deliveredOrderId)
+                        }
+                    }
+
                     CustomerContent(
                         activeOrder = state.activeOrder,
                         orderDelivered = state.orderDelivered,
@@ -91,6 +101,15 @@ fun HomeScreen(
                     )
                 }
                 is HomeUiState.DriverView -> {
+                    // Navigate to rating after driver completes delivery
+                    val pendingRating = state.pendingRatingOrderId
+                    if (pendingRating != null) {
+                        LaunchedEffect(pendingRating) {
+                            homeViewModel.clearPendingRating()
+                            onRateOrder(pendingRating)
+                        }
+                    }
+
                     DriverLocationSetup(
                         onStartLocation = { homeViewModel.startLocationTracking() }
                     )

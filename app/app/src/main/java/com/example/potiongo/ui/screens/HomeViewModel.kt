@@ -144,7 +144,11 @@ class HomeViewModel @Inject constructor(
                 stopOrderStatusListener()
                 val currentState = _uiState.value
                 if (currentState is HomeUiState.CustomerView) {
-                    _uiState.value = currentState.copy(activeOrder = null, orderDelivered = true)
+                    _uiState.value = currentState.copy(
+                        activeOrder = null,
+                        orderDelivered = true,
+                        lastDeliveredOrderId = orderId
+                    )
                 }
             }
         }
@@ -158,7 +162,7 @@ class HomeViewModel @Inject constructor(
     fun clearDeliveredFlag() {
         val currentState = _uiState.value
         if (currentState is HomeUiState.CustomerView) {
-            _uiState.value = currentState.copy(orderDelivered = false)
+            _uiState.value = currentState.copy(orderDelivered = false, lastDeliveredOrderId = null)
         }
     }
 
@@ -259,7 +263,9 @@ class HomeViewModel @Inject constructor(
             when (val result = validateOrderUseCase(orderId, delivery.enteredCode)) {
                 is ValidateOrderUseCaseResult.Success -> {
                     clearDeliveryTracking()
-                    loadDriverOrders()
+                    _uiState.value = HomeUiState.DriverView(
+                        pendingRatingOrderId = orderId
+                    )
                 }
                 is ValidateOrderUseCaseResult.Error -> {
                     _uiState.value = currentState.copy(
@@ -268,6 +274,14 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun clearPendingRating() {
+        val currentState = _uiState.value
+        if (currentState is HomeUiState.DriverView) {
+            _uiState.value = currentState.copy(pendingRatingOrderId = null)
+        }
+        loadDriverOrders()
     }
 
     // ── Products ──
