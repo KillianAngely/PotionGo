@@ -10,9 +10,7 @@ private const val TAG : String = "GetAllProductUseCase"
 sealed interface GetAllProductUseCaseResult {
     data class Success(val products : List<Product>) : GetAllProductUseCaseResult
     data object Error : GetAllProductUseCaseResult
-
 }
-
 
 class GetAllProductUseCase @Inject constructor(
     private val productRepository: ProductRepository

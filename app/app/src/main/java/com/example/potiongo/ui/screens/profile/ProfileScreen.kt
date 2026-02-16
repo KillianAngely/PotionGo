@@ -1,6 +1,6 @@
 package com.example.potiongo.ui.screens.profile
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -46,9 +46,42 @@ fun ProfileScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            when (val state = uiState) {
+                is ProfileUiState.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(top = 32.dp)
+                    )
+                }
+                is ProfileUiState.Loaded -> {
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Text(
+                        text = "${state.user.firstName} ${state.user.lastName}",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = state.user.email,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                is ProfileUiState.Error -> {
+                    Text(
+                        text = state.error,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 32.dp)
+                    )
+                }
+                else -> {}
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
             Button(
                 onClick = { profileViewModel.signOut() },
                 modifier = Modifier.fillMaxWidth(),
