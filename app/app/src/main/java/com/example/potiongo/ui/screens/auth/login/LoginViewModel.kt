@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.potiongo.domain.LoginUseCase
 import com.example.potiongo.domain.LoginUseCaseResult
+import com.example.potiongo.domain.SaveFcmTokenUseCase
 import com.example.potiongo.domain.SignWithGoogleUseCase
 import com.example.potiongo.domain.SignWithGoogleUseCaseResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private  val signWithGoogleUseCase: SignWithGoogleUseCase
+    private val signWithGoogleUseCase: SignWithGoogleUseCase,
+    private val saveFcmTokenUseCase: SaveFcmTokenUseCase
 ): ViewModel() {
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -46,6 +48,7 @@ class LoginViewModel @Inject constructor(
             _uiState.value = LoginUiState.Loading
             when(val res = signWithGoogleUseCase(activityContext)) {
                 is SignWithGoogleUseCaseResult.Success -> {
+                    saveFcmTokenUseCase()
                     _uiState.value = LoginUiState.Success
                 }
                 is SignWithGoogleUseCaseResult.ErrorAuth -> {
@@ -60,6 +63,7 @@ class LoginViewModel @Inject constructor(
             _uiState.value = LoginUiState.Loading
             when(val res = loginUseCase(email, password)) {
                 is LoginUseCaseResult.Success -> {
+                    saveFcmTokenUseCase()
                     _uiState.value = LoginUiState.Success
                 }
                 is LoginUseCaseResult.ErrorAuth -> {

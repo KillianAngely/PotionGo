@@ -2,6 +2,31 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Products: any authenticated user can read
+    match /products/{productId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Users: user can read their own doc, update only fcmToken
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId
+                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fcmToken']);
+      allow create, delete: if false;
+    }
+
+    // Orders: customers read their own, drivers read PENDING or assigned to them
+    match /orders/{orderId} {
+      allow read: if request.auth != null &&
+        (resource.data.customerId == request.auth.uid ||
+         resource.data.driverId == request.auth.uid ||
+         resource.data.status == "PENDING");
+      allow write: if false;
+    }
+
+    // Default deny
     match /{document=**} {
       allow read, write: if false;
     }

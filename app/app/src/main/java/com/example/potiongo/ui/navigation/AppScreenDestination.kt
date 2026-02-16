@@ -9,5 +9,7 @@ enum class AppScreenDestination() {
     History,
     Profile,
     Cart,
-    Checkout
+    Checkout,
+    OrderRequest,
+    ActiveDelivery
 }

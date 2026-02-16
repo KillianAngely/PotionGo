@@ -78,6 +78,8 @@ export const orderSchema = z.object({
     lat: z.number(),
     lng: z.number(),
   }),
+  validationCode: z.string().length(6).optional(),
+  createdAt: z.number().optional(),
 })
 
 export type OrderInput = z.infer<typeof orderSchema>

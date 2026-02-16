@@ -12,6 +12,6 @@ sealed class CheckoutUiState {
     ) : CheckoutUiState()
 
     data object Loading : CheckoutUiState()
-    data class Success(val orderId: String) : CheckoutUiState()
+    data class Success(val orderId: String, val validationCode: String) : CheckoutUiState()
     data class Error(val error: String) : CheckoutUiState()
 }

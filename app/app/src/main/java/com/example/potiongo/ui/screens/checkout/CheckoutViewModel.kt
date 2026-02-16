@@ -102,7 +102,7 @@ class CheckoutViewModel @Inject constructor(
         viewModelScope.launch {
             when (val result = placeOrderUseCase(lat, lng, address)) {
                 is PlaceOrderUseCaseResult.Success -> {
-                    _uiState.value = CheckoutUiState.Success(result.orderId)
+                    _uiState.value = CheckoutUiState.Success(result.orderId, result.validationCode)
                 }
                 is PlaceOrderUseCaseResult.Error -> {
                     _uiState.value = CheckoutUiState.Error(result.message)
