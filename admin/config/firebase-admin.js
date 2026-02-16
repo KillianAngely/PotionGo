@@ -15,9 +15,17 @@ const getServiceAccountFromEnv = () => {
 }
 
 if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(getServiceAccountFromEnv()),
-  })
+  const serviceAccount = getServiceAccountFromEnv()
+
+  if (serviceAccount) {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    })
+  } else {
+    admin.initializeApp({
+      credential: admin.credential.applicationDefault(),
+    })
+  }
 }
 
 export default admin
