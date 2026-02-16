@@ -1,6 +1,57 @@
-import { z } from "zod"
+﻿import { z } from "zod"
 
 const noHtmlTags = (value: string) => !/[<>]/.test(value)
+
+const normalizeCreatedAt = (value: unknown) => {
+  if (value === undefined || value === null) return undefined
+
+  if (typeof value === "number" && Number.isFinite(value)) return value
+
+  if (value instanceof Date && Number.isFinite(value.getTime())) {
+    return value.getTime()
+  }
+
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    "toMillis" in value &&
+    typeof (value as { toMillis?: unknown }).toMillis === "function"
+  ) {
+    try {
+      const millis = (value as { toMillis: () => unknown }).toMillis()
+      if (typeof millis === "number" && Number.isFinite(millis)) return millis
+    } catch {
+      return value
+    }
+  }
+
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    "seconds" in value &&
+    typeof (value as { seconds?: unknown }).seconds === "number"
+  ) {
+    const timestampLike = value as Record<string, unknown>
+    const seconds = timestampLike.seconds as number
+    const nanos = typeof timestampLike.nanoseconds === "number" ? timestampLike.nanoseconds : 0
+    return Math.round(seconds * 1000 + nanos / 1_000_000)
+  }
+
+  if (
+    typeof value === "object" &&
+    value !== null &&
+    "_seconds" in value &&
+    typeof (value as { _seconds?: unknown })._seconds === "number"
+  ) {
+    const timestampLike = value as Record<string, unknown>
+    const seconds = timestampLike._seconds as number
+    const nanos = typeof timestampLike._nanoseconds === "number" ? timestampLike._nanoseconds : 0
+    return Math.round(seconds * 1000 + nanos / 1_000_000)
+  }
+
+  return value
+}
+
 const normalizeDriverId = (value: unknown) => {
   if (value === undefined || value === null) return null
 
@@ -21,6 +72,7 @@ const normalizeDriverId = (value: unknown) => {
 
   return value
 }
+
 const normalizeDriverStart = (value: unknown) => {
   if (value === undefined || value === null) return null
   if (typeof value !== "object") return value
@@ -33,10 +85,10 @@ const normalizeDriverStart = (value: unknown) => {
     return null
   }
 
-  if (address === "") {
+  if (address !== undefined) {
     return {
       ...candidate,
-      address: undefined,
+      address,
     }
   }
 
@@ -52,13 +104,13 @@ export const orderStatusEnum = z.enum([
 ])
 
 export const orderSchema = z.object({
-  customerId: z.string().min(1),
+  customerId: z.string().trim().min(1),
   driverId: z.preprocess(normalizeDriverId, z.string().nullable()),
   status: orderStatusEnum,
   items: z
     .array(
       z.object({
-        potionId: z.string().min(1),
+        potionId: z.string().trim().min(1),
         quantity: z.number().int().positive(),
       }),
     )
@@ -67,19 +119,19 @@ export const orderSchema = z.object({
     normalizeDriverStart,
     z
       .object({
-        address: z.string().min(1).refine(noHtmlTags, "Adresse de départ invalide").optional(),
+        address: z.string().trim().min(1).refine(noHtmlTags, "Adresse de départ invalide").optional(),
         lat: z.number(),
         lng: z.number(),
       })
       .nullable(),
   ),
   dropoff: z.object({
-    address: z.string().min(1).refine(noHtmlTags, "Adresse de livraison invalide"),
+    address: z.string().trim().min(1).refine(noHtmlTags, "Adresse de livraison invalide"),
     lat: z.number(),
     lng: z.number(),
   }),
   validationCode: z.string().length(6).optional(),
-  createdAt: z.number().optional(),
+  createdAt: z.preprocess(normalizeCreatedAt, z.number().finite().optional()),
 })
 
 export type OrderInput = z.infer<typeof orderSchema>
