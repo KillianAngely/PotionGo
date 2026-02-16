@@ -15,13 +15,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -66,7 +65,7 @@ fun HomeScreen(
                 val driverState = uiState as HomeUiState.DriverView
                 DriverContent(
                     driverState = driverState,
-                    onToggleLocation = { homeViewModel.toggleLocationTracking() },
+                    onStartLocation = { homeViewModel.startLocationTracking() },
                     onOrderClick = onOrderClick
                 )
             }
@@ -77,7 +76,7 @@ fun HomeScreen(
 @Composable
 private fun DriverContent(
     driverState: HomeUiState.DriverView,
-    onToggleLocation: () -> Unit,
+    onStartLocation: () -> Unit,
     onOrderClick: (Order) -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -85,54 +84,38 @@ private fun DriverContent(
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
-        val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
-        if (fineGranted || coarseGranted) {
-            onToggleLocation()
+        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
+                || permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (granted) {
+            onStartLocation()
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        DriverOrderList(
-            orders = driverState.orders,
-            onOrderClick = onOrderClick,
-            modifier = Modifier.weight(1f)
-        )
+    LaunchedEffect(Unit) {
+        val hasFine = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        val hasCoarse = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
-        Button(
-            onClick = {
-                val hasFine = ContextCompat.checkSelfPermission(
-                    context, Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-                val hasCoarse = ContextCompat.checkSelfPermission(
-                    context, Manifest.permission.ACCESS_COARSE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-
-                if (hasFine || hasCoarse) {
-                    onToggleLocation()
-                } else {
-                    permissionLauncher.launch(
-                        arrayOf(
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                        )
-                    )
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            colors = if (driverState.isSendingLocation) {
-                ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-            } else {
-                ButtonDefaults.buttonColors()
-            }
-        ) {
-            Text(
-                text = if (driverState.isSendingLocation) "Stop Location" else "Send Location"
+        if (hasFine || hasCoarse) {
+            onStartLocation()
+        } else {
+            permissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
             )
         }
     }
+
+    DriverOrderList(
+        orders = driverState.orders,
+        onOrderClick = onOrderClick,
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
 @Composable
