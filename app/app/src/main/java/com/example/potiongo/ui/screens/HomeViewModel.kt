@@ -39,6 +39,7 @@ class HomeViewModel @Inject constructor(
     val products: StateFlow<List<Product>> = _products.asStateFlow()
 
     private var locationCallback: LocationCallback? = null
+    private var locationStarted = false
 
     init {
         witchRole()
@@ -48,6 +49,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             when(val res = getRoleUseCase()){
                 is GetRoleUseCaseResult.Customer -> {
+                    stopLocationUpdates()
                     _uiState.value = HomeUiState.CustomerView
                     getAllProduct()
                 }
@@ -87,21 +89,16 @@ class HomeViewModel @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    fun toggleLocationTracking() {
-        val currentState = _uiState.value
-        if (currentState !is HomeUiState.DriverView) return
-
-        if (currentState.isSendingLocation) {
-            stopLocationUpdates()
-            _uiState.value = currentState.copy(isSendingLocation = false)
-        } else {
-            startLocationUpdates()
-            _uiState.value = currentState.copy(isSendingLocation = true)
-        }
+    fun startLocationTracking() {
+        if (locationStarted) return
+        locationStarted = true
+        startLocationUpdates()
     }
 
     @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
+        stopLocationUpdates()
+
         val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000L)
             .setMinUpdateIntervalMillis(3000L)
             .build()
@@ -126,6 +123,7 @@ class HomeViewModel @Inject constructor(
             fusedLocationClient.removeLocationUpdates(it)
         }
         locationCallback = null
+        locationStarted = false
     }
 
     override fun onCleared() {
