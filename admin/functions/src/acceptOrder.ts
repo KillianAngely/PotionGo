@@ -25,9 +25,7 @@ export const acceptOrder = onCall(async (request) => {
   const driverId = request.auth.uid
 
   try {
-    const driverLocSnap = await getDatabase()
-      .ref(`drivers/${driverId}/location`)
-      .get()
+    const driverLocSnap = await getDatabase().ref(`drivers/${driverId}/location`).get()
     const driverLoc = driverLocSnap.exists() ? driverLocSnap.val() : null
 
     await firestore().runTransaction(async (transaction) => {
@@ -40,18 +38,13 @@ export const acceptOrder = onCall(async (request) => {
 
       const orderData = orderDoc.data()!
       if (orderData.status !== "PENDING") {
-        throw new HttpsError(
-          "failed-precondition",
-          "Cette commande a deja ete prise en charge",
-        )
+        throw new HttpsError("failed-precondition", "Cette commande a deja ete prise en charge")
       }
 
       transaction.update(orderRef, {
         driverId,
         status: "ASSIGNED",
-        driverStart: driverLoc
-          ? { lat: driverLoc.lat, lng: driverLoc.lng }
-          : null,
+        driverStart: driverLoc ? { lat: driverLoc.lat, lng: driverLoc.lng } : null,
       })
     })
 

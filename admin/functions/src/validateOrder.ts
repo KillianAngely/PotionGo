@@ -35,17 +35,11 @@ export const validateOrder = onCall(async (request) => {
     const orderData = orderDoc.data()!
 
     if (orderData.driverId !== driverId) {
-      throw new HttpsError(
-        "permission-denied",
-        "Vous n'etes pas le livreur de cette commande",
-      )
+      throw new HttpsError("permission-denied", "Vous n'etes pas le livreur de cette commande")
     }
 
     if (orderData.status !== "ASSIGNED" && orderData.status !== "IN_TRANSIT") {
-      throw new HttpsError(
-        "failed-precondition",
-        "Cette commande ne peut pas etre validee",
-      )
+      throw new HttpsError("failed-precondition", "Cette commande ne peut pas etre validee")
     }
 
     if (orderData.validationCode !== validationCode) {
