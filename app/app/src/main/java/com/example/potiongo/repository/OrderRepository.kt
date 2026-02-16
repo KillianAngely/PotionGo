@@ -26,10 +26,12 @@ class OrderRepository @Inject constructor(
 
     override suspend fun getUnassignedOrders(): List<Order> {
         val snapshot = firestore.collection("orders")
-            .whereEqualTo("driverId", "")
+            .whereEqualTo("status", "PENDING")
             .get()
             .await()
-        return snapshot.toObjects(Order::class.java)
+        return snapshot.documents.map { doc ->
+            doc.toObject(Order::class.java)!!.copy(id = doc.id)
+        }
     }
 }
 

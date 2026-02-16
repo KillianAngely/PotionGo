@@ -41,7 +41,8 @@ import com.example.potiongo.ui.component.ProductGrid
 fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
     bottomBarNavigation: BottomBarNavigation,
-    onSelectProduct: (String) -> Unit
+    onSelectProduct: (String) -> Unit,
+    onOrderClick: (Order) -> Unit = {}
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val product by homeViewModel.products.collectAsState()
@@ -65,7 +66,8 @@ fun HomeScreen(
                 val driverState = uiState as HomeUiState.DriverView
                 DriverContent(
                     driverState = driverState,
-                    onToggleLocation = { homeViewModel.toggleLocationTracking() }
+                    onToggleLocation = { homeViewModel.toggleLocationTracking() },
+                    onOrderClick = onOrderClick
                 )
             }
         }
@@ -75,7 +77,8 @@ fun HomeScreen(
 @Composable
 private fun DriverContent(
     driverState: HomeUiState.DriverView,
-    onToggleLocation: () -> Unit
+    onToggleLocation: () -> Unit,
+    onOrderClick: (Order) -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -92,6 +95,7 @@ private fun DriverContent(
     Column(modifier = Modifier.fillMaxSize()) {
         DriverOrderList(
             orders = driverState.orders,
+            onOrderClick = onOrderClick,
             modifier = Modifier.weight(1f)
         )
 
@@ -134,6 +138,7 @@ private fun DriverContent(
 @Composable
 private fun DriverOrderList(
     orders: List<Order>,
+    onOrderClick: (Order) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     if (orders.isEmpty()) {
@@ -157,17 +162,18 @@ private fun DriverOrderList(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(orders) { order ->
-                OrderCard(order = order)
+                OrderCard(order = order, onClick = { onOrderClick(order) })
             }
         }
     }
 }
 
 @Composable
-private fun OrderCard(order: Order) {
+private fun OrderCard(order: Order, onClick: () -> Unit = {}) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier
