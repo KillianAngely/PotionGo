@@ -68,10 +68,7 @@ fun AppNavHost(
                     Log.d("AppNavGraph","product_detail/$productId")
                 },
                 onOrderClick = { order ->
-                    val address = order.dropoff.address.ifEmpty { "Adresse inconnue" }
-                    navController.navigate(
-                        "order_request/${order.id}/$address/${order.dropoff.lat}/${order.dropoff.lng}/${order.items.size}"
-                    )
+                    navController.navigate("order_request/${order.id}")
                 }
             )
         }
@@ -141,13 +138,9 @@ fun AppNavHost(
             )
         }
         composable(
-            route = "order_request/{orderId}/{dropoffAddress}/{dropoffLat}/{dropoffLng}/{itemCount}",
+            route = "order_request/{orderId}",
             arguments = listOf(
-                navArgument("orderId") { type = NavType.StringType },
-                navArgument("dropoffAddress") { type = NavType.StringType },
-                navArgument("dropoffLat") { type = NavType.StringType },
-                navArgument("dropoffLng") { type = NavType.StringType },
-                navArgument("itemCount") { type = NavType.StringType },
+                navArgument("orderId") { type = NavType.StringType }
             )
         ) {
             OrderRequestScreen(
