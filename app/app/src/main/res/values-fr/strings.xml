@@ -1,12 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">potionGo</string>
     <string name="app_display_name">PotionGo</string>
-    <string name="login">Login</string>
-    //Login Screen
+    <string name="login">Connexion</string>
     <string name="email_input">Email</string>
     <string name="password_input">Password</string>
-    <string name="signup_link">"Don't have an account? Sign up"</string>
+    <string name="signup_link">Créer un compte</string>
     <string name="default_web_client_id_google_auth">925160551434-3jrvmgc9ita3t5v5c2r6oabum1ukhdcn.apps.googleusercontent.com</string>
-    <string name="sign_with_google">Sign with google</string>
+    <string name="sign_with_google">Se connecter avec Google</string>
 </resources>

@@ -3,7 +3,10 @@ package com.example.potiongo.ui.screens.auth.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -22,6 +25,8 @@ import com.example.potiongo.R
 import com.example.potiongo.ui.theme.PotionGoTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 
 @Composable
@@ -48,11 +53,17 @@ fun LoginScreen(
         if(uiState is LoginUiState.Error){
             Text("Invalid Password or Something")
         }
+        Text(
+            text = stringResource(R.string.app_display_name),
+            fontSize = 32.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         TextField(
             value = loginViewModel.email,
             onValueChange = { loginViewModel.updateEmail(it) },
             label = { Text(stringResource(R.string.email_input)) }
         )
+        Spacer(modifier = Modifier.height(8.dp))
         TextField(
             value = loginViewModel.password,
             onValueChange = { loginViewModel.updatePassword(it) },
@@ -63,16 +74,15 @@ fun LoginScreen(
             Text(stringResource(R.string.signup_link))
         }
         OutlinedButton(
-            modifier = modifier,
             onClick = { loginViewModel.signWithGoogle(activityContext) }
         ){
-            Text("Sign with google")
+            Text(stringResource(R.string.sign_with_google))
         }
         Button(
             onClick = { loginViewModel.login() },
             enabled = uiState !is LoginUiState.Loading
         ) {
-            Text(stringResource(R.string.submit))
+            Text(stringResource(R.string.login))
         }
     }
 }
