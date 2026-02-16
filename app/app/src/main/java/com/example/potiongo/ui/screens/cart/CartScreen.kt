@@ -28,10 +28,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.potiongo.R
 import com.example.potiongo.data.Cart
 import com.example.potiongo.ui.component.BottomBarNavigation
 import com.example.potiongo.ui.component.PotionGoScaffold
@@ -45,7 +47,7 @@ fun CartScreen(
     val items by viewModel.items.collectAsState()
 
     PotionGoScaffold(
-        title = "Mon Panier",
+        title = stringResource(R.string.my_cart),
         showBottomBar = true,
         bottomBarNavigation = bottomBarNavigation
     ) { innerPadding ->
@@ -62,7 +64,7 @@ fun CartScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Votre panier est vide",
+                        text = stringResource(R.string.cart_empty),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -87,7 +89,7 @@ fun CartScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Total",
+                        text = stringResource(R.string.total),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -105,7 +107,7 @@ fun CartScreen(
                     onClick = onClickPay,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Payer")
+                    Text(stringResource(R.string.pay))
                 }
             }
         }
@@ -151,7 +153,7 @@ private fun CartItemCard(
             IconButton(onClick = onRemove) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Supprimer",
+                    contentDescription = stringResource(R.string.delete_item),
                     tint = MaterialTheme.colorScheme.error
                 )
             }

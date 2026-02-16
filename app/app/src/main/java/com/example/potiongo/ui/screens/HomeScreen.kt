@@ -33,11 +33,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.potiongo.R
 import com.example.potiongo.data.Order
 import com.example.potiongo.ui.component.BottomBarNavigation
 import com.example.potiongo.ui.component.PotionGoScaffold
@@ -65,7 +67,7 @@ fun HomeScreen(
     val driverLoc by homeViewModel.driverLocation.collectAsState()
 
     PotionGoScaffold(
-        title = "PotionGo",
+        title = stringResource(R.string.app_display_name),
         showBottomBar = true,
         bottomBarNavigation = bottomBarNavigation
     ) { innerPadding ->
@@ -133,11 +135,11 @@ private fun CustomerContent(
                 modifier = Modifier.padding(16.dp),
                 action = {
                     TextButton(onClick = onDismissDelivered) {
-                        Text("OK")
+                        Text(stringResource(R.string.ok))
                     }
                 }
             ) {
-                Text("Commande livree !")
+                Text(stringResource(R.string.order_delivered))
             }
         }
 
@@ -174,7 +176,7 @@ private fun ActiveOrderCard(
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
-                text = "Livraison en cours",
+                text = stringResource(R.string.delivery_in_progress),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -196,17 +198,17 @@ private fun ActiveOrderCard(
             ) {
                 Marker(
                     state = MarkerState(position = driverPosition),
-                    title = "Livreur",
+                    title = stringResource(R.string.marker_driver),
                     icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
                 )
                 Marker(
                     state = MarkerState(position = dropoffPosition),
-                    title = "Livraison"
+                    title = stringResource(R.string.marker_delivery)
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Appuyez pour suivre votre commande",
+                text = stringResource(R.string.tap_to_track_order),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -321,13 +323,13 @@ private fun NavigatingContent(
             if (hasDriverLocation) {
                 Marker(
                     state = MarkerState(position = driverPosition),
-                    title = "Ma position",
+                    title = stringResource(R.string.marker_my_position),
                     icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
                 )
             }
             Marker(
                 state = MarkerState(position = dropoffPosition),
-                title = "Lieu de livraison",
+                title = stringResource(R.string.marker_delivery_location),
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
             )
         }
@@ -344,7 +346,7 @@ private fun NavigatingContent(
 
         if (hasDriverLocation) {
             Text(
-                text = "Distance : ${state.distanceMeters.toInt()} m",
+                text = stringResource(R.string.distance_format, state.distanceMeters.toInt()),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -368,7 +370,7 @@ private fun CodeEntryContent(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Validation de la livraison",
+            text = stringResource(R.string.delivery_validation_title),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -376,7 +378,7 @@ private fun CodeEntryContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Demandez le code de validation au client",
+            text = stringResource(R.string.ask_validation_code),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -386,7 +388,7 @@ private fun CodeEntryContent(
         OutlinedTextField(
             value = state.enteredCode,
             onValueChange = onCodeChange,
-            label = { Text("Code de validation") },
+            label = { Text(stringResource(R.string.validation_code_label)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             singleLine = true,
             isError = state.errorMessage != null,
@@ -409,7 +411,7 @@ private fun CodeEntryContent(
             enabled = state.enteredCode.length == 6,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Valider la livraison")
+            Text(stringResource(R.string.validate_delivery))
         }
     }
 }
@@ -430,7 +432,7 @@ private fun DriverOrderList(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Aucune commande disponible",
+                text = stringResource(R.string.no_orders_available),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -466,7 +468,7 @@ private fun OrderCard(order: Order, onClick: () -> Unit = {}) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Commande",
+                    text = stringResource(R.string.order_label),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -480,7 +482,7 @@ private fun OrderCard(order: Order, onClick: () -> Unit = {}) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "${order.items.size} article(s)",
+                text = stringResource(R.string.items_count, order.items.size),
                 style = MaterialTheme.typography.bodyMedium
             )
 

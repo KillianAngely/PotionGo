@@ -27,11 +27,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.potiongo.R
 import com.example.potiongo.data.Cart
 import com.example.potiongo.ui.component.PotionGoScaffold
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -51,7 +53,7 @@ fun CheckoutScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     PotionGoScaffold(
-        title = "Paiement",
+        title = stringResource(R.string.payment),
         onBack = onBack
     ) { paddingValues ->
         when (val state = uiState) {
@@ -93,13 +95,13 @@ fun CheckoutScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "Commande confirmee !",
+                        text = stringResource(R.string.order_confirmed),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(24.dp))
                     Text(
-                        text = "Votre code de validation :",
+                        text = stringResource(R.string.your_validation_code),
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -112,14 +114,14 @@ fun CheckoutScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Communiquez ce code au livreur a la reception",
+                        text = stringResource(R.string.give_code_to_driver),
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                     Button(onClick = onOrderPlaced) {
-                        Text("Retour a l'accueil")
+                        Text(stringResource(R.string.back_to_home))
                     }
                 }
             }
@@ -140,7 +142,7 @@ fun CheckoutScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = { viewModel.placeOrder() }) {
-                        Text("Réessayer")
+                        Text(stringResource(R.string.retry))
                     }
                 }
             }
@@ -162,7 +164,7 @@ private fun ReadyContent(
             .padding(16.dp)
     ) {
         Text(
-            text = "Récapitulatif",
+            text = stringResource(R.string.summary),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -171,10 +173,10 @@ private fun ReadyContent(
 
         // Header row
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text("Produit", modifier = Modifier.weight(2f), fontWeight = FontWeight.SemiBold)
-            Text("Qté", modifier = Modifier.weight(0.5f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
-            Text("Prix", modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
-            Text("Sous-total", modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
+            Text(stringResource(R.string.product_header), modifier = Modifier.weight(2f), fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.qty_header), modifier = Modifier.weight(0.5f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+            Text(stringResource(R.string.price_header), modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
+            Text(stringResource(R.string.subtotal_header), modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
         }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
@@ -195,7 +197,7 @@ private fun ReadyContent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Total",
+                text = stringResource(R.string.total),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -210,7 +212,7 @@ private fun ReadyContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Lieu de livraison",
+            text = stringResource(R.string.delivery_location),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -239,7 +241,7 @@ private fun ReadyContent(
         ) {
             Marker(
                 state = MarkerState(position = markerPosition),
-                title = "Lieu de livraison"
+                title = stringResource(R.string.delivery_location)
             )
         }
 
@@ -248,7 +250,7 @@ private fun ReadyContent(
         OutlinedTextField(
             value = state.deliveryAddress,
             onValueChange = onAddressChange,
-            label = { Text("Adresse de livraison") },
+            label = { Text(stringResource(R.string.delivery_address)) },
             modifier = Modifier.fillMaxWidth(),
             singleLine = false,
             maxLines = 3
@@ -260,7 +262,7 @@ private fun ReadyContent(
             onClick = onConfirm,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Confirmer la commande")
+            Text(stringResource(R.string.confirm_order))
         }
     }
 }

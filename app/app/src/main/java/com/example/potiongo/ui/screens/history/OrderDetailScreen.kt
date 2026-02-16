@@ -20,10 +20,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.potiongo.R
 import com.example.potiongo.data.OrderDetail
 import com.example.potiongo.data.OrderDetailItem
 import com.example.potiongo.ui.component.PotionGoScaffold
@@ -42,7 +44,7 @@ fun OrderDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     PotionGoScaffold(
-        title = "Detail commande",
+        title = stringResource(R.string.order_detail),
         onBack = onBack
     ) { paddingValues ->
         when (val state = uiState) {
@@ -100,7 +102,7 @@ private fun OrderDetailContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Statut",
+                text = stringResource(R.string.status),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -111,13 +113,13 @@ private fun OrderDetailContent(
 
         // Driver
         Text(
-            text = "Livreur",
+            text = stringResource(R.string.driver),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = detail.driverName ?: "Non assigne",
+            text = detail.driverName ?: stringResource(R.string.not_assigned),
             style = MaterialTheme.typography.bodyMedium,
             color = if (detail.driverName != null)
                 MaterialTheme.colorScheme.onSurface
@@ -129,13 +131,13 @@ private fun OrderDetailContent(
 
         // Delivery address
         Text(
-            text = "Adresse de livraison",
+            text = stringResource(R.string.delivery_address),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = detail.order.dropoff.address.ifEmpty { "Non renseignee" },
+            text = detail.order.dropoff.address.ifEmpty { stringResource(R.string.not_provided) },
             style = MaterialTheme.typography.bodyMedium
         )
 
@@ -157,7 +159,7 @@ private fun OrderDetailContent(
             ) {
                 Marker(
                     state = MarkerState(position = markerPosition),
-                    title = "Lieu de livraison"
+                    title = stringResource(R.string.delivery_location)
                 )
             }
 
@@ -166,7 +168,7 @@ private fun OrderDetailContent(
 
         // Items
         Text(
-            text = "Articles",
+            text = stringResource(R.string.items),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -175,10 +177,10 @@ private fun OrderDetailContent(
 
         // Header
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text("Produit", modifier = Modifier.weight(2f), fontWeight = FontWeight.SemiBold)
-            Text("Qte", modifier = Modifier.weight(0.5f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
-            Text("Prix", modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
-            Text("Sous-total", modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
+            Text(stringResource(R.string.product_header), modifier = Modifier.weight(2f), fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.qty_header), modifier = Modifier.weight(0.5f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+            Text(stringResource(R.string.price_header), modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
+            Text(stringResource(R.string.subtotal_header), modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
         }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
@@ -196,7 +198,7 @@ private fun OrderDetailContent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Total",
+                text = stringResource(R.string.total),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )

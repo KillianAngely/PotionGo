@@ -21,10 +21,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.potiongo.R
 import com.example.potiongo.data.Order
 import com.example.potiongo.ui.component.BottomBarNavigation
 import com.example.potiongo.ui.component.PotionGoScaffold
@@ -38,7 +40,7 @@ fun HistoryScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     PotionGoScaffold(
-        title = "Historique",
+        title = stringResource(R.string.history),
         showBottomBar = true,
         bottomBarNavigation = bottomBarNavigation
     ) { innerPadding ->
@@ -78,7 +80,7 @@ fun HistoryScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Aucune commande",
+                            text = stringResource(R.string.no_orders),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -125,7 +127,7 @@ private fun OrderCard(
             ) {
                 StatusBadge(status = order.status)
                 Text(
-                    text = "${order.items.size} article(s)",
+                    text = stringResource(R.string.items_count, order.items.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -134,7 +136,7 @@ private fun OrderCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = order.dropoff.address.ifEmpty { "Adresse non renseignee" },
+                text = order.dropoff.address.ifEmpty { stringResource(R.string.address_not_provided) },
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
@@ -153,11 +155,11 @@ fun StatusBadge(status: String) {
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
     val label = when (status) {
-        "PENDING" -> "En attente"
-        "ASSIGNED" -> "Assignee"
-        "IN_TRANSIT" -> "En livraison"
-        "DELIVERED" -> "Livree"
-        "CANCELLED" -> "Annulee"
+        "PENDING" -> stringResource(R.string.status_pending)
+        "ASSIGNED" -> stringResource(R.string.status_assigned)
+        "IN_TRANSIT" -> stringResource(R.string.status_in_transit)
+        "DELIVERED" -> stringResource(R.string.status_delivered)
+        "CANCELLED" -> stringResource(R.string.status_cancelled)
         else -> status
     }
     Text(

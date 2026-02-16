@@ -22,12 +22,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.potiongo.R
 import com.example.potiongo.domain.GetRoleUseCase
 import com.example.potiongo.domain.GetRoleUseCaseResult
 import com.example.potiongo.repository.CartRepository
@@ -83,8 +85,8 @@ fun PotionGoBottomBar(
                     onClick = navigation.goToHome
                 )
             ) {
-                Icon(Icons.Default.Home, contentDescription = "Home")
-                Text("Home", fontSize = 12.sp)
+                Icon(Icons.Default.Home, contentDescription = stringResource(R.string.bottom_home))
+                Text(stringResource(R.string.bottom_home), fontSize = 12.sp)
             }
             if (!isDriver) {
                 Column(
@@ -103,9 +105,9 @@ fun PotionGoBottomBar(
                             }
                         }
                     ) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = "Panier")
+                        Icon(Icons.Default.ShoppingCart, contentDescription = stringResource(R.string.bottom_cart))
                     }
-                    Text("Panier", fontSize = 12.sp)
+                    Text(stringResource(R.string.bottom_cart), fontSize = 12.sp)
                 }
             }
             Column(
@@ -117,8 +119,8 @@ fun PotionGoBottomBar(
                     onClick = navigation.goToHistory
                 )
             ) {
-                Icon(Icons.Default.History, contentDescription = "History")
-                Text("History", fontSize = 12.sp)
+                Icon(Icons.Default.History, contentDescription = stringResource(R.string.bottom_history))
+                Text(stringResource(R.string.bottom_history), fontSize = 12.sp)
             }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -129,8 +131,8 @@ fun PotionGoBottomBar(
                     onClick = navigation.goToProfile
                 )
             ) {
-                Icon(Icons.Default.Person, contentDescription = "Profile")
-                Text("Profile", fontSize = 12.sp)
+                Icon(Icons.Default.Person, contentDescription = stringResource(R.string.bottom_profile))
+                Text(stringResource(R.string.bottom_profile), fontSize = 12.sp)
             }
         }
     }

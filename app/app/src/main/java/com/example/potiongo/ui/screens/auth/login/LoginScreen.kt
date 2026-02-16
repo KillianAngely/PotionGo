@@ -51,7 +51,7 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if(uiState is LoginUiState.Error){
-            Text("Invalid Password or Something")
+            Text(stringResource(R.string.login_error))
         }
         Text(
             text = stringResource(R.string.app_display_name),

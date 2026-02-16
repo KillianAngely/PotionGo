@@ -24,10 +24,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.potiongo.R
 import com.example.potiongo.ui.component.PotionGoScaffold
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -45,7 +47,7 @@ fun OrderRequestScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     PotionGoScaffold(
-        title = "Nouvelle commande",
+        title = stringResource(R.string.new_order),
         onBack = onRejected
     ) { paddingValues ->
         when (val state = uiState) {
@@ -91,7 +93,7 @@ fun OrderRequestScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = onRejected) {
-                        Text("Retour")
+                        Text(stringResource(R.string.back))
                     }
                 }
             }
@@ -118,7 +120,7 @@ private fun ReadyContent(
             .padding(16.dp)
     ) {
         Text(
-            text = "Livraison demandee",
+            text = stringResource(R.string.delivery_requested),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -133,7 +135,7 @@ private fun ReadyContent(
         ) {
             Marker(
                 state = MarkerState(position = markerPosition),
-                title = "Lieu de livraison"
+                title = stringResource(R.string.delivery_location)
             )
         }
 
@@ -150,13 +152,13 @@ private fun ReadyContent(
 
         // Section Client
         Text(
-            text = "Client",
+            text = stringResource(R.string.client),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = state.customerName.ifEmpty { "Inconnu" },
+            text = state.customerName.ifEmpty { stringResource(R.string.unknown) },
             style = MaterialTheme.typography.bodyLarge
         )
         Text(
@@ -171,7 +173,7 @@ private fun ReadyContent(
 
         // Section Produits
         Text(
-            text = "Articles",
+            text = stringResource(R.string.items),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -180,10 +182,10 @@ private fun ReadyContent(
 
         // Header
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text("Produit", modifier = Modifier.weight(2f), fontWeight = FontWeight.SemiBold)
-            Text("Qte", modifier = Modifier.weight(0.5f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
-            Text("Prix", modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
-            Text("Sous-total", modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
+            Text(stringResource(R.string.product_header), modifier = Modifier.weight(2f), fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.qty_header), modifier = Modifier.weight(0.5f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+            Text(stringResource(R.string.price_header), modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
+            Text(stringResource(R.string.subtotal_header), modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
         }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
@@ -220,7 +222,7 @@ private fun ReadyContent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Total",
+                text = stringResource(R.string.total),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -245,13 +247,13 @@ private fun ReadyContent(
                     contentColor = MaterialTheme.colorScheme.error
                 )
             ) {
-                Text("Refuser")
+                Text(stringResource(R.string.decline))
             }
             Button(
                 onClick = onAccept,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Accepter")
+                Text(stringResource(R.string.accept))
             }
         }
 

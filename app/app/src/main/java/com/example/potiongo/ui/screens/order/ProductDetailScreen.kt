@@ -22,9 +22,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.potiongo.R
 import com.example.potiongo.ui.component.PotionGoScaffold
 
 @Composable
@@ -35,7 +37,7 @@ fun ProductDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     PotionGoScaffold(
-        title = "Detail produit",
+        title = stringResource(R.string.product_detail),
         onBack = onBack
     ) { innerPadding ->
         when (val state = uiState) {
@@ -59,7 +61,7 @@ fun ProductDetailScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Erreur lors du chargement du produit")
+                    Text(stringResource(R.string.product_loading_error))
                 }
             }
 
@@ -144,7 +146,7 @@ private fun ProductDetailContent(
                 contentDescription = null,
                 modifier = Modifier.padding(end = 8.dp)
             )
-            Text("Ajouter au panier")
+            Text(stringResource(R.string.add_to_cart))
         }
     }
 }
