@@ -78,6 +78,11 @@
     <!-- Profile Screen -->
     <string name="profile">Profile</string>
     <string name="sign_out">Sign out</string>
+    <string name="edit_profile">Edit</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="profile_updated">Profile updated successfully</string>
+    <string name="email_verification_required">Please verify your new email address</string>
 
     <!-- Order Request Screen (Driver) -->
     <string name="new_order">New order</string>
