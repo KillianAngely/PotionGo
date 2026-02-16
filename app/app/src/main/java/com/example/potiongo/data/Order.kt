@@ -1,15 +1,6 @@
 package com.example.potiongo.data
 
-data class OrderLocation(
-    val address: String = "",
-    val lat: Double = 0.0,
-    val lng: Double = 0.0
-)
 
-data class OrderItem(
-    val potionId: String = "",
-    val quantity: Int = 0
-)
 
 data class Order(
     val customerId: String = "",

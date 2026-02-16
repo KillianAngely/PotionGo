@@ -1,6 +1,8 @@
 package com.example.potiongo.repository
 
 import android.util.Log
+import com.example.potiongo.data.Product
+import com.example.potiongo.data.User
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
@@ -15,6 +17,7 @@ import javax.inject.Singleton
 
 interface IUserRepository {
     suspend fun isExist(id: String) : Boolean
+    suspend fun getUserInfo(id: String) : User?
 }
 
 
@@ -30,6 +33,11 @@ class UserRepository @Inject constructor(private val firestore : FirebaseFiresto
             false
         }
 
+    }
+
+    override suspend fun getUserInfo(id: String): User? {
+        val snapshot = firestore.collection("users").document(id).get().await()
+        return snapshot.toObject(User::class.java)?.copy(id = snapshot.id)
     }
 
 }

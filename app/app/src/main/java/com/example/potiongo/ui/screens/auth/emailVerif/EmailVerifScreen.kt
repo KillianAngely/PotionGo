@@ -15,9 +15,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import com.example.potiongo.domain.LoginUseCase
-import com.example.potiongo.domain.SignUpUseCase
-import com.example.potiongo.ui.screens.auth.login.LoginUiState
 
 
 @Composable
