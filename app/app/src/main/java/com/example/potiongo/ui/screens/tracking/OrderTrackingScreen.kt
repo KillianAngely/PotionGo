@@ -26,11 +26,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.potiongo.R
 import com.example.potiongo.ui.component.PotionGoScaffold
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -50,7 +52,7 @@ fun OrderTrackingScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     PotionGoScaffold(
-        title = "Suivi de commande",
+        title = stringResource(R.string.order_tracking),
         onBack = onBack
     ) { paddingValues ->
         when (val state = uiState) {
@@ -138,13 +140,13 @@ private fun TrackingContent(
             if (hasDriverLocation) {
                 Marker(
                     state = MarkerState(position = driverPosition),
-                    title = "Livreur",
+                    title = stringResource(R.string.marker_driver),
                     icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
                 )
             }
             Marker(
                 state = MarkerState(position = dropoffPosition),
-                title = "Lieu de livraison"
+                title = stringResource(R.string.marker_delivery_location)
             )
         }
 
@@ -159,7 +161,7 @@ private fun TrackingContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Votre code de validation :",
+            text = stringResource(R.string.your_validation_code),
             style = MaterialTheme.typography.bodyMedium
         )
         Text(
@@ -175,7 +177,7 @@ private fun TrackingContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Articles",
+            text = stringResource(R.string.items),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -183,9 +185,9 @@ private fun TrackingContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Row(modifier = Modifier.fillMaxWidth()) {
-            Text("Produit", modifier = Modifier.weight(2f), fontWeight = FontWeight.SemiBold)
-            Text("Qte", modifier = Modifier.weight(0.5f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
-            Text("Prix", modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
+            Text(stringResource(R.string.product_header), modifier = Modifier.weight(2f), fontWeight = FontWeight.SemiBold)
+            Text(stringResource(R.string.qty_header), modifier = Modifier.weight(0.5f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+            Text(stringResource(R.string.price_header), modifier = Modifier.weight(1f), fontWeight = FontWeight.SemiBold, textAlign = TextAlign.End)
         }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
@@ -205,7 +207,7 @@ private fun TrackingContent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Total",
+                text = stringResource(R.string.total),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -241,20 +243,20 @@ private fun DeliveredContent(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Commande livree !",
+            text = stringResource(R.string.order_delivered_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Votre commande a ete livree avec succes",
+            text = stringResource(R.string.order_delivered_message),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onBack) {
-            Text("Retour")
+            Text(stringResource(R.string.back))
         }
     }
 }

@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.potiongo.R
 
 data class BottomBarNavigation(
     val goToHome: () -> Unit,
@@ -39,7 +41,7 @@ fun PotionGoScaffold(
                         IconButton(onClick = onBack) {
                             Icon(
                                 Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Retour"
+                                contentDescription = stringResource(R.string.back_button)
                             )
                         }
                     }

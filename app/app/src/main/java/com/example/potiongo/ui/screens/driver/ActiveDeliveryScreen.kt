@@ -20,10 +20,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.potiongo.R
 import com.example.potiongo.ui.component.PotionGoScaffold
 
 @Composable
@@ -35,7 +37,7 @@ fun ActiveDeliveryScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     PotionGoScaffold(
-        title = "Livraison en cours",
+        title = stringResource(R.string.active_delivery),
         onBack = onBack
     ) { paddingValues ->
         when (val state = uiState) {
@@ -49,7 +51,7 @@ fun ActiveDeliveryScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Validation de la livraison",
+                        text = stringResource(R.string.delivery_validation_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -57,7 +59,7 @@ fun ActiveDeliveryScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "Demandez le code de validation au client",
+                        text = stringResource(R.string.ask_validation_code),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -67,7 +69,7 @@ fun ActiveDeliveryScreen(
                     OutlinedTextField(
                         value = state.enteredCode,
                         onValueChange = { viewModel.updateCode(it) },
-                        label = { Text("Code de validation") },
+                        label = { Text(stringResource(R.string.validation_code_label)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         isError = state.errorMessage != null,
@@ -90,7 +92,7 @@ fun ActiveDeliveryScreen(
                         enabled = state.enteredCode.length == 6,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Valider la livraison")
+                        Text(stringResource(R.string.validate_delivery))
                     }
                 }
             }

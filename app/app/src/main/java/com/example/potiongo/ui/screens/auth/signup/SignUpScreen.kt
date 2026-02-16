@@ -14,8 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.potiongo.R
 
 @Composable
 fun SignUpScreen(
@@ -46,36 +48,36 @@ fun SignUpScreen(
         TextField(
             value = signUpViewModel.firstName,
             onValueChange = { signUpViewModel.updateFirstname(it) },
-            label = { Text("First Name") }
+            label = { Text(stringResource(R.string.first_name)) }
         )
         TextField(
             value = signUpViewModel.lastName,
             onValueChange = { signUpViewModel.updateLastname(it) },
-            label = { Text("Last Name") }
+            label = { Text(stringResource(R.string.last_name)) }
         )
         TextField(
             value = signUpViewModel.email,
             onValueChange = { signUpViewModel.updateEmail(it) },
-            label = { Text("Email") }
+            label = { Text(stringResource(R.string.email_input)) }
         )
         TextField(
             value = signUpViewModel.password,
             onValueChange = { signUpViewModel.updatePassword(it) },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.password_input)) },
             visualTransformation = PasswordVisualTransformation()
         )
         OutlinedButton(
             modifier = modifier,
             onClick = { signUpViewModel.signWithGoogle(activityContext) }
         ){
-            Text("Sign with google")
+            Text(stringResource(R.string.sign_with_google))
         }
         Button(
             onClick = {
                 signUpViewModel.signUp()
             }
         ) {
-            Text("Click me!")
+            Text(stringResource(R.string.sign_up))
         }
     }
 }

@@ -1,11 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">potionGo</string>
     <string name="app_display_name">PotionGo</string>
+    <string name="default_web_client_id_google_auth">925160551434-3jrvmgc9ita3t5v5c2r6oabum1ukhdcn.apps.googleusercontent.com</string>
+
+    <!-- Login Screen -->
     <string name="login">Connexion</string>
     <string name="email_input">Email</string>
-    <string name="password_input">Password</string>
-    <string name="signup_link">Créer un compte</string>
-    <string name="default_web_client_id_google_auth">925160551434-3jrvmgc9ita3t5v5c2r6oabum1ukhdcn.apps.googleusercontent.com</string>
+    <string name="password_input">Mot de passe</string>
+    <string name="signup_link">Pas de compte ? Inscrivez-vous</string>
     <string name="sign_with_google">Se connecter avec Google</string>
+    <string name="login_error">Mot de passe ou email invalide</string>
+
+    <!-- Sign Up Screen -->
+    <string name="first_name">Prénom</string>
+    <string name="last_name">Nom</string>
+    <string name="sign_up">S\'inscrire</string>
+
+    <!-- Email Verification Screen -->
+    <string name="email_verif_message">Veuillez vérifier votre email</string>
+
+    <!-- Role Selection Screen -->
+    <string name="role_selection_title">Je suis…</string>
+    <string name="role_customer">Client</string>
+    <string name="role_customer_description">Je souhaite commander des potions</string>
+    <string name="role_driver">Livreur</string>
+    <string name="role_driver_description">Je souhaite livrer des commandes</string>
+
+    <!-- Home Screen - Customer -->
+    <string name="order_delivered">Commande livrée !</string>
+    <string name="ok">OK</string>
+    <string name="delivery_in_progress">Livraison en cours</string>
+    <string name="tap_to_track_order">Appuyez pour suivre votre commande</string>
+    <string name="marker_driver">Livreur</string>
+    <string name="marker_delivery">Livraison</string>
+
+    <!-- Home Screen - Driver -->
+    <string name="marker_my_position">Ma position</string>
+    <string name="marker_delivery_location">Lieu de livraison</string>
+    <string name="distance_format">Distance : %1$d m</string>
+    <string name="delivery_validation_title">Validation de la livraison</string>
+    <string name="ask_validation_code">Demandez le code de validation au client</string>
+    <string name="validation_code_label">Code de validation</string>
+    <string name="validate_delivery">Valider la livraison</string>
+    <string name="no_orders_available">Aucune commande disponible</string>
+    <string name="order_label">Commande</string>
+    <string name="items_count">%1$d article(s)</string>
+
+    <!-- Cart Screen -->
+    <string name="my_cart">Mon Panier</string>
+    <string name="cart_empty">Votre panier est vide</string>
+    <string name="total">Total</string>
+    <string name="pay">Payer</string>
+    <string name="delete_item">Supprimer</string>
+
+    <!-- Checkout Screen -->
+    <string name="payment">Paiement</string>
+    <string name="order_confirmed">Commande confirmée !</string>
+    <string name="your_validation_code">Votre code de validation :</string>
+    <string name="give_code_to_driver">Communiquez ce code au livreur à la réception</string>
+    <string name="back_to_home">Retour à l\'accueil</string>
+    <string name="retry">Réessayer</string>
+    <string name="summary">Récapitulatif</string>
+    <string name="product_header">Produit</string>
+    <string name="qty_header">Qté</string>
+    <string name="price_header">Prix</string>
+    <string name="subtotal_header">Sous-total</string>
+    <string name="delivery_location">Lieu de livraison</string>
+    <string name="delivery_address">Adresse de livraison</string>
+    <string name="confirm_order">Confirmer la commande</string>
+
+    <!-- Product Detail Screen -->
+    <string name="product_detail">Détail produit</string>
+    <string name="product_loading_error">Erreur lors du chargement du produit</string>
+    <string name="add_to_cart">Ajouter au panier</string>
+
+    <!-- Profile Screen -->
+    <string name="profile">Profil</string>
+    <string name="sign_out">Se déconnecter</string>
+
+    <!-- Order Request Screen (Driver) -->
+    <string name="new_order">Nouvelle commande</string>
+    <string name="delivery_requested">Livraison demandée</string>
+    <string name="client">Client</string>
+    <string name="unknown">Inconnu</string>
+    <string name="items">Articles</string>
+    <string name="decline">Refuser</string>
+    <string name="accept">Accepter</string>
+    <string name="back">Retour</string>
+
+    <!-- Active Delivery Screen -->
+    <string name="active_delivery">Livraison en cours</string>
+
+    <!-- History Screen -->
+    <string name="history">Historique</string>
+    <string name="no_orders">Aucune commande</string>
+    <string name="address_not_provided">Adresse non renseignée</string>
+    <string name="status_pending">En attente</string>
+    <string name="status_assigned">Assignée</string>
+    <string name="status_in_transit">En livraison</string>
+    <string name="status_delivered">Livrée</string>
+    <string name="status_cancelled">Annulée</string>
+
+    <!-- Order Detail Screen -->
+    <string name="order_detail">Détail commande</string>
+    <string name="status">Statut</string>
+    <string name="driver">Livreur</string>
+    <string name="not_assigned">Non assigné</string>
+    <string name="not_provided">Non renseignée</string>
+
+    <!-- Order Tracking Screen -->
+    <string name="order_tracking">Suivi de commande</string>
+    <string name="order_delivered_title">Commande livrée !</string>
+    <string name="order_delivered_message">Votre commande a été livrée avec succès</string>
+
+    <!-- Bottom Bar -->
+    <string name="bottom_home">Accueil</string>
+    <string name="bottom_cart">Panier</string>
+    <string name="bottom_history">Historique</string>
+    <string name="bottom_profile">Profil</string>
+
+    <!-- Scaffold -->
+    <string name="back_button">Retour</string>
+
 </resources>

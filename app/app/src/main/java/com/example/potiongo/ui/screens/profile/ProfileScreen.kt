@@ -17,8 +17,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.potiongo.R
 import com.example.potiongo.ui.component.BottomBarNavigation
 import com.example.potiongo.ui.component.PotionGoScaffold
 
@@ -37,7 +39,7 @@ fun ProfileScreen(
     }
 
     PotionGoScaffold(
-        title = "Profil",
+        title = stringResource(R.string.profile),
         showBottomBar = true,
         bottomBarNavigation = bottomBarNavigation
     ) { innerPadding ->
@@ -89,7 +91,7 @@ fun ProfileScreen(
                     containerColor = MaterialTheme.colorScheme.error
                 )
             ) {
-                Text("Se déconnecter")
+                Text(stringResource(R.string.sign_out))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
