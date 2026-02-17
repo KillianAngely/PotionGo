@@ -78,6 +78,11 @@
     <!-- Profile Screen -->
     <string name="profile">Profile</string>
     <string name="sign_out">Sign out</string>
+    <string name="edit_profile">Edit</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="profile_updated">Profile updated successfully</string>
+    <string name="email_verification_required">Please verify your new email address</string>
 
     <!-- Order Request Screen (Driver) -->
     <string name="new_order">New order</string>
@@ -119,6 +124,20 @@
     <string name="bottom_cart">Cart</string>
     <string name="bottom_history">History</string>
     <string name="bottom_profile">Profile</string>
+
+    <!-- Rating Screen -->
+    <string name="rate_your_driver">Rate your driver</string>
+    <string name="rate_your_customer">Rate the customer</string>
+    <string name="leave_comment">Leave a comment (optional)</string>
+    <string name="submit_rating">Submit</string>
+    <string name="skip_rating">Skip</string>
+    <string name="rating_submitted">Rating submitted!</string>
+
+    <!-- User Profile Screen -->
+    <string name="user_profile">User profile</string>
+    <string name="rating_summary">%1$.1f/5 (%2$d reviews)</string>
+    <string name="no_reviews">No reviews yet</string>
+    <string name="reviews">Reviews</string>
 
     <!-- Scaffold -->
     <string name="back_button">Back</string>
