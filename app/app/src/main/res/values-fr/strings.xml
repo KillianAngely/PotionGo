@@ -126,6 +126,21 @@
     <string name="bottom_history">Historique</string>
     <string name="bottom_profile">Profil</string>
 
+    <!-- Rating Screen -->
+    <string name="rate_your_driver">Notez le livreur</string>
+    <string name="rate_your_customer">Notez le client</string>
+    <string name="leave_comment">Commentez (optionnel)</string>
+    <string name="submit_rating">Soumettre</string>
+    <string name="skip_rating">Passer</string>
+    <string name="rating_submitted">Avis soumis !</string>
+
+
+    <!-- User Profile Screen -->
+    <string name="user_profile">Profil utilisateur</string>
+    <string name="rating_summary">%1$.1f/5 (%2$d commentaires)</string>
+    <string name="no_reviews">Aucun avis</string>
+    <string name="reviews">Avis</string>
+
     <!-- Route / ETA -->
     <string name="estimated_arrival">Arrivée estimée : %1$s</string>
     <string name="route_distance">Distance : %1$s</string>
