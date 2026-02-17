@@ -1,5 +1,6 @@
 package com.example.potiongo.ui.screens.profile
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,12 +9,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.potiongo.R
+import com.example.potiongo.data.DriverStats
 import com.example.potiongo.ui.component.BottomBarNavigation
 import com.example.potiongo.ui.component.PotionGoScaffold
 
@@ -70,7 +77,8 @@ fun ProfileScreen(
                 is ProfileUiState.Loaded -> {
                     LoadedContent(
                         state = state,
-                        onEdit = { profileViewModel.startEditing() }
+                        onEdit = { profileViewModel.startEditing() },
+                        driverStats = state.driverStats
                     )
                 }
                 is ProfileUiState.Editing -> {
@@ -121,7 +129,8 @@ fun ProfileScreen(
 @Composable
 private fun LoadedContent(
     state: ProfileUiState.Loaded,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    driverStats: DriverStats?
 ) {
     Spacer(modifier = Modifier.height(24.dp))
 
@@ -148,6 +157,93 @@ private fun LoadedContent(
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
+
+    if (driverStats != null) {
+        Spacer(modifier = Modifier.height(24.dp))
+        DriverStatsSection(stats = driverStats)
+    }
+}
+
+@Composable
+private fun DriverStatsSection(stats: DriverStats) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        HorizontalDivider()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = stringResource(R.string.my_statistics),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            StatCard(
+                label = stringResource(R.string.total_deliveries),
+                value = "${stats.totalDeliveries}",
+                modifier = Modifier.weight(1f)
+            )
+            StatCard(
+                label = stringResource(R.string.total_revenue),
+                value = String.format("%.2f \u20AC", stats.totalRevenue),
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            StatCard(
+                label = stringResource(R.string.acceptance_rate),
+                value = String.format("%.0f %%", stats.acceptanceRate),
+                modifier = Modifier.weight(1f)
+            )
+            StatCard(
+                label = stringResource(R.string.average_rating),
+                value = if (stats.totalRatings > 0) String.format("%.1f/5 (%d)", stats.averageRating, stats.totalRatings) else "-",
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatCard(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
 }
 
 @Composable

@@ -19,6 +19,8 @@ interface IOrderRepository {
     suspend fun getOrderById(orderId: String): Order?
     suspend fun getActiveOrderForCustomer(customerId: String): Order?
     suspend fun getActiveOrderForDriver(driverId: String): Order?
+    suspend fun getDeliveredOrdersForDriver(driverId: String): List<Order>
+    suspend fun getRejectedCountForDriver(driverId: String): Int
     fun listenToOrderStatus(orderId: String, onUpdate: (String) -> Unit): ListenerRegistration
 }
 
@@ -90,6 +92,25 @@ class OrderRepository @Inject constructor(
         return snapshot.documents.firstOrNull()?.let { doc ->
             doc.toObject(Order::class.java)?.copy(id = doc.id)
         }
+    }
+
+    override suspend fun getDeliveredOrdersForDriver(driverId: String): List<Order> {
+        val snapshot = firestore.collection("orders")
+            .whereEqualTo("driverId", driverId)
+            .whereEqualTo("status", "DELIVERED")
+            .get()
+            .await()
+        return snapshot.documents.map { doc ->
+            doc.toObject(Order::class.java)!!.copy(id = doc.id)
+        }
+    }
+
+    override suspend fun getRejectedCountForDriver(driverId: String): Int {
+        val snapshot = firestore.collection("orders")
+            .whereArrayContains("rejectedBy", driverId)
+            .get()
+            .await()
+        return snapshot.size()
     }
 
     override fun listenToOrderStatus(orderId: String, onUpdate: (String) -> Unit): ListenerRegistration {

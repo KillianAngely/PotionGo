@@ -21,6 +21,7 @@ interface ICloudFunctionsService {
     suspend fun createUser(role: String, email: String, firstName: String, lastName: String)
     suspend fun createOrder(items: List<Map<String, Any>>, dropoff: Map<String, Any>): Map<String, Any>
     suspend fun acceptOrder(orderId: String)
+    suspend fun rejectOrder(orderId: String)
     suspend fun validateOrder(orderId: String, validationCode: String)
     suspend fun updateUser(firstName: String, lastName: String, email: String?): Map<String, Any>
     suspend fun submitRating(orderId: String, rating: Int, comment: String?)
@@ -71,6 +72,12 @@ class CloudFunctionsService @Inject constructor(private val cloudFunction: Fireb
     override suspend fun acceptOrder(orderId: String) {
         val data = hashMapOf("orderId" to orderId)
         cloudFunction.getHttpsCallable("acceptOrder")
+            .call(data).await()
+    }
+
+    override suspend fun rejectOrder(orderId: String) {
+        val data = hashMapOf("orderId" to orderId)
+        cloudFunction.getHttpsCallable("rejectOrder")
             .call(data).await()
     }
 

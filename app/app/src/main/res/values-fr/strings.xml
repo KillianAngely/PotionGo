@@ -126,18 +126,19 @@
     <string name="bottom_history">Historique</string>
     <string name="bottom_profile">Profil</string>
 
-    <string name="rate_your_driver">Notez votre livreur</string>
-    <string name="rate_your_customer">Notez le client</string>
-    <string name="leave_comment">Commentez (optionnel)</string>
-    <string name="submit_rating">Soumettre</string>
-    <string name="skip_rating">Passer</string>
-    <string name="rating_submitted">Commentaire Envoyer!</string>
+    <!-- Route / ETA -->
+    <string name="estimated_arrival">Arrivée estimée : %1$s</string>
+    <string name="route_distance">Distance : %1$s</string>
+    <string name="calculating_route">Calcul de l\'itinéraire…</string>
 
-    <!-- User Profile Screen -->
-    <string name="user_profile">Profile Utilisation</string>
-    <string name="rating_summary">%1$.1f/5 (%2$d commentaires)</string>
-    <string name="no_reviews">Aucune note</string>
-    <string name="reviews">Commentaire</string>
+    <!-- Driver Stats -->
+    <string name="my_statistics">Mes statistiques</string>
+    <string name="total_deliveries">Livraisons</string>
+    <string name="total_revenue">Revenus</string>
+    <string name="acceptance_rate">Taux d\'acceptation</string>
+    <string name="average_rating">Note moyenne</string>
+    <string name="revenue_format">%.2f €</string>
+    <string name="rate_format">%.0f %%</string>
 
     <!-- Scaffold -->
     <string name="back_button">Retour</string>

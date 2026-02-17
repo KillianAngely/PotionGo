@@ -2,6 +2,10 @@ package com.example.potiongo.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.potiongo.domain.GetDriverStatsUseCase
+import com.example.potiongo.domain.GetDriverStatsUseCaseResult
+import com.example.potiongo.domain.GetRoleUseCase
+import com.example.potiongo.domain.GetRoleUseCaseResult
 import com.example.potiongo.domain.GetUserInfoUseCase
 import com.example.potiongo.domain.GetUserInfoUseCaseResult
 import com.example.potiongo.domain.LogoutUseCase
@@ -19,7 +23,9 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val getUserInfoUseCase: GetUserInfoUseCase,
-    private val updateProfileUseCase: UpdateProfileUseCase
+    private val updateProfileUseCase: UpdateProfileUseCase,
+    private val getRoleUseCase: GetRoleUseCase,
+    private val getDriverStatsUseCase: GetDriverStatsUseCase
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow<ProfileUiState>(ProfileUiState.Idle)
@@ -32,9 +38,33 @@ class ProfileViewModel @Inject constructor(
     fun loadUserInfo() {
         viewModelScope.launch {
             _uiState.value = ProfileUiState.Loading
-            _uiState.value = when (val res = getUserInfoUseCase()) {
-                is GetUserInfoUseCaseResult.Success -> ProfileUiState.Loaded(res.user)
-                is GetUserInfoUseCaseResult.Error -> ProfileUiState.Error("Impossible de charger le profil")
+            when (val res = getUserInfoUseCase()) {
+                is GetUserInfoUseCaseResult.Success -> {
+                    _uiState.value = ProfileUiState.Loaded(res.user)
+                    loadDriverStatsIfNeeded()
+                }
+                is GetUserInfoUseCaseResult.Error -> {
+                    _uiState.value = ProfileUiState.Error("Impossible de charger le profil")
+                }
+            }
+        }
+    }
+
+    private fun loadDriverStatsIfNeeded() {
+        viewModelScope.launch {
+            when (getRoleUseCase()) {
+                is GetRoleUseCaseResult.Driver -> {
+                    when (val statsResult = getDriverStatsUseCase()) {
+                        is GetDriverStatsUseCaseResult.Success -> {
+                            val current = _uiState.value
+                            if (current is ProfileUiState.Loaded) {
+                                _uiState.value = current.copy(driverStats = statsResult.stats)
+                            }
+                        }
+                        is GetDriverStatsUseCaseResult.Error -> { /* silently ignore stats error */ }
+                    }
+                }
+                else -> { /* not a driver, no stats needed */ }
             }
         }
     }

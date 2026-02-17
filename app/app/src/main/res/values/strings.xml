@@ -139,6 +139,20 @@
     <string name="no_reviews">No reviews yet</string>
     <string name="reviews">Reviews</string>
 
+    <!-- Route / ETA -->
+    <string name="estimated_arrival">Estimated arrival: %1$s</string>
+    <string name="route_distance">Distance: %1$s</string>
+    <string name="calculating_route">Calculating route…</string>
+
+    <!-- Driver Stats -->
+    <string name="my_statistics">My statistics</string>
+    <string name="total_deliveries">Deliveries</string>
+    <string name="total_revenue">Revenue</string>
+    <string name="acceptance_rate">Acceptance rate</string>
+    <string name="average_rating">Average rating</string>
+    <string name="revenue_format">%.2f €</string>
+    <string name="rate_format">%.0f %%</string>
+
     <!-- Scaffold -->
     <string name="back_button">Back</string>
 

@@ -48,6 +48,7 @@ export const validateOrder = onCall(async (request) => {
 
     await orderRef.update({
       status: "DELIVERED",
+      deliveredAt: firestore.FieldValue.serverTimestamp(),
     })
 
     return { success: true }

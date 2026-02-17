@@ -14,16 +14,21 @@ const getServiceAccountFromEnv = () => {
   }
 }
 
+const RTDB_URL =
+  process.env.FIREBASE_DATABASE_URL || "https://potiongo-f85b7-default-rtdb.europe-west1.firebasedatabase.app"
+
 if (!admin.apps.length) {
   const serviceAccount = getServiceAccountFromEnv()
 
   if (serviceAccount) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
+      databaseURL: RTDB_URL,
     })
   } else {
     admin.initializeApp({
       credential: admin.credential.applicationDefault(),
+      databaseURL: RTDB_URL,
     })
   }
 }

@@ -37,7 +37,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       email: snapshot.data().email,
       firstName: snapshot.data().firstName,
       lastName: snapshot.data().lastName,
-      role: snapshot.data().role,
+      role: String(snapshot.data().role ?? "").toUpperCase() as User["role"],
     }
 
     const validation = userSchema.omit({ password: true }).safeParse(user)
