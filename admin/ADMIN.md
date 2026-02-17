@@ -6,16 +6,16 @@ Dashboard d'administration pour la plateforme PotionGo. Application Next.js 15 a
 
 **Stack technique :**
 
-| Categorie | Technologie |
-|-----------|------------|
-| Framework | Next.js 15 (App Router) + React 19 |
-| Langage | TypeScript (strict mode) |
-| Styling | Tailwind CSS 4 + CSS Modules |
-| Validation | Zod 4 + react-hook-form 7 |
-| Auth | Firebase Auth (session cookies 12h) |
-| Database | Firebase Firestore + Realtime DB |
-| Storage | Firebase Storage |
-| Code Quality | ESLint + Prettier |
+| Categorie    | Technologie                         |
+| ------------ | ----------------------------------- |
+| Framework    | Next.js 15 (App Router) + React 19  |
+| Langage      | TypeScript (strict mode)            |
+| Styling      | Tailwind CSS 4 + CSS Modules        |
+| Validation   | Zod 4 + react-hook-form 7           |
+| Auth         | Firebase Auth (session cookies 12h) |
+| Database     | Firebase Firestore + Realtime DB    |
+| Storage      | Firebase Storage                    |
+| Code Quality | ESLint + Prettier                   |
 
 ---
 
@@ -131,15 +131,15 @@ admin/
 
 Applique sur toutes les routes (sauf API/static) les headers :
 
-| Header | Valeur |
-|--------|--------|
-| Content-Security-Policy | self + Firebase APIs |
-| Referrer-Policy | strict-origin-when-cross-origin |
-| X-Content-Type-Options | nosniff |
-| X-Frame-Options | DENY |
-| Cross-Origin-Opener-Policy | same-origin |
-| Cross-Origin-Resource-Policy | same-origin |
-| Permissions-Policy | camera=(), microphone=(), geolocation=(), payment=() |
+| Header                       | Valeur                                               |
+| ---------------------------- | ---------------------------------------------------- |
+| Content-Security-Policy      | self + Firebase APIs                                 |
+| Referrer-Policy              | strict-origin-when-cross-origin                      |
+| X-Content-Type-Options       | nosniff                                              |
+| X-Frame-Options              | DENY                                                 |
+| Cross-Origin-Opener-Policy   | same-origin                                          |
+| Cross-Origin-Resource-Policy | same-origin                                          |
+| Permissions-Policy           | camera=(), microphone=(), geolocation=(), payment=() |
 
 ---
 
@@ -147,28 +147,29 @@ Applique sur toutes les routes (sauf API/static) les headers :
 
 ### Authentication
 
-| Methode | Route | Description |
-|---------|-------|-------------|
-| POST | `/api/auth/session` | Cree la session (cookie + CSRF) a partir d'un ID token |
-| DELETE | `/api/auth/session` | Deconnexion (supprime cookies, revoque tokens) |
-| GET | `/api/health` | Health check |
+| Methode | Route               | Description                                            |
+| ------- | ------------------- | ------------------------------------------------------ |
+| POST    | `/api/auth/session` | Cree la session (cookie + CSRF) a partir d'un ID token |
+| DELETE  | `/api/auth/session` | Deconnexion (supprime cookies, revoque tokens)         |
+| GET     | `/api/health`       | Health check                                           |
 
 ### Dashboard
 
-| Methode | Route | Description |
-|---------|-------|-------------|
-| GET | `/api/dashboard/stats` | Statistiques agregees (totaux, roles, statuts, evaluations) |
+| Methode | Route                  | Description                                                 |
+| ------- | ---------------------- | ----------------------------------------------------------- |
+| GET     | `/api/dashboard/stats` | Statistiques agregees (totaux, roles, statuts, evaluations) |
 
 ### Commandes
 
-| Methode | Route | Description |
-|---------|-------|-------------|
-| GET | `/api/orders` | Liste paginee avec filtres (status, search, prix) et tri multi-champs |
-| POST | `/api/orders` | Creer une commande (CSRF requis) |
-| GET | `/api/orders/[id]` | Detail d'une commande |
-| DELETE | `/api/orders/[id]` | Supprimer une commande (CSRF requis) |
+| Methode | Route              | Description                                                           |
+| ------- | ------------------ | --------------------------------------------------------------------- |
+| GET     | `/api/orders`      | Liste paginee avec filtres (status, search, prix) et tri multi-champs |
+| POST    | `/api/orders`      | Creer une commande (CSRF requis)                                      |
+| GET     | `/api/orders/[id]` | Detail d'une commande                                                 |
+| DELETE  | `/api/orders/[id]` | Supprimer une commande (CSRF requis)                                  |
 
 **Parametres GET `/api/orders` :**
+
 - `page`, `pageSize` (max 100)
 - `status` : PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED, all
 - `search` : recherche sur ID, nom client/livreur, adresse
@@ -177,29 +178,30 @@ Applique sur toutes les routes (sauf API/static) les headers :
 
 ### Produits
 
-| Methode | Route | Description |
-|---------|-------|-------------|
-| GET | `/api/products` | Liste paginee avec filtres (search, mood, prix) |
-| POST | `/api/products` | Creer un produit (CSRF requis) |
-| GET | `/api/products/[id]` | Detail d'un produit |
-| DELETE | `/api/products/[id]` | Supprimer un produit (CSRF requis) |
+| Methode | Route                | Description                                     |
+| ------- | -------------------- | ----------------------------------------------- |
+| GET     | `/api/products`      | Liste paginee avec filtres (search, mood, prix) |
+| POST    | `/api/products`      | Creer un produit (CSRF requis)                  |
+| GET     | `/api/products/[id]` | Detail d'un produit                             |
+| DELETE  | `/api/products/[id]` | Supprimer un produit (CSRF requis)              |
 
 ### Utilisateurs
 
-| Methode | Route | Description |
-|---------|-------|-------------|
-| GET | `/api/users` | Liste paginee avec filtres (role, search) |
-| POST | `/api/users` | Creer un utilisateur (CSRF requis, roles CUSTOMER/DRIVER uniquement) |
-| GET | `/api/users/[id]` | Detail utilisateur |
-| DELETE | `/api/users/[id]` | Supprimer utilisateur (Auth + Firestore) |
-| GET | `/api/users/export` | Export CSV de tous les utilisateurs |
-| GET | `/api/users/[id]/ratings` | Evaluations et stats d'un utilisateur |
+| Methode | Route                     | Description                                                          |
+| ------- | ------------------------- | -------------------------------------------------------------------- |
+| GET     | `/api/users`              | Liste paginee avec filtres (role, search)                            |
+| POST    | `/api/users`              | Creer un utilisateur (CSRF requis, roles CUSTOMER/DRIVER uniquement) |
+| GET     | `/api/users/[id]`         | Detail utilisateur                                                   |
+| DELETE  | `/api/users/[id]`         | Supprimer utilisateur (Auth + Firestore)                             |
+| GET     | `/api/users/export`       | Export CSV de tous les utilisateurs                                  |
+| GET     | `/api/users/[id]/ratings` | Evaluations et stats d'un utilisateur                                |
 
 ---
 
 ## Schemas de validation Zod
 
 ### Product (`products/schema.ts`)
+
 ```typescript
 {
   name: string (1-100 chars, pas de HTML),
@@ -211,6 +213,7 @@ Applique sur toutes les routes (sauf API/static) les headers :
 ```
 
 ### Order (`orders/schema.ts`)
+
 ```typescript
 {
   customerId: string,
@@ -225,6 +228,7 @@ Applique sur toutes les routes (sauf API/static) les headers :
 ```
 
 ### User (`users/schema.ts`)
+
 ```typescript
 {
   email: string (email valide),
@@ -249,13 +253,13 @@ Chaque entite suit le pattern interface + implementation :
 
 ### Repositories disponibles
 
-| Repository | Methodes |
-|------------|----------|
-| `DashboardRepository` | `getStats()` |
-| `OrderRepository` | `list(query)`, `findAll()`, `findById(id)`, `create(payload)`, `removeById(id)` |
-| `ProductRepository` | `list(query)`, `findAll()`, `findById(id)`, `create(payload)`, `removeById(id)` |
-| `UserRepository` | `list(query)`, `findAll()`, `findAllByRole(role)`, `findById(id)`, `create(payload)`, `removeById(id)`, `export()` |
-| `RatingRepository` | `list(query)`, `findAll()`, `findById(id)`, `findByUserId(id)`, `create(payload)`, `removeById(id)` |
+| Repository            | Methodes                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `DashboardRepository` | `getStats()`                                                                                                       |
+| `OrderRepository`     | `list(query)`, `findAll()`, `findById(id)`, `create(payload)`, `removeById(id)`                                    |
+| `ProductRepository`   | `list(query)`, `findAll()`, `findById(id)`, `create(payload)`, `removeById(id)`                                    |
+| `UserRepository`      | `list(query)`, `findAll()`, `findAllByRole(role)`, `findById(id)`, `create(payload)`, `removeById(id)`, `export()` |
+| `RatingRepository`    | `list(query)`, `findAll()`, `findById(id)`, `findByUserId(id)`, `create(payload)`, `removeById(id)`                |
 
 Toutes les mutations incluent automatiquement les headers CSRF via `withCsrfHeaders()`.
 
@@ -264,18 +268,32 @@ Toutes les mutations incluent automatiquement les headers CSRF via `withCsrfHead
 ## Types TypeScript
 
 ### UserRole
+
 ```typescript
-enum UserAdminRole { ADMIN = "ADMIN" }
-enum UserClientRole { CUSTOMER = "CUSTOMER", DRIVER = "DRIVER" }
+enum UserAdminRole {
+  ADMIN = "ADMIN",
+}
+enum UserClientRole {
+  CUSTOMER = "CUSTOMER",
+  DRIVER = "DRIVER",
+}
 type UserRole = UserAdminRole | UserClientRole
 ```
 
 ### OrderStatus
+
 ```typescript
-enum OrderStatus { PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED }
+enum OrderStatus {
+  PENDING,
+  ASSIGNED,
+  IN_TRANSIT,
+  DELIVERED,
+  CANCELLED,
+}
 ```
 
 ### Interfaces principales
+
 - `User` : uid, email, firstName, lastName, role
 - `Product` : id, name, price, mood, description?, imageUrl?
 - `Order` : id, customerId, driverId, status, items[], dropoff, validationCode, createdAt
@@ -286,10 +304,12 @@ enum OrderStatus { PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED }
 ## Pages du dashboard
 
 ### `/` - Connexion
+
 - Formulaire email/mot de passe avec validation Zod
 - Erreur si l'utilisateur n'est pas admin
 
 ### `/dashboard` - Accueil
+
 - Boutons d'acces rapide (Utilisateurs, Commandes, Produits)
 - Totaux : utilisateurs, produits, commandes, evaluations, unites vendues
 - Distribution par role (graphique en barres)
@@ -297,6 +317,7 @@ enum OrderStatus { PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED }
 - Statistiques des evaluations (moyenne, distribution)
 
 ### `/dashboard/orders` - Commandes
+
 - Tableau pagine (5, 10, 20, 50 par page)
 - Filtre par statut
 - Recherche full-text
@@ -304,17 +325,20 @@ enum OrderStatus { PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED }
 - Suppression avec confirmation modale
 
 ### `/dashboard/products` - Produits
+
 - Liste paginee avec recherche, filtre par mood, filtre prix min/max
 - Modal de creation (nom, mood, prix, description, upload image)
 - Badges de couleur par mood (SAD, HAPPY, ANGRY)
 
 ### `/dashboard/users` - Utilisateurs
+
 - Liste paginee avec filtre par role, recherche
 - Modal de creation (prenom, nom, email, mot de passe, role)
 - Export CSV
 - Badges de role colores
 
 ### `/dashboard/users/[id]` - Detail utilisateur
+
 - Metadonnees (uid, email, nom, role)
 - Section evaluations : moyenne, distribution, 5 derniers commentaires
 - Section commandes/livraisons (tableau pagine)
@@ -324,28 +348,34 @@ enum OrderStatus { PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED }
 ## Cloud Functions
 
 ### `createUser`
+
 - **Input** : `{ role: "driver"|"customer", email, firstName, lastName }`
 - **Actions** : Set custom claims + cree document Firestore
 - **Rollback** : Supprime l'utilisateur Auth si Firestore echoue
 
 ### `createOrder`
+
 - **Input** : `{ items: [{potionId, quantity}], dropoff: {address, lat, lng} }`
 - **Actions** : Genere code 6 chiffres, cree commande PENDING, cherche livreurs < 10km (Haversine), envoie FCM
 - **Retour** : `{ orderId, validationCode }`
 
 ### `acceptOrder`
+
 - **Input** : `{ orderId }`
 - **Actions** : Transaction Firestore → verifie PENDING → ASSIGNED + driverStart
 
 ### `validateOrder`
+
 - **Input** : `{ orderId, validationCode (6 chars) }`
 - **Actions** : Verifie le code → DELIVERED
 
 ### `submitRating`
+
 - **Input** : `{ orderId, rating: 1-5, comment? }`
 - **Actions** : Cree l'evaluation, recalcule la moyenne du note, empeche les doublons
 
 ### `updateUser`
+
 - **Input** : `{ firstName, lastName, email? }`
 - **Actions** : Met a jour Firestore + Auth si email change
 
@@ -354,11 +384,13 @@ enum OrderStatus { PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED }
 ## Theme et styling
 
 ### Tailwind CSS
+
 - Theme avec variables CSS personnalisees (bg, fg, card, muted, accent, accent2, accent3)
 - Mode sombre via classe `.dark` sur `<html>`
 - Persistence du theme dans localStorage
 
 ### Couleurs
+
 - **Accent** : Bleu primaire
 - **Accent2** : Cyan/Teal secondaire
 - **Accent3** : Violet tertiaire
@@ -369,6 +401,7 @@ enum OrderStatus { PENDING, ASSIGNED, IN_TRANSIT, DELIVERED, CANCELLED }
 ## Configuration Firebase Admin
 
 Resolution des credentials (`config/firebase-admin.js`) :
+
 1. Variable d'env `CLIENT_SERVICE_ACCOUNT_JSON` (JSON string)
 2. Application Default Credentials (GCP)
 
@@ -376,16 +409,16 @@ Resolution des credentials (`config/firebase-admin.js`) :
 
 ## Dependances principales
 
-| Package | Version | Usage |
-|---------|---------|-------|
-| `next` | ^15.5.12 | Framework web |
-| `react` / `react-dom` | 19.1.0 | UI |
-| `firebase` | ^12.4.0 | SDK client Firebase |
-| `firebase-admin` | ^13.6.0 | SDK serveur Firebase |
-| `zod` | ^4.3.5 | Validation de schemas |
-| `react-hook-form` | ^7.71.1 | Gestion de formulaires |
-| `@hookform/resolvers` | ^5.2.2 | Resolver Zod pour RHF |
-| `tailwindcss` | ^4.1.18 | CSS utilitaire |
-| `typescript` | ^5 | Typage statique |
-| `eslint` | ^9 | Linting |
-| `prettier` | ^3.6.2 | Formatage |
+| Package               | Version  | Usage                  |
+| --------------------- | -------- | ---------------------- |
+| `next`                | ^15.5.12 | Framework web          |
+| `react` / `react-dom` | 19.1.0   | UI                     |
+| `firebase`            | ^12.4.0  | SDK client Firebase    |
+| `firebase-admin`      | ^13.6.0  | SDK serveur Firebase   |
+| `zod`                 | ^4.3.5   | Validation de schemas  |
+| `react-hook-form`     | ^7.71.1  | Gestion de formulaires |
+| `@hookform/resolvers` | ^5.2.2   | Resolver Zod pour RHF  |
+| `tailwindcss`         | ^4.1.18  | CSS utilitaire         |
+| `typescript`          | ^5       | Typage statique        |
+| `eslint`              | ^9       | Linting                |
+| `prettier`            | ^3.6.2   | Formatage              |
