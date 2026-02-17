@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "potiongo"
+  },
+  "targets": {},
+  "etags": {
+    "potiongo-f85b7": {
+      "extensionInstances": {
+        "firestore-bigquery-export": "e63eb200b50f7269d7c65d981261517660d4ae615d3a58130b350d0c2b844c0a",
+        "firestore-bigquery-export-ratings": "2f0b641e10a402aeebda439f89f75e186a995288e503b9266e74adb5c09f0859"
+      }
+    }
   }
 }

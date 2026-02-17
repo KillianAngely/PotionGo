@@ -12,12 +12,24 @@
     {
       "codebase": "default",
       "disallowLegacyRuntimeConfig": true,
-      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "*.local"],
-      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"],
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ],
       "source": "functions"
     }
   ],
   "storage": {
     "rules": "storage.rules"
+  },
+  "extensions": {
+    "firestore-bigquery-export": "firebase/firestore-bigquery-export@0.2.6",
+    "firestore-bigquery-export-ratings": "firebase/firestore-bigquery-export@0.2.6"
   }
 }
