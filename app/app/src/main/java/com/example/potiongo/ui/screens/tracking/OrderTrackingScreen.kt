@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,6 +43,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
@@ -148,9 +150,26 @@ private fun TrackingContent(
                 state = MarkerState(position = dropoffPosition),
                 title = stringResource(R.string.marker_delivery_location)
             )
+            if (state.routePoints.isNotEmpty()) {
+                Polyline(
+                    points = state.routePoints,
+                    color = Color(0xFF4285F4),
+                    width = 12f
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
+
+        if (state.estimatedArrival.isNotEmpty()) {
+            Text(
+                text = stringResource(R.string.estimated_arrival, state.estimatedArrival),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
         Text(
             text = state.order.dropoff.address,

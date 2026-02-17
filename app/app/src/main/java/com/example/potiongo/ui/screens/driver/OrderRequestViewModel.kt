@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.potiongo.domain.AcceptOrderUseCase
 import com.example.potiongo.domain.AcceptOrderUseCaseResult
+import com.example.potiongo.domain.RejectOrderUseCase
+import com.example.potiongo.domain.RejectOrderUseCaseResult
 import com.example.potiongo.repository.OrderRepository
 import com.example.potiongo.repository.ProductRepository
 import com.example.potiongo.repository.UserRepository
@@ -18,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderRequestViewModel @Inject constructor(
     private val acceptOrderUseCase: AcceptOrderUseCase,
+    private val rejectOrderUseCase: RejectOrderUseCase,
     private val orderRepository: OrderRepository,
     private val productRepository: ProductRepository,
     private val userRepository: UserRepository,
@@ -80,6 +83,20 @@ class OrderRequestViewModel @Inject constructor(
                     _uiState.value = OrderRequestUiState.Accepted(orderId)
                 }
                 is AcceptOrderUseCaseResult.Error -> {
+                    _uiState.value = OrderRequestUiState.Error(result.message)
+                }
+            }
+        }
+    }
+
+    fun reject() {
+        _uiState.value = OrderRequestUiState.Loading
+        viewModelScope.launch {
+            when (val result = rejectOrderUseCase(orderId)) {
+                is RejectOrderUseCaseResult.Success -> {
+                    _uiState.value = OrderRequestUiState.Rejected
+                }
+                is RejectOrderUseCaseResult.Error -> {
                     _uiState.value = OrderRequestUiState.Error(result.message)
                 }
             }

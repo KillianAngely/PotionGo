@@ -52,6 +52,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
@@ -351,9 +352,26 @@ private fun NavigatingContent(
                 title = stringResource(R.string.marker_delivery_location),
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
             )
+            if (state.routePoints.isNotEmpty()) {
+                Polyline(
+                    points = state.routePoints,
+                    color = androidx.compose.ui.graphics.Color(0xFF4285F4),
+                    width = 12f
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
+
+        if (state.estimatedArrival.isNotEmpty()) {
+            Text(
+                text = stringResource(R.string.estimated_arrival, state.estimatedArrival),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+        }
 
         Text(
             text = state.dropoffAddress,

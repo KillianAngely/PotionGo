@@ -14,5 +14,7 @@ data class Order(
     val items: List<OrderItem> = emptyList(),
     val status: String = "PENDING",
     val validationCode: String = "",
-    val createdAt: Timestamp? = null
+    val rejectedBy: List<String> = emptyList(),
+    val createdAt: Timestamp? = null,
+    val deliveredAt: Timestamp? = null
 )

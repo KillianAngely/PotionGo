@@ -3,6 +3,7 @@ package com.example.potiongo.ui.screens.tracking
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.potiongo.repository.DirectionsRepository
 import com.example.potiongo.repository.LocationRepository
 import com.example.potiongo.repository.OrderRepository
 import com.example.potiongo.repository.ProductRepository
@@ -10,6 +11,8 @@ import com.example.potiongo.ui.screens.driver.OrderItemDetail
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +24,7 @@ class OrderTrackingViewModel @Inject constructor(
     private val orderRepository: OrderRepository,
     private val productRepository: ProductRepository,
     private val locationRepository: LocationRepository,
+    private val directionsRepository: DirectionsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -32,6 +36,8 @@ class OrderTrackingViewModel @Inject constructor(
     private var driverLocationListener: ValueEventListener? = null
     private var driverIdForListener: String? = null
     private var orderStatusListener: ListenerRegistration? = null
+    private var routeFetchJob: Job? = null
+    private var lastRouteFetchTime: Long = 0
 
     init {
         loadOrderDetails()
@@ -84,6 +90,28 @@ class OrderTrackingViewModel @Inject constructor(
             val current = _uiState.value
             if (current is OrderTrackingUiState.Tracking) {
                 _uiState.value = current.copy(driverLat = lat, driverLng = lng)
+                fetchRouteDebounced(lat, lng, current.order.dropoff.lat, current.order.dropoff.lng)
+            }
+        }
+    }
+
+    private fun fetchRouteDebounced(
+        driverLat: Double, driverLng: Double,
+        dropoffLat: Double, dropoffLng: Double
+    ) {
+        val now = System.currentTimeMillis()
+        if (now - lastRouteFetchTime < 15_000) return
+        lastRouteFetchTime = now
+
+        routeFetchJob?.cancel()
+        routeFetchJob = viewModelScope.launch {
+            val result = directionsRepository.getRoute(driverLat, driverLng, dropoffLat, dropoffLng)
+            val current = _uiState.value
+            if (current is OrderTrackingUiState.Tracking && result != null) {
+                _uiState.value = current.copy(
+                    routePoints = result.points,
+                    estimatedArrival = result.duration
+                )
             }
         }
     }
@@ -116,5 +144,6 @@ class OrderTrackingViewModel @Inject constructor(
         super.onCleared()
         stopDriverLocationListener()
         stopOrderStatusListener()
+        routeFetchJob?.cancel()
     }
 }
