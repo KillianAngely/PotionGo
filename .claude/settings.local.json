@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(./gradlew assembleDebug:*)",
+      "Bash(bash gradlew:*)",
+      "Bash(npm uninstall:*)"
+    ]
+  }
+}

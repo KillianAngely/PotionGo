@@ -12,8 +12,8 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-  "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://firebasestorage.googleapis.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://maps.gstatic.com",
+  "connect-src 'self' https://*.googleapis.com https://maps.googleapis.com https://maps.gstatic.com https://*.firebaseio.com wss://*.firebaseio.com https://firebasestorage.googleapis.com",
   isProduction ? "upgrade-insecure-requests" : "",
 ]
   .filter(Boolean)

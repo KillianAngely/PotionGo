@@ -1,6 +1,7 @@
 package com.example.potiongo.ui.screens
 
 import com.example.potiongo.data.Order
+import com.google.android.gms.maps.model.LatLng
 
 sealed class HomeUiState{
     data class DriverView(
@@ -25,7 +26,9 @@ sealed class DriverDeliveryState {
         val dropoffAddress: String,
         val driverLat: Double,
         val driverLng: Double,
-        val distanceMeters: Float
+        val distanceMeters: Float,
+        val routePoints: List<LatLng> = emptyList(),
+        val estimatedArrival: String = ""
     ) : DriverDeliveryState()
 
     data class CodeEntry(

@@ -66,7 +66,7 @@ fun OrderRequestScreen(
                 ReadyContent(
                     state = state,
                     onAccept = { viewModel.accept() },
-                    onReject = onRejected,
+                    onReject = { viewModel.reject() },
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -74,6 +74,12 @@ fun OrderRequestScreen(
             is OrderRequestUiState.Accepted -> {
                 LaunchedEffect(Unit) {
                     onAccepted(state.orderId)
+                }
+            }
+
+            is OrderRequestUiState.Rejected -> {
+                LaunchedEffect(Unit) {
+                    onRejected()
                 }
             }
 

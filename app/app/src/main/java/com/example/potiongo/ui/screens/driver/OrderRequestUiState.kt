@@ -20,5 +20,6 @@ sealed class OrderRequestUiState {
 
     data object Loading : OrderRequestUiState()
     data class Accepted(val orderId: String) : OrderRequestUiState()
+    data object Rejected : OrderRequestUiState()
     data class Error(val message: String) : OrderRequestUiState()
 }

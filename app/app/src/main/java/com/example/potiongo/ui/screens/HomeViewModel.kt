@@ -14,6 +14,7 @@ import com.example.potiongo.domain.GetRoleUseCaseResult
 import com.example.potiongo.domain.SendLocationUseCase
 import com.example.potiongo.domain.ValidateOrderUseCase
 import com.example.potiongo.domain.ValidateOrderUseCaseResult
+import com.example.potiongo.repository.DirectionsRepository
 import com.example.potiongo.repository.LocationRepository
 import com.example.potiongo.repository.OrderRepository
 import com.example.potiongo.services.AuthService
@@ -25,6 +26,7 @@ import com.google.android.gms.location.Priority
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,6 +43,7 @@ class HomeViewModel @Inject constructor(
     val getAllProductUseCase: GetAllProductUseCase,
     private val orderRepository: OrderRepository,
     private val locationRepository: LocationRepository,
+    private val directionsRepository: DirectionsRepository,
     private val authService: AuthService,
     private val sendLocationUseCase: SendLocationUseCase,
     private val validateOrderUseCase: ValidateOrderUseCase,
@@ -63,7 +66,9 @@ class HomeViewModel @Inject constructor(
     private var driverIdForListener: String? = null
     private var orderStatusListener: ListenerRegistration? = null
 
-    // Driver: active delivery tracking
+    // Driver: active delivery tracking + route
+    private var routeFetchJob: Job? = null
+    private var lastRouteFetchTime: Long = 0
     private var activeOrderId: String? = null
     private var dropoffLat: Double = 0.0
     private var dropoffLng: Double = 0.0
@@ -192,7 +197,9 @@ class HomeViewModel @Inject constructor(
                     )
                 } else {
                     clearDeliveryTracking()
+                    val uid = authService.getUid() ?: ""
                     val orders = orderRepository.getUnassignedOrders()
+                        .filter { !it.rejectedBy.contains(uid) }
                     _uiState.value = HomeUiState.DriverView(orders = orders)
                 }
             } catch (e: Exception) {
@@ -227,6 +234,9 @@ class HomeViewModel @Inject constructor(
                 deliveryState = DriverDeliveryState.CodeEntry(orderId = orderId)
             )
         } else {
+            val currentDelivery = currentState.deliveryState
+            val existingRoute = if (currentDelivery is DriverDeliveryState.Navigating) currentDelivery.routePoints else emptyList()
+            val existingEta = if (currentDelivery is DriverDeliveryState.Navigating) currentDelivery.estimatedArrival else ""
             _uiState.value = currentState.copy(
                 deliveryState = DriverDeliveryState.Navigating(
                     orderId = orderId,
@@ -235,9 +245,35 @@ class HomeViewModel @Inject constructor(
                     dropoffAddress = dropoffAddress,
                     driverLat = driverLat,
                     driverLng = driverLng,
-                    distanceMeters = distance
+                    distanceMeters = distance,
+                    routePoints = existingRoute,
+                    estimatedArrival = existingEta
                 )
             )
+            fetchRouteDebounced(driverLat, driverLng)
+        }
+    }
+
+    private fun fetchRouteDebounced(driverLat: Double, driverLng: Double) {
+        val now = System.currentTimeMillis()
+        if (now - lastRouteFetchTime < 15_000) return
+        lastRouteFetchTime = now
+
+        routeFetchJob?.cancel()
+        routeFetchJob = viewModelScope.launch {
+            val result = directionsRepository.getRoute(driverLat, driverLng, dropoffLat, dropoffLng)
+            val currentState = _uiState.value
+            if (currentState is HomeUiState.DriverView && result != null) {
+                val delivery = currentState.deliveryState
+                if (delivery is DriverDeliveryState.Navigating) {
+                    _uiState.value = currentState.copy(
+                        deliveryState = delivery.copy(
+                            routePoints = result.points,
+                            estimatedArrival = result.duration
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -345,5 +381,6 @@ class HomeViewModel @Inject constructor(
         stopLocationUpdates()
         stopDriverLocationListener()
         stopOrderStatusListener()
+        routeFetchJob?.cancel()
     }
 }
