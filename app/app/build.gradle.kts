@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +7,11 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+}
+
+val localProps = Properties().also { props ->
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { props.load(it) }
 }
 
 android {
@@ -22,10 +29,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val localProps = java.util.Properties().apply {
-            val f = rootProject.file("local.properties")
-            if (f.exists()) load(f.inputStream())
-        }
         manifestPlaceholders["MAPS_API_KEY"] = localProps.getProperty("MAPS_API_KEY") ?: ""
     }
 
