@@ -15,7 +15,8 @@ const getServiceAccountFromEnv = () => {
 }
 
 const RTDB_URL =
-  process.env.FIREBASE_DATABASE_URL || "https://potiongo-f85b7-default-rtdb.europe-west1.firebasedatabase.app"
+  process.env.FIREBASE_DATABASE_URL ||
+  "https://potiongo-f85b7-default-rtdb.europe-west1.firebasedatabase.app"
 
 if (!admin.apps.length) {
   const serviceAccount = getServiceAccountFromEnv()

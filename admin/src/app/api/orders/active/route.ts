@@ -37,7 +37,11 @@ export async function GET(request: Request) {
     // Firestore "in" queries max 30 elements at a time
     for (let i = 0; i < allUserIds.length; i += 30) {
       const batch = allUserIds.slice(i, i + 30)
-      const usersSnap = await admin.firestore().collection("users").where("__name__", "in", batch).get()
+      const usersSnap = await admin
+        .firestore()
+        .collection("users")
+        .where("__name__", "in", batch)
+        .get()
       for (const doc of usersSnap.docs) {
         const data = doc.data()
         userNames[doc.id] = `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim() || "N/A"
@@ -81,7 +85,9 @@ export async function GET(request: Request) {
           customerName: userNames[customerId] ?? "N/A",
         }
       })
-      .filter((o) => o.driverLat !== 0 || o.driverLng !== 0 || o.dropoffLat !== 0 || o.dropoffLng !== 0)
+      .filter(
+        (o) => o.driverLat !== 0 || o.driverLng !== 0 || o.dropoffLat !== 0 || o.dropoffLng !== 0,
+      )
 
     return new Response(JSON.stringify({ orders }), {
       status: 200,

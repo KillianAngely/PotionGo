@@ -73,14 +73,21 @@ export default function DriversPage() {
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <SummaryCard label="Total livreurs" value={String(data.summary.totalDrivers)} />
-            <SummaryCard label="Revenus totaux" value={`${data.summary.totalRevenue.toFixed(2)} €`} />
+            <SummaryCard
+              label="Revenus totaux"
+              value={`${data.summary.totalRevenue.toFixed(2)} €`}
+            />
             <SummaryCard
               label="Taux acceptation moyen"
               value={`${data.summary.averageAcceptanceRate.toFixed(1)} %`}
             />
             <SummaryCard
               label="Note moyenne"
-              value={data.summary.averageRating > 0 ? `${data.summary.averageRating.toFixed(1)} / 5` : "N/A"}
+              value={
+                data.summary.averageRating > 0
+                  ? `${data.summary.averageRating.toFixed(1)} / 5`
+                  : "N/A"
+              }
             />
           </div>
 
@@ -98,7 +105,10 @@ export default function DriversPage() {
                   >
                     Livraisons{sortIndicator("totalDeliveries")}
                   </th>
-                  <th className="cursor-pointer px-4 py-3 text-right" onClick={() => handleSort("revenue")}>
+                  <th
+                    className="cursor-pointer px-4 py-3 text-right"
+                    onClick={() => handleSort("revenue")}
+                  >
                     Revenus{sortIndicator("revenue")}
                   </th>
                   <th
@@ -135,7 +145,8 @@ export default function DriversPage() {
                       <td className="px-4 py-3 text-right">
                         {driver.totalRatings > 0 ? (
                           <span>
-                            <span className="text-yellow-500">★</span> {driver.averageRating.toFixed(1)}{" "}
+                            <span className="text-yellow-500">★</span>{" "}
+                            {driver.averageRating.toFixed(1)}{" "}
                             <span className="text-muted">({driver.totalRatings})</span>
                           </span>
                         ) : (

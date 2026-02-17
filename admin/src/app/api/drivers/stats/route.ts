@@ -40,8 +40,14 @@ export async function GET(request: Request) {
 
         const items = Array.isArray(data.items) ? data.items : []
         for (const item of items) {
-          const potionId = typeof item === "object" && item !== null ? (item as { potionId?: string }).potionId : undefined
-          const quantity = typeof item === "object" && item !== null ? Number((item as { quantity?: unknown }).quantity) : 0
+          const potionId =
+            typeof item === "object" && item !== null
+              ? (item as { potionId?: string }).potionId
+              : undefined
+          const quantity =
+            typeof item === "object" && item !== null
+              ? Number((item as { quantity?: unknown }).quantity)
+              : 0
           if (potionId && Number.isFinite(quantity)) {
             const price = productPrices[potionId] ?? 0
             driverDelivered[driverId].revenue += price * quantity
@@ -72,7 +78,8 @@ export async function GET(request: Request) {
         totalDeliveries: delivered,
         revenue: Math.round(revenue * 100) / 100,
         acceptanceRate: Math.round(acceptanceRate * 10) / 10,
-        averageRating: typeof data.averageRating === "number" ? Math.round(data.averageRating * 100) / 100 : 0,
+        averageRating:
+          typeof data.averageRating === "number" ? Math.round(data.averageRating * 100) / 100 : 0,
         totalRatings: typeof data.totalRatings === "number" ? data.totalRatings : 0,
       }
     })
@@ -85,7 +92,8 @@ export async function GET(request: Request) {
     const driversWithRatings = drivers.filter((d) => d.totalRatings > 0)
     const averageRating =
       driversWithRatings.length > 0
-        ? driversWithRatings.reduce((sum, d) => sum + d.averageRating, 0) / driversWithRatings.length
+        ? driversWithRatings.reduce((sum, d) => sum + d.averageRating, 0) /
+          driversWithRatings.length
         : 0
 
     return new Response(
@@ -102,9 +110,12 @@ export async function GET(request: Request) {
     )
   } catch (error) {
     console.error("[GET /api/drivers/stats] Error:", error)
-    return new Response(JSON.stringify({ error: "Impossible de charger les statistiques des livreurs" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    })
+    return new Response(
+      JSON.stringify({ error: "Impossible de charger les statistiques des livreurs" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    )
   }
 }

@@ -164,7 +164,9 @@ export default function LiveMapPage() {
     return (
       <div className="space-y-6">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Carte live</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
+            Carte live
+          </p>
           <h2 className="text-xl font-semibold">Suivi des livraisons en temps réel</h2>
         </div>
         <div className="rounded-2xl border border-border bg-card p-6">
@@ -188,12 +190,15 @@ export default function LiveMapPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Carte live</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
+            Carte live
+          </p>
           <h2 className="text-xl font-semibold">Suivi des livraisons en temps réel</h2>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted">
-            {orders.length} commande{orders.length !== 1 ? "s" : ""} active{orders.length !== 1 ? "s" : ""}
+            {orders.length} commande{orders.length !== 1 ? "s" : ""} active
+            {orders.length !== 1 ? "s" : ""}
           </span>
           <span className="inline-flex h-2 w-2 animate-pulse rounded-full bg-green-500" />
         </div>
@@ -202,7 +207,10 @@ export default function LiveMapPage() {
       {error && <p className="text-sm text-red-500">{error}</p>}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="relative overflow-hidden rounded-2xl border border-border" style={{ height: "600px" }}>
+        <div
+          className="relative overflow-hidden rounded-2xl border border-border"
+          style={{ height: "600px" }}
+        >
           {!mapsReady ? (
             <div className="flex h-full items-center justify-center">
               <p className="text-sm text-muted">Chargement de la carte...</p>
@@ -231,7 +239,9 @@ export default function LiveMapPage() {
                   googleMapRef.current?.setZoom(14)
                 }}
                 className={`w-full rounded-xl border p-3 text-left text-sm transition hover:bg-bg/80 ${
-                  selectedOrderId === order.orderId ? "border-accent bg-bg/80" : "border-border bg-card"
+                  selectedOrderId === order.orderId
+                    ? "border-accent bg-bg/80"
+                    : "border-border bg-card"
                 }`}
               >
                 <div className="flex items-center gap-2">
