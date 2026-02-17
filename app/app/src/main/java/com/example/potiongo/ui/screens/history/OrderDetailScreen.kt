@@ -1,5 +1,6 @@
 package com.example.potiongo.ui.screens.history
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 fun OrderDetailScreen(
     onBack: () -> Unit = {},
+    onUserClick: (String) -> Unit = {},
     viewModel: OrderDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -77,6 +79,7 @@ fun OrderDetailScreen(
             is OrderDetailUiState.Success -> {
                 OrderDetailContent(
                     detail = state.detail,
+                    onUserClick = onUserClick,
                     modifier = Modifier.padding(paddingValues)
                 )
             }
@@ -87,6 +90,7 @@ fun OrderDetailScreen(
 @Composable
 private fun OrderDetailContent(
     detail: OrderDetail,
+    onUserClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -118,13 +122,18 @@ private fun OrderDetailContent(
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(4.dp))
+        val driverId = detail.order.driverId
         Text(
             text = detail.driverName ?: stringResource(R.string.not_assigned),
             style = MaterialTheme.typography.bodyMedium,
             color = if (detail.driverName != null)
-                MaterialTheme.colorScheme.onSurface
+                MaterialTheme.colorScheme.primary
             else
-                MaterialTheme.colorScheme.onSurfaceVariant
+                MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = if (!driverId.isNullOrEmpty())
+                Modifier.clickable { onUserClick(driverId) }
+            else
+                Modifier
         )
 
         Spacer(modifier = Modifier.height(16.dp))

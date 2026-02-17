@@ -22,6 +22,8 @@ interface ICloudFunctionsService {
     suspend fun createOrder(items: List<Map<String, Any>>, dropoff: Map<String, Any>): Map<String, Any>
     suspend fun acceptOrder(orderId: String)
     suspend fun validateOrder(orderId: String, validationCode: String)
+    suspend fun updateUser(firstName: String, lastName: String, email: String?): Map<String, Any>
+    suspend fun submitRating(orderId: String, rating: Int, comment: String?)
 }
 
 private const val TAG : String = "CloudFunctionsService"
@@ -79,6 +81,32 @@ class CloudFunctionsService @Inject constructor(private val cloudFunction: Fireb
         )
         cloudFunction.getHttpsCallable("validateOrder")
             .call(data).await()
+    }
+
+    override suspend fun submitRating(orderId: String, rating: Int, comment: String?) {
+        val data = hashMapOf<String, Any>(
+            "orderId" to orderId,
+            "rating" to rating
+        )
+        if (comment != null) {
+            data["comment"] = comment
+        }
+        cloudFunction.getHttpsCallable("submitRating")
+            .call(data).await()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override suspend fun updateUser(firstName: String, lastName: String, email: String?): Map<String, Any> {
+        val data = hashMapOf<String, Any>(
+            "firstName" to firstName,
+            "lastName" to lastName
+        )
+        if (email != null) {
+            data["email"] = email
+        }
+        val result = cloudFunction.getHttpsCallable("updateUser")
+            .call(data).await()
+        return result.data as Map<String, Any>
     }
 
 }

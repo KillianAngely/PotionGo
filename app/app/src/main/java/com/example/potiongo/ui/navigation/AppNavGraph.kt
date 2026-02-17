@@ -25,7 +25,9 @@ import com.example.potiongo.ui.screens.history.HistoryScreen
 import com.example.potiongo.ui.screens.history.OrderDetailScreen
 import com.example.potiongo.ui.screens.order.ProductDetailScreen
 import com.example.potiongo.ui.screens.profile.ProfileScreen
+import com.example.potiongo.ui.screens.rating.RatingScreen
 import com.example.potiongo.ui.screens.tracking.OrderTrackingScreen
+import com.example.potiongo.ui.screens.userprofile.UserProfileScreen
 
 @Composable
 fun AppNavHost(
@@ -73,6 +75,9 @@ fun AppNavHost(
                 },
                 onTrackOrder = { orderId ->
                     navController.navigate("order_tracking/$orderId")
+                },
+                onRateOrder = { orderId ->
+                    navController.navigate("rating/$orderId")
                 }
             )
         }
@@ -113,7 +118,10 @@ fun AppNavHost(
             arguments = listOf(navArgument("orderId") { type = NavType.StringType })
         ) {
             OrderDetailScreen(
-                onBack = { navController.popBackStack() }
+                onBack = { navController.popBackStack() },
+                onUserClick = { userId ->
+                    navController.navigate("user_profile/$userId")
+                }
             )
         }
         composable(route = AppScreenDestination.Profile.name){
@@ -148,9 +156,9 @@ fun AppNavHost(
             )
         ) {
             OrderRequestScreen(
-                onAccepted = { orderId ->
-                    navController.navigate("active_delivery/$orderId") {
-                        popUpTo(AppScreenDestination.Home.name)
+                onAccepted = {
+                    navController.navigate(AppScreenDestination.Home.name) {
+                        popUpTo(AppScreenDestination.Home.name) { inclusive = true }
                     }
                 },
                 onRejected = { navController.popBackStack() }
@@ -159,11 +167,12 @@ fun AppNavHost(
         composable(
             route = "active_delivery/{orderId}",
             arguments = listOf(navArgument("orderId") { type = NavType.StringType })
-        ) {
+        ) { backStackEntry ->
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
             ActiveDeliveryScreen(
                 onDeliveryCompleted = {
-                    navController.navigate(AppScreenDestination.Home.name) {
-                        popUpTo(AppScreenDestination.Home.name) { inclusive = true }
+                    navController.navigate("rating/$orderId") {
+                        popUpTo(AppScreenDestination.Home.name)
                     }
                 },
                 onBack = { navController.popBackStack() }
@@ -174,6 +183,26 @@ fun AppNavHost(
             arguments = listOf(navArgument("orderId") { type = NavType.StringType })
         ) {
             OrderTrackingScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(
+            route = "rating/{orderId}",
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
+        ) {
+            RatingScreen(
+                onDone = {
+                    navController.navigate(AppScreenDestination.Home.name) {
+                        popUpTo(AppScreenDestination.Home.name) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(
+            route = "user_profile/{userId}",
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) {
+            UserProfileScreen(
                 onBack = { navController.popBackStack() }
             )
         }

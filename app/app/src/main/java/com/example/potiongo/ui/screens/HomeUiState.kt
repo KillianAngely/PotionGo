@@ -5,11 +5,13 @@ import com.example.potiongo.data.Order
 sealed class HomeUiState{
     data class DriverView(
         val orders: List<Order> = emptyList(),
-        val deliveryState: DriverDeliveryState? = null
+        val deliveryState: DriverDeliveryState? = null,
+        val pendingRatingOrderId: String? = null
     ) : HomeUiState()
     data class CustomerView(
         val activeOrder: Order? = null,
-        val orderDelivered: Boolean = false
+        val orderDelivered: Boolean = false,
+        val lastDeliveredOrderId: String? = null
     ) : HomeUiState()
     data class Error(val error : String) : HomeUiState()
     data object ErrorProduct : HomeUiState()
