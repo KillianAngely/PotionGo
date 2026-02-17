@@ -75,10 +75,7 @@ export const submitRating = onCall(async (request) => {
     })
 
     // Recalculate reviewee's average rating
-    const allRatings = await db
-      .collection("ratings")
-      .where("revieweeId", "==", revieweeId)
-      .get()
+    const allRatings = await db.collection("ratings").where("revieweeId", "==", revieweeId).get()
 
     let totalRatings = 0
     let sumRatings = 0
@@ -89,10 +86,13 @@ export const submitRating = onCall(async (request) => {
 
     const averageRating = totalRatings > 0 ? sumRatings / totalRatings : 0
 
-    await db.collection("users").doc(revieweeId).update({
-      averageRating: Math.round(averageRating * 10) / 10,
-      totalRatings,
-    })
+    await db
+      .collection("users")
+      .doc(revieweeId)
+      .update({
+        averageRating: Math.round(averageRating * 10) / 10,
+        totalRatings,
+      })
 
     return { success: true }
   } catch (error) {
