@@ -119,7 +119,12 @@ export const orderSchema = z.object({
     normalizeDriverStart,
     z
       .object({
-        address: z.string().trim().min(1).refine(noHtmlTags, "Adresse de départ invalide").optional(),
+        address: z
+          .string()
+          .trim()
+          .min(1)
+          .refine(noHtmlTags, "Adresse de départ invalide")
+          .optional(),
         lat: z.number(),
         lng: z.number(),
       })
