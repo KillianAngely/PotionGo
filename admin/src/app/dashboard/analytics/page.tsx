@@ -1,7 +1,11 @@
 "use client"
 import { useEffect, useMemo, useState } from "react"
 import { AnalyticsRepository } from "../../00_INFRA/Repositories/Analytics/AnalyticsRepository"
-import { AnalyticsSnapshot, ForecastPoint, OrderPerDay } from "../../00_INFRA/types/AnalyticsSnapshot"
+import {
+  AnalyticsSnapshot,
+  ForecastPoint,
+  OrderPerDay,
+} from "../../00_INFRA/types/AnalyticsSnapshot"
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -109,7 +113,8 @@ function ForecastChart({
                 style={{ height: `${heightPct}%` }}
               />
               <div className="pointer-events-none absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-fg px-1.5 py-0.5 text-xs text-bg opacity-0 group-hover:opacity-100">
-                {d.day.slice(5)} — {d.value}{d.predicted ? " (prédit)" : ""}
+                {d.day.slice(5)} — {d.value}
+                {d.predicted ? " (prédit)" : ""}
               </div>
             </div>
           )
@@ -145,10 +150,7 @@ export default function AnalyticsPage() {
       .finally(() => setLoading(false))
   }, [repo])
 
-  const dailyTotals = useMemo(
-    () => buildDailyTotals(snapshot?.ordersPerDay ?? []),
-    [snapshot],
-  )
+  const dailyTotals = useMemo(() => buildDailyTotals(snapshot?.ordersPerDay ?? []), [snapshot])
   const recentTotals = useMemo(() => fillDateRange(dailyTotals, 14), [dailyTotals])
   const forecastHistory = useMemo(() => fillDateRange(dailyTotals, 10), [dailyTotals])
 
@@ -179,9 +181,7 @@ export default function AnalyticsPage() {
         </p>
         <p className="mt-3 text-xs text-muted">
           Pour déclencher manuellement :{" "}
-          <code className="text-accent">
-            firebase functions:shell → weeklyAnalytics()
-          </code>
+          <code className="text-accent">firebase functions:shell → weeklyAnalytics()</code>
         </p>
       </div>
     )
@@ -198,8 +198,7 @@ export default function AnalyticsPage() {
       <div className="rounded-2xl border border-border bg-bg/80 p-6">
         <h2 className="text-lg font-semibold">Analytics BigQuery</h2>
         <p className="mt-1 text-sm text-muted">
-          Données issues de BigQuery via l&apos;extension Firebase Stream to BigQuery.
-          Snapshot du{" "}
+          Données issues de BigQuery via l&apos;extension Firebase Stream to BigQuery. Snapshot du{" "}
           <strong>
             {snapshot.period.from} → {snapshot.period.to}
           </strong>
@@ -229,7 +228,11 @@ export default function AnalyticsPage() {
       {/* Graphes */}
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-border bg-card p-6">
-          <BarChart data={recentTotals} color="bg-accent" label="Commandes / jour (14 derniers j)" />
+          <BarChart
+            data={recentTotals}
+            color="bg-accent"
+            label="Commandes / jour (14 derniers j)"
+          />
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-6">
@@ -272,20 +275,20 @@ export default function AnalyticsPage() {
         <p className="font-semibold text-fg">Architecture big data — Ce2.5.4</p>
         <ul className="mt-2 list-disc space-y-1 pl-4">
           <li>
-            <strong>Collecte</strong> : Extension Firebase{" "}
-            <em>Stream Firestore to BigQuery</em> — ETL temps réel sans pipeline custom
+            <strong>Collecte</strong> : Extension Firebase <em>Stream Firestore to BigQuery</em> —
+            ETL temps réel sans pipeline custom
           </li>
           <li>
-            <strong>Stockage analytique</strong> : BigQuery (OLAP) séparé du Firestore
-            opérationnel (OLTP)
+            <strong>Stockage analytique</strong> : BigQuery (OLAP) séparé du Firestore opérationnel
+            (OLTP)
           </li>
           <li>
-            <strong>Traitement batch</strong> : Cloud Function schedulée (lundi 02h00) — SQL
-            agrégé sur le changelog BigQuery
+            <strong>Traitement batch</strong> : Cloud Function schedulée (lundi 02h00) — SQL agrégé
+            sur le changelog BigQuery
           </li>
           <li>
-            <strong>Analyse prédictive</strong> : Régression linéaire (moindres carrés) sur
-            les 30 derniers jours → prévision J+7
+            <strong>Analyse prédictive</strong> : Régression linéaire (moindres carrés) sur les 30
+            derniers jours → prévision J+7
           </li>
           <li>
             <strong>Cache opérationnel</strong> : Snapshot stocké dans Firestore pour servir le

@@ -183,9 +183,9 @@ export async function GET(request: Request) {
     )
   } catch (error) {
     console.error("[GET /api/analytics/snapshots] Error:", error)
-    return new Response(
-      JSON.stringify({ error: "Impossible de charger le snapshot analytique" }),
-      { status: 500, headers: { "Content-Type": "application/json" } },
-    )
+    return new Response(JSON.stringify({ error: "Impossible de charger le snapshot analytique" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
   }
 }
