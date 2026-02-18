@@ -41,14 +41,26 @@ export const weeklyAnalytics = onSchedule(
        * On interroge le changelog BigQuery généré par l'extension Firebase
        * pour reconstituer l'évolution des commandes jour par jour.
        */
+      /**
+       * On récupère la date de création + le statut final de chaque commande,
+       * puis on agrège par jour de création. Cela garantit que les commandes
+       * DELIVERED (mise à jour via UPDATE) sont bien comptabilisées.
+       */
       const [ordersPerDayRows] = await bigquery.query(`
         SELECT
-          FORMAT_DATE('%Y-%m-%d', DATE(timestamp)) AS day,
-          JSON_VALUE(data, '$.status')              AS status,
+          FORMAT_DATE('%Y-%m-%d', DATE(created_at)) AS day,
+          latest_status                              AS status,
           COUNT(*)                                   AS order_count
-        FROM \`${BQ_PROJECT_ID}.${BQ_DATASET}.orders_raw_changelog\`
-        WHERE operation = 'CREATE'
-          AND timestamp >= TIMESTAMP('${fromISO}')
+        FROM (
+          SELECT
+            document_name,
+            MIN(CASE WHEN operation IN ('CREATE', 'IMPORT') THEN timestamp ELSE NULL END) AS created_at,
+            ARRAY_AGG(JSON_VALUE(data, '$.status') ORDER BY timestamp DESC LIMIT 1)[OFFSET(0)] AS latest_status
+          FROM \`${BQ_PROJECT_ID}.${BQ_DATASET}.orders_raw_changelog\`
+          WHERE operation != 'DELETE'
+          GROUP BY document_name
+        )
+        WHERE created_at >= TIMESTAMP('${fromISO}') AND created_at IS NOT NULL
         GROUP BY day, status
         ORDER BY day ASC
       `)

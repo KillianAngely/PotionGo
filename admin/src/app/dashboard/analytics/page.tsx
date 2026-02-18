@@ -113,39 +113,6 @@ function ForecastChart({
   )
 }
 
-function StatusBreakdown({ rows }: { rows: OrderPerDay[] }) {
-  const byStatus = useMemo(() => {
-    const map = new Map<string, number>()
-    for (const row of rows) {
-      map.set(row.status, (map.get(row.status) ?? 0) + Number(row.order_count))
-    }
-    return Array.from(map.entries())
-      .sort((a, b) => b[1] - a[1])
-      .map(([status, count]) => ({ status, count }))
-  }, [rows])
-
-  const total = byStatus.reduce((s, r) => s + r.count, 0)
-
-  return (
-    <div className="space-y-2">
-      {byStatus.map(({ status, count }) => {
-        const width = total > 0 ? `${Math.max(6, Math.round((count / total) * 100))}%` : "0%"
-        return (
-          <div key={status}>
-            <div className="mb-1 flex justify-between text-xs text-muted">
-              <span>{status}</span>
-              <span>{count}</span>
-            </div>
-            <div className="h-2 rounded-full bg-border/70">
-              <div className="h-2 rounded-full bg-accent" style={{ width }} />
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AnalyticsPage() {
@@ -254,43 +221,34 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Répartition par statut + Top produits */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-            Répartition par statut (30 j)
-          </p>
-          <StatusBreakdown rows={snapshot.ordersPerDay} />
-        </div>
-
-        <div className="rounded-2xl border border-border bg-card p-6">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-            Top 5 potions commandées
-          </p>
-          {snapshot.topProducts.length === 0 ? (
-            <p className="text-sm text-muted">Aucune donnée</p>
-          ) : (
-            <div className="space-y-2">
-              {snapshot.topProducts.map((p, i) => {
-                const max = Number(snapshot.topProducts[0]?.total_quantity ?? 1)
-                const width = `${Math.max(8, Math.round((Number(p.total_quantity) / max) * 100))}%`
-                return (
-                  <div key={p.potion_id}>
-                    <div className="mb-1 flex justify-between text-xs text-muted">
-                      <span>
-                        #{i + 1} {p.potion_id}
-                      </span>
-                      <span>{p.total_quantity} unités</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-border/70">
-                      <div className="h-2 rounded-full bg-yellow-400" style={{ width }} />
-                    </div>
+      {/* Top produits */}
+      <div className="rounded-2xl border border-border bg-card p-6">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+          Top 5 potions commandées
+        </p>
+        {snapshot.topProducts.length === 0 ? (
+          <p className="text-sm text-muted">Aucune donnée</p>
+        ) : (
+          <div className="space-y-2">
+            {snapshot.topProducts.map((p, i) => {
+              const max = Number(snapshot.topProducts[0]?.total_quantity ?? 1)
+              const width = `${Math.max(8, Math.round((Number(p.total_quantity) / max) * 100))}%`
+              return (
+                <div key={p.potion_id}>
+                  <div className="mb-1 flex justify-between text-xs text-muted">
+                    <span>
+                      #{i + 1} {p.potion_id}
+                    </span>
+                    <span>{p.total_quantity} unités</span>
                   </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
+                  <div className="h-2 rounded-full bg-border/70">
+                    <div className="h-2 rounded-full bg-yellow-400" style={{ width }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Note technique */}
