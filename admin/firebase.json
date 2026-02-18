@@ -19,5 +19,9 @@
   ],
   "storage": {
     "rules": "storage.rules"
+  },
+  "extensions": {
+    "firestore-bigquery-export": "firebase/firestore-bigquery-export@0.2.6",
+    "firestore-bigquery-export-ratings": "firebase/firestore-bigquery-export@0.2.6"
   }
 }

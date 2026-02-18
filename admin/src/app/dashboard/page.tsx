@@ -86,6 +86,18 @@ export default function Dashboard() {
             <h3 className="mt-2 text-lg font-semibold">Suivre les potions</h3>
             <p className="mt-2 text-sm text-muted">Inventaire, mood et détails des offres.</p>
           </button>
+          <button
+            onClick={() => router.push("/dashboard/analytics")}
+            className="group rounded-2xl border border-border bg-card px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:border-accent/60"
+          >
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              Analytics
+            </p>
+            <h3 className="mt-2 text-lg font-semibold">Données BigQuery</h3>
+            <p className="mt-2 text-sm text-muted">
+              Tendances, prévisions et top produits issus de l&apos;analyse batch.
+            </p>
+          </button>
         </div>
       </div>
 
