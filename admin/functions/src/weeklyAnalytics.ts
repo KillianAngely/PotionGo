@@ -25,7 +25,7 @@ export const weeklyAnalytics = onSchedule(
     region: "europe-west1",
   },
   async () => {
-    const bigquery = new BigQuery({ projectId: BQ_PROJECT_ID })
+    const bigquery = new BigQuery({ projectId: BQ_PROJECT_ID, location: "EU" })
     const db = firestore()
 
     const now = new Date()
@@ -63,10 +63,14 @@ export const weeklyAnalytics = onSchedule(
         SELECT
           JSON_VALUE(item, '$.potionId') AS potion_id,
           SUM(CAST(JSON_VALUE(item, '$.quantity') AS INT64)) AS total_quantity
-        FROM \`${BQ_PROJECT_ID}.${BQ_DATASET}.orders_raw_latest\`,
+        FROM (
+          SELECT data
+          FROM \`${BQ_PROJECT_ID}.${BQ_DATASET}.orders_raw_changelog\`
+          WHERE operation != 'DELETE'
+          QUALIFY ROW_NUMBER() OVER (PARTITION BY document_name ORDER BY timestamp DESC) = 1
+        ),
         UNNEST(JSON_QUERY_ARRAY(data, '$.items')) AS item
         WHERE JSON_VALUE(data, '$.status') = 'DELIVERED'
-          AND operation != 'DELETE'
         GROUP BY potion_id
         ORDER BY total_quantity DESC
         LIMIT 5
