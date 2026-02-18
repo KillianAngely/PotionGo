@@ -40,7 +40,7 @@ jobs:
 
       - name: Create google-services.json
         if: env.GOOGLE_SERVICES_JSON != ''
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/app/google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > app/google-services.json
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
 
@@ -64,7 +64,7 @@ jobs:
                 "api_key": [ { "current_key": "mock-api-key" } ]
               }
             ]
-          }' > app/app/google-services.json
+          }' > app/google-services.json
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
 
