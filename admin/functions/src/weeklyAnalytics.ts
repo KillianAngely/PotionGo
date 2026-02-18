@@ -1,5 +1,6 @@
 import { onSchedule } from "firebase-functions/v2/scheduler"
 import { firestore } from "firebase-admin"
+import { FieldValue } from "firebase-admin/firestore"
 import { BigQuery } from "@google-cloud/bigquery"
 
 const BQ_PROJECT_ID = process.env.GCLOUD_PROJECT ?? "potiongo-f85b7"
@@ -83,7 +84,7 @@ export const weeklyAnalytics = onSchedule(
       const forecast = computeLinearForecast(dailyTotals, 7)
 
       const snapshot = {
-        generatedAt: firestore.FieldValue.serverTimestamp(),
+        generatedAt: FieldValue.serverTimestamp(),
         period: { from: fromISO, to: toISO },
         ordersPerDay: ordersPerDayRows,
         topProducts: topProductsRows,
