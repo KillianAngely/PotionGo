@@ -16,9 +16,25 @@ function buildDailyTotals(rows: OrderPerDay[]): Array<{ day: string; count: numb
     .map(([day, count]) => ({ day, count }))
 }
 
-/** Retourne uniquement les N dernières entrées d'un tableau. */
-function lastN<T>(arr: T[], n: number): T[] {
-  return arr.slice(Math.max(0, arr.length - n))
+/**
+ * Génère exactement `days` jours consécutifs se terminant à aujourd'hui
+ * et remplit avec les valeurs connues (0 pour les jours sans données).
+ * Cela garantit que les graphiques affichent toujours toute la plage.
+ */
+function fillDateRange(
+  data: Array<{ day: string; count: number }>,
+  days: number,
+): Array<{ day: string; count: number }> {
+  const map = new Map(data.map((d) => [d.day, d.count]))
+  const result: Array<{ day: string; count: number }> = []
+  const today = new Date()
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    const day = d.toISOString().slice(0, 10)
+    result.push({ day, count: map.get(day) ?? 0 })
+  }
+  return result
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -133,8 +149,8 @@ export default function AnalyticsPage() {
     () => buildDailyTotals(snapshot?.ordersPerDay ?? []),
     [snapshot],
   )
-  const recentTotals = useMemo(() => lastN(dailyTotals, 14), [dailyTotals])
-  const forecastHistory = useMemo(() => lastN(dailyTotals, 10), [dailyTotals])
+  const recentTotals = useMemo(() => fillDateRange(dailyTotals, 14), [dailyTotals])
+  const forecastHistory = useMemo(() => fillDateRange(dailyTotals, 10), [dailyTotals])
 
   if (loading) {
     return (
@@ -237,7 +253,7 @@ export default function AnalyticsPage() {
                 <div key={p.potion_id}>
                   <div className="mb-1 flex justify-between text-xs text-muted">
                     <span>
-                      #{i + 1} {p.potion_id}
+                      #{i + 1} {p.productName ?? p.potion_id}
                     </span>
                     <span>{p.total_quantity} unités</span>
                   </div>
